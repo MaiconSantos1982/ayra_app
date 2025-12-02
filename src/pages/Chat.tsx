@@ -95,7 +95,7 @@ export default function Chat() {
             // Add Ayra's response
             const ayraMsg: Message = {
                 id: (Date.now() + 1).toString(),
-                text: data.response || data.message || "Desculpe, não consegui processar sua mensagem. Tente novamente!",
+                text: data.response || data.output || data.message || "Desculpe, não consegui processar sua mensagem. Tente novamente!",
                 sender: 'ayra',
                 timestamp: new Date()
             };
