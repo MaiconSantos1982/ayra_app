@@ -225,9 +225,9 @@ Responda de forma clara, objetiva e motivadora. Use emojis quando apropriado.`;
     }
 
     return (
-        <div className="flex flex-col h-screen bg-background">
-            {/* Header */}
-            <div className="bg-gradient-to-br from-purple-900 to-purple-800 p-4 shadow-lg">
+        <div className="flex flex-col h-full bg-background relative">
+            {/* Header - Fixo no topo do fluxo */}
+            <div className="flex-none bg-gradient-to-br from-purple-900 to-purple-800 p-4 shadow-lg z-10">
                 <div className="flex items-center gap-3">
                     <div className="bg-primary/20 p-2 rounded-full">
                         <Sparkles className="w-6 h-6 text-primary" />
@@ -239,8 +239,8 @@ Responda de forma clara, objetiva e motivadora. Use emojis quando apropriado.`;
                 </div>
             </div>
 
-            {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-24">
+            {/* Messages - Área rolável que ocupa espaço restante */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
                 {messages.map((message, index) => (
                     <div
                         key={index}
@@ -278,8 +278,8 @@ Responda de forma clara, objetiva e motivadora. Use emojis quando apropriado.`;
                 <div ref={messagesEndRef} />
             </div>
 
-            {/* Input */}
-            <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-white/10 p-4">
+            {/* Input - Fixo na base do fluxo */}
+            <div className="flex-none bg-background border-t border-white/10 p-4 z-10 w-full">
                 <div className="flex gap-2 max-w-4xl mx-auto">
                     <input
                         type="text"

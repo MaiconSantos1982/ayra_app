@@ -1,19 +1,30 @@
-import { Outlet, NavLink } from 'react-router-dom';
+import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { Home, PlusCircle, MessageSquare, User } from 'lucide-react';
 import clsx from 'clsx';
 
 import PullToRefresh from './PullToRefresh';
 
 export default function Layout() {
+    const location = useLocation();
+    const isChat = location.pathname === '/chat';
+
     return (
         <div className="flex flex-col h-screen bg-background text-text overflow-hidden">
             {/* Main Content Area */}
             <main className="flex-1 overflow-hidden relative">
-                <PullToRefresh>
-                    <div className="pb-24 p-4 min-h-screen">
+                {isChat ? (
+                    // Chat Layout: Sem PullToRefresh, Sem Padding, Altura Fixa
+                    <div className="h-full w-full overflow-hidden">
                         <Outlet />
                     </div>
-                </PullToRefresh>
+                ) : (
+                    // Default Layout: Com PullToRefresh, Com Padding
+                    <PullToRefresh>
+                        <div className="pb-24 p-4 min-h-full">
+                            <Outlet />
+                        </div>
+                    </PullToRefresh>
+                )}
             </main>
 
             {/* Bottom Tab Bar */}
