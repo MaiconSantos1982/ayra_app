@@ -35,10 +35,13 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+import InstallPWA from './components/InstallPWA'; // Import adicionado
+
 export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <InstallPWA /> {/* Componente PWA adicionado aqui */}
         <Routes>
           <Route path="/login" element={<AuthPage />} />
           <Route path="/onboarding" element={<ProtectedRoute><OnboardingSimple /></ProtectedRoute>} />
