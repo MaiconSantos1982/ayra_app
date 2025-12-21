@@ -613,7 +613,7 @@ export default function AnamnesePage() {
                                                 type="time"
                                                 value={currentMeal.horario}
                                                 onChange={(e) => setCurrentMeal({ ...currentMeal, horario: e.target.value })}
-                                                className="w-full px-4 py-3 rounded-xl bg-background border border-white/10 text-white focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                                                className="w-full max-w-full min-w-0 px-4 py-3 rounded-xl bg-background border border-white/10 text-white focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all appearance-none [color-scheme:dark]"
                                             />
                                             <p className="text-xs text-text-muted/70 mt-1">
                                                 Informe o horário aproximado que você costuma fazer esta refeição
