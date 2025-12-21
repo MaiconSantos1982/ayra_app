@@ -284,7 +284,7 @@ export default function Chat() {
     };
 
     return (
-        <div className="flex flex-col h-full bg-[#0B141A]">
+        <div className="flex flex-col h-screen bg-[#0B141A]">{/* Changed from h-full to h-screen */}
             {/* WhatsApp Header */}
             <div className="bg-[#202C33] px-4 py-2 flex items-center gap-3 shadow-lg">
                 <button
