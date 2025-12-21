@@ -257,11 +257,6 @@ export async function syncUserDataFromSupabase(userId: number): Promise<void> {
             if (data.restricoes) profileUpdates.restricoes = data.restricoes;
             if (data.peso) profileUpdates.peso = data.peso;
             if (data.altura) profileUpdates.altura = data.altura;
-            if (data.telefone) profileUpdates.telefone = data.telefone;
-            if (data.problemas_de_saude) profileUpdates.problemas_de_saude = data.problemas_de_saude;
-            if (data.dificuldade) profileUpdates.dificuldade = data.dificuldade;
-            if (data.tem_nutri_ou_dieta) profileUpdates.tem_nutri_ou_dieta = data.tem_nutri_ou_dieta;
-            if (data.info_extra) profileUpdates.info_extra = data.info_extra;
 
             // Atualiza localStorage com dados do Supabase
             if (Object.keys(profileUpdates).length > 0) {
