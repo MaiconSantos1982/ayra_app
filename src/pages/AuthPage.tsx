@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Mail, User, LogIn, UserPlus, Sparkles } from 'lucide-react';
-import { registerUser, loginUser, saveUserToLocalStorage } from '../lib/supabaseAuth';
+import { registerUser, loginUser, saveUserToLocalStorage, syncUserDataFromSupabase } from '../lib/supabaseAuth';
+import { getUserData } from '../lib/localStorage';
 import Toast from '../components/Toast';
 import type { ToastType } from '../components/Toast';
 
@@ -30,8 +31,16 @@ export default function AuthPage() {
             const result = await loginUser(loginEmail);
 
             if (result.success && result.user) {
-                // Salva no localStorage
+                // 1. Salva dados básicos no localStorage
                 saveUserToLocalStorage(result.user);
+
+                // 2. Sincroniza PERFIL COMPLETO do Supabase antes de redirecionar
+                // Isso garante que peso, altura e anamnese sejam carregados
+                await syncUserDataFromSupabase(result.user.id);
+
+                // 3. Verifica para onde enviar
+                const userData = getUserData();
+                const hasProfileData = userData?.profile?.idade && userData?.profile?.objetivo;
 
                 // Feedback
                 const isPremium = result.user.plano === 'premium';
@@ -40,10 +49,11 @@ export default function AuthPage() {
                     type: 'success'
                 });
 
-                // Redireciona com reload para atualizar AuthContext
+                // Redireciona
                 setTimeout(() => {
-                    window.location.href = '/inicio';
-                }, 1500);
+                    // Se já tiver perfil preenchido, vai para início. Se não, onboarding.
+                    window.location.href = hasProfileData ? '/inicio' : '/onboarding';
+                }, 1000);
             } else {
                 setToast({ message: result.error || 'Erro ao fazer login', type: 'error' });
             }
