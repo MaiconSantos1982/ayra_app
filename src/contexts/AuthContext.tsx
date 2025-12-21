@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { getCurrentUser, isUserLoggedIn, logoutUser, refreshUserPremiumStatus } from '../lib/supabaseAuth';
+import { getCurrentUser, isUserLoggedIn, logoutUser, refreshUserPremiumStatus, syncUserDataFromSupabase } from '../lib/supabaseAuth';
 
 interface AuthContextType {
     user: {

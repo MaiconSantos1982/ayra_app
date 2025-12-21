@@ -226,3 +226,45 @@ export async function refreshUserPremiumStatus(): Promise<boolean> {
         return false;
     }
 }
+
+/**
+ * Sincroniza dados do Supabase com localStorage
+ * Carrega dados do perfil salvos no Supabase e atualiza o localStorage
+ */
+export async function syncUserDataFromSupabase(userId: number): Promise<void> {
+    try {
+        const { data, error } = await supabase
+            .from('ayra_cadastro')
+            .select('*')
+            .eq('id', userId)
+            .single();
+
+        if (error) {
+            console.error('Erro ao sincronizar dados:', error);
+            return;
+        }
+
+        if (data) {
+            // Importa updateProfile do localStorage
+            const { updateProfile } = await import('./localStorage');
+
+            // Atualiza apenas se houver dados no Supabase
+            const profileUpdates: any = {};
+
+            if (data.nome) profileUpdates.nome = data.nome;
+            if (data.idade) profileUpdates.idade = data.idade.toString();
+            if (data.objetivo) profileUpdates.objetivo = data.objetivo;
+            if (data.restricoes) profileUpdates.restricoes = data.restricoes;
+            if (data.peso) profileUpdates.peso = data.peso;
+            if (data.altura) profileUpdates.altura = data.altura;
+
+            // Atualiza localStorage com dados do Supabase
+            if (Object.keys(profileUpdates).length > 0) {
+                updateProfile(profileUpdates);
+                console.log('Dados sincronizados do Supabase com sucesso!');
+            }
+        }
+    } catch (error) {
+        console.error('Erro ao sincronizar dados:', error);
+    }
+}
