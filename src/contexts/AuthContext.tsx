@@ -26,6 +26,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             if (currentUser) {
                 setUser(currentUser);
 
+                // Sincroniza dados do Supabase com localStorage
+                syncUserDataFromSupabase(currentUser.id).catch(console.error);
+
                 // Atualiza status premium em background
                 refreshUserPremiumStatus().then((isPremium) => {
                     setUser(prev => prev ? { ...prev, premium: isPremium } : null);
