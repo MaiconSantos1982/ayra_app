@@ -13,8 +13,8 @@ export default function Layout() {
             {/* Main Content Area */}
             <main className="flex-1 overflow-hidden relative">
                 {isChat ? (
-                    // Chat Layout: Sem PullToRefresh, Sem Padding, Altura Fixa
-                    <div className="h-full w-full overflow-hidden">
+                    // Chat Layout: Altura calculada descontando Bottom Bar (64px)
+                    <div className="w-full overflow-hidden" style={{ height: 'calc(100vh - 64px)' }}>
                         <Outlet />
                     </div>
                 ) : (

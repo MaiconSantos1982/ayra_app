@@ -278,8 +278,8 @@ Responda de forma clara, objetiva e motivadora. Use emojis quando apropriado.`;
                 <div ref={messagesEndRef} />
             </div>
 
-            {/* Input - Fixo na base do fluxo, com margem para Bottom Bar */}
-            <div className="flex-none bg-background border-t border-white/10 p-4 z-10 w-full mb-20">
+            {/* Input - Fixo na base do fluxo */}
+            <div className="flex-none bg-background border-t border-white/10 p-4 z-10 w-full">
                 <div className="flex gap-2 max-w-4xl mx-auto">
                     <input
                         type="text"
