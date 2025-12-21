@@ -1,4 +1,4 @@
-import { User, LogOut, /* Download, Upload, */ Settings, Crown, UtensilsCrossed, Target, RefreshCw } from 'lucide-react';
+import { User, LogOut, /* Download, Upload, */ Settings, Crown, UtensilsCrossed, Target, RefreshCw, Smartphone } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { getUserData, getStats, /* exportData, importData */ } from '../lib/localStorage';
@@ -284,6 +284,29 @@ export default function ProfileSimple() {
                     />
                 </div>
             </div> */}
+
+            {/* Configurações do App */}
+            <div className="px-6 mb-6">
+                <h2 className="text-lg font-bold text-white mb-3">Configurações do App</h2>
+                <div className="space-y-3">
+                    <button
+                        onClick={() => {
+                            localStorage.removeItem('ayra_pwa_prompt_date');
+                            window.location.reload();
+                        }}
+                        className="w-full bg-card border border-white/10 rounded-2xl p-4 flex items-center justify-between hover:border-primary/30 transition-colors"
+                    >
+                        <div className="flex items-center gap-3">
+                            <Smartphone className="w-5 h-5 text-purple-400" />
+                            <div className="text-left">
+                                <span className="text-white font-semibold block">Instalar Aplicativo</span>
+                                <span className="text-xs text-gray-400">Adicionar à tela inicial</span>
+                            </div>
+                        </div>
+                        <span className="text-gray-400">→</span>
+                    </button>
+                </div>
+            </div>
 
             {/* Sair */}
             <div className="px-6 mb-6">
