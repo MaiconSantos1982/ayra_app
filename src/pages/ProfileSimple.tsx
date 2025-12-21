@@ -236,7 +236,7 @@ export default function ProfileSimple() {
 
                     {/* Editar Perfil Básico */}
                     <button
-                        onClick={() => navigate('/onboarding')}
+                        onClick={() => navigate('/onboarding?edit=true')}
                         className="w-full bg-card border border-white/10 rounded-2xl p-4 flex items-center justify-between hover:border-primary/30 transition-colors"
                     >
                         <div className="flex items-center gap-3">

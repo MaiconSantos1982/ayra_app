@@ -5,6 +5,8 @@ import { initializeUserData, getUserData } from '../lib/localStorage';
 import Toast from '../components/Toast';
 import type { ToastType } from '../components/Toast';
 
+import { syncUserDataFromSupabase } from '../lib/supabaseAuth';
+
 export default function OnboardingSimple() {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
@@ -16,15 +18,31 @@ export default function OnboardingSimple() {
 
     // Carrega dados existentes para edição
     useEffect(() => {
-        const userData = getUserData();
-        if (userData?.profile) {
-            setFormData({
-                nome: userData.profile.nome || '',
-                objetivo: userData.profile.objetivo || '',
-                restricoes: userData.profile.restricoes || '',
-            });
-        }
-    }, []);
+        const loadData = async () => {
+            // Tenta sincronizar do servidor primeiro (garantia extra)
+            const userId = localStorage.getItem('ayra_user_id');
+            if (userId) {
+                await syncUserDataFromSupabase(Number(userId));
+            }
+
+            const userData = getUserData();
+            if (userData?.profile) {
+                // Se já tem dados preenchidos (nome e objetivo), e não veio explicitamente para editar
+                if (userData.profile.nome && userData.profile.objetivo && !window.location.search.includes('edit=true')) {
+                    navigate('/inicio');
+                    return;
+                }
+
+                setFormData({
+                    nome: userData.profile.nome || '',
+                    objetivo: userData.profile.objetivo || '',
+                    restricoes: userData.profile.restricoes || '',
+                });
+            }
+        };
+
+        loadData();
+    }, [navigate]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
