@@ -233,7 +233,6 @@ export async function refreshUserPremiumStatus(): Promise<boolean> {
  */
 export async function syncUserDataFromSupabase(userId: number): Promise<void> {
     try {
-        console.log('🔄 Iniciando sincronização para userId:', userId);
 
         const { data, error } = await supabase
             .from('ayra_cadastro')
@@ -247,7 +246,6 @@ export async function syncUserDataFromSupabase(userId: number): Promise<void> {
         }
 
         if (data) {
-            console.log('📦 Dados recebidos do Supabase:', data);
 
             // Importa getUserData e saveUserData diretamente
             const { getUserData, saveUserData } = await import('./localStorage');
@@ -256,7 +254,6 @@ export async function syncUserDataFromSupabase(userId: number): Promise<void> {
             const currentData = getUserData();
 
             if (!currentData) {
-                console.warn('⚠️ Nenhum dado encontrado no localStorage');
                 return;
             }
 
@@ -275,22 +272,17 @@ export async function syncUserDataFromSupabase(userId: number): Promise<void> {
             if (data.tem_nutri_ou_dieta) profileUpdates.tem_nutri_ou_dieta = data.tem_nutri_ou_dieta;
             if (data.info_extra) profileUpdates.info_extra = data.info_extra;
 
-            console.log('📝 Campos para atualizar:', Object.keys(profileUpdates));
-            console.log('💾 Valores:', profileUpdates);
 
             // Atualiza localStorage com dados do Supabase
             if (Object.keys(profileUpdates).length > 0) {
                 currentData.profile = { ...currentData.profile, ...profileUpdates };
                 saveUserData(currentData);
                 console.log('✅ Dados sincronizados com sucesso!');
-                console.log('📋 Perfil atualizado:', currentData.profile);
             } else {
-                console.warn('⚠️ Nenhum campo para atualizar');
             }
         } else {
-            console.warn('⚠️ Nenhum dado retornado do Supabase');
         }
     } catch (error) {
-        console.error('❌ Erro ao sincronizar dados:', error);
+        console.error('Erro na sincronização:', error);
     }
 }
