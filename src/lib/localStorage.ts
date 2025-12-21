@@ -17,6 +17,11 @@ export interface UserProfile {
     restricoes?: string;
     peso?: number;
     altura?: number;
+    telefone?: string;
+    problemas_de_saude?: string;
+    dificuldade?: string;
+    tem_nutri_ou_dieta?: string;
+    info_extra?: string;
     segueDieta?: boolean; // Se a pessoa segue alguma dieta
     customDiet?: DietMeal[]; // Refeições da dieta personalizada
 }
