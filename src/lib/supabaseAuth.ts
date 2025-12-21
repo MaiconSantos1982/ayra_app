@@ -233,6 +233,8 @@ export async function refreshUserPremiumStatus(): Promise<boolean> {
  */
 export async function syncUserDataFromSupabase(userId: number): Promise<void> {
     try {
+        console.log('🔄 Iniciando sincronização para userId:', userId);
+
         const { data, error } = await supabase
             .from('ayra_cadastro')
             .select('*')
@@ -240,13 +242,23 @@ export async function syncUserDataFromSupabase(userId: number): Promise<void> {
             .single();
 
         if (error) {
-            console.error('Erro ao sincronizar dados:', error);
+            console.error('❌ Erro ao buscar dados do Supabase:', error);
             return;
         }
 
         if (data) {
-            // Importa updateProfile do localStorage
-            const { updateProfile } = await import('./localStorage');
+            console.log('📦 Dados recebidos do Supabase:', data);
+
+            // Importa getUserData e saveUserData diretamente
+            const { getUserData, saveUserData } = await import('./localStorage');
+
+            // Obtém dados atuais do localStorage
+            const currentData = getUserData();
+
+            if (!currentData) {
+                console.warn('⚠️ Nenhum dado encontrado no localStorage');
+                return;
+            }
 
             // Atualiza apenas se houver dados no Supabase
             const profileUpdates: any = {};
@@ -263,13 +275,22 @@ export async function syncUserDataFromSupabase(userId: number): Promise<void> {
             if (data.tem_nutri_ou_dieta) profileUpdates.tem_nutri_ou_dieta = data.tem_nutri_ou_dieta;
             if (data.info_extra) profileUpdates.info_extra = data.info_extra;
 
+            console.log('📝 Campos para atualizar:', Object.keys(profileUpdates));
+            console.log('💾 Valores:', profileUpdates);
+
             // Atualiza localStorage com dados do Supabase
             if (Object.keys(profileUpdates).length > 0) {
-                updateProfile(profileUpdates);
-                console.log('Dados sincronizados do Supabase com sucesso!');
+                currentData.profile = { ...currentData.profile, ...profileUpdates };
+                saveUserData(currentData);
+                console.log('✅ Dados sincronizados com sucesso!');
+                console.log('📋 Perfil atualizado:', currentData.profile);
+            } else {
+                console.warn('⚠️ Nenhum campo para atualizar');
             }
+        } else {
+            console.warn('⚠️ Nenhum dado retornado do Supabase');
         }
     } catch (error) {
-        console.error('Erro ao sincronizar dados:', error);
+        console.error('❌ Erro ao sincronizar dados:', error);
     }
 }
