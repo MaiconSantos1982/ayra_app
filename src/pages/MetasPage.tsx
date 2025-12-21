@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, Target, Zap, TrendingUp, Droplet, Dumbbell, Moon, Award, Scale } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
+import CustomSelect from '../components/CustomSelect';
+import Toast from '../components/Toast';
+import type { ToastType } from '../components/Toast';
 
 export default function MetasPage() {
     const navigate = useNavigate();
@@ -22,6 +25,7 @@ export default function MetasPage() {
         peso_corporal_kg: '',
         meta_consistencia_dias: '5' // Padrão: 5 dias/semana
     });
+    const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
 
     useEffect(() => {
         loadMetas();
@@ -154,8 +158,8 @@ export default function MetasPage() {
             const demoUser = localStorage.getItem('demo_user');
             if (demoUser) {
                 localStorage.setItem('demo_metas', JSON.stringify(metasData));
-                alert('Metas salvas com sucesso!');
-                navigate('/perfil');
+                setToast({ message: 'Metas salvas com sucesso!', type: 'success' });
+                setTimeout(() => navigate('/perfil'), 1500);
             } else {
                 const { error } = await supabase
                     .from('ayra_metas')
@@ -165,12 +169,12 @@ export default function MetasPage() {
                     });
 
                 if (error) throw error;
-                alert('Metas salvas com sucesso!');
-                navigate('/perfil');
+                setToast({ message: 'Metas salvas com sucesso!', type: 'success' });
+                setTimeout(() => navigate('/perfil'), 1500);
             }
         } catch (error: any) {
             console.error('Error saving metas:', error);
-            alert('Erro ao salvar metas: ' + error.message);
+            setToast({ message: 'Erro ao salvar metas: ' + error.message, type: 'error' });
         } finally {
             setLoading(false);
         }
@@ -366,21 +370,20 @@ export default function MetasPage() {
                                 <Dumbbell size={16} className="text-primary" />
                                 Dias de Exercício/Semana
                             </label>
-                            <select
-                                name="dias_exercicio_semana"
+                            <CustomSelect
                                 value={formData.dias_exercicio_semana}
-                                onChange={handleChange}
-                                className="w-full px-4 py-3 rounded-xl bg-background border border-white/10 text-white font-semibold focus:border-primary focus:outline-none transition-all"
-                            >
-                                <option value="">Selecione...</option>
-                                <option value="1">1 dia</option>
-                                <option value="2">2 dias</option>
-                                <option value="3">3 dias</option>
-                                <option value="4">4 dias</option>
-                                <option value="5">5 dias</option>
-                                <option value="6">6 dias</option>
-                                <option value="7">7 dias</option>
-                            </select>
+                                onChange={(value) => setFormData({ ...formData, dias_exercicio_semana: value })}
+                                options={[
+                                    { value: '1', label: '1 dia' },
+                                    { value: '2', label: '2 dias' },
+                                    { value: '3', label: '3 dias' },
+                                    { value: '4', label: '4 dias' },
+                                    { value: '5', label: '5 dias' },
+                                    { value: '6', label: '6 dias' },
+                                    { value: '7', label: '7 dias' },
+                                ]}
+                                placeholder="Selecione..."
+                            />
                         </div>
 
                         {/* Sono */}
@@ -389,20 +392,19 @@ export default function MetasPage() {
                                 <Moon size={16} className="text-purple-400" />
                                 Horas de Sono
                             </label>
-                            <select
-                                name="horas_sono"
+                            <CustomSelect
                                 value={formData.horas_sono}
-                                onChange={handleChange}
-                                className="w-full px-4 py-3 rounded-xl bg-background border border-white/10 text-white font-semibold focus:border-purple-400 focus:outline-none transition-all"
-                            >
-                                <option value="">Selecione...</option>
-                                <option value="5">5 horas</option>
-                                <option value="6">6 horas</option>
-                                <option value="7">7 horas</option>
-                                <option value="8">8 horas</option>
-                                <option value="9">9 horas</option>
-                                <option value="10">10 horas</option>
-                            </select>
+                                onChange={(value) => setFormData({ ...formData, horas_sono: value })}
+                                options={[
+                                    { value: '5', label: '5 horas' },
+                                    { value: '6', label: '6 horas' },
+                                    { value: '7', label: '7 horas' },
+                                    { value: '8', label: '8 horas' },
+                                    { value: '9', label: '9 horas' },
+                                    { value: '10', label: '10 horas' },
+                                ]}
+                                placeholder="Selecione..."
+                            />
                         </div>
                     </div>
                 </div>
@@ -425,18 +427,18 @@ export default function MetasPage() {
                                 Quantos dias por semana você quer bater suas metas? <br />
                                 <span className="text-primary">Ideal: 4-6 dias/semana</span>
                             </p>
-                            <select
-                                name="meta_consistencia_dias"
+                            <CustomSelect
                                 value={formData.meta_consistencia_dias}
-                                onChange={handleChange}
-                                className="w-full px-4 py-3 rounded-xl bg-background border border-primary/30 text-white font-semibold focus:border-primary focus:outline-none transition-all"
-                            >
-                                <option value="3">3 dias/semana</option>
-                                <option value="4">4 dias/semana (Bom)</option>
-                                <option value="5">5 dias/semana (Ótimo)</option>
-                                <option value="6">6 dias/semana (Excelente)</option>
-                                <option value="7">7 dias/semana (Perfeito)</option>
-                            </select>
+                                onChange={(value) => setFormData({ ...formData, meta_consistencia_dias: value })}
+                                options={[
+                                    { value: '3', label: '3 dias/semana' },
+                                    { value: '4', label: '4 dias/semana (Bom)' },
+                                    { value: '5', label: '5 dias/semana (Ótimo)' },
+                                    { value: '6', label: '6 dias/semana (Excelente)' },
+                                    { value: '7', label: '7 dias/semana (Perfeito)' },
+                                ]}
+                                placeholder="Selecione..."
+                            />
                         </div>
 
                         {/* Peso Corporal */}
@@ -487,6 +489,15 @@ export default function MetasPage() {
                     )}
                 </button>
             </form>
+
+            {/* Toast Notification */}
+            {toast && (
+                <Toast
+                    message={toast.message}
+                    type={toast.type}
+                    onClose={() => setToast(null)}
+                />
+            )}
         </div>
     );
 }

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, Droplet, Dumbbell, Moon, Smile, Scale, Plus, Minus } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
+import Toast from '../components/Toast';
+import type { ToastType } from '../components/Toast';
 
 export default function RegistroDiarioPage() {
     const navigate = useNavigate();
@@ -16,6 +18,7 @@ export default function RegistroDiarioPage() {
         peso_kg: '',
         observacoes: ''
     });
+    const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
 
     useEffect(() => {
         loadTodayData();
@@ -89,8 +92,8 @@ export default function RegistroDiarioPage() {
             const demoUser = localStorage.getItem('demo_user');
             if (demoUser) {
                 localStorage.setItem(`demo_lifestyle_${today}`, JSON.stringify(lifestyleData));
-                alert('Registro salvo com sucesso!');
-                navigate('/inicio');
+                setToast({ message: 'Registro salvo com sucesso!', type: 'success' });
+                setTimeout(() => navigate('/inicio'), 1500);
             } else {
                 // Supabase upsert
                 const { error } = await supabase
@@ -104,12 +107,12 @@ export default function RegistroDiarioPage() {
                     });
 
                 if (error) throw error;
-                alert('Registro salvo com sucesso!');
-                navigate('/inicio');
+                setToast({ message: 'Registro salvo com sucesso!', type: 'success' });
+                setTimeout(() => navigate('/inicio'), 1500);
             }
         } catch (error: any) {
             console.error('Error saving data:', error);
-            alert('Erro ao salvar: ' + error.message);
+            setToast({ message: 'Erro ao salvar: ' + error.message, type: 'error' });
         } finally {
             setLoading(false);
         }
@@ -210,8 +213,8 @@ export default function RegistroDiarioPage() {
                             type="button"
                             onClick={() => setFormData(prev => ({ ...prev, exercicio_feito: true }))}
                             className={`flex-1 py-4 rounded-xl font-semibold transition-all ${formData.exercicio_feito
-                                    ? 'bg-gradient-to-r from-primary to-secondary text-black shadow-neon'
-                                    : 'bg-white/5 text-text-muted hover:bg-white/10'
+                                ? 'bg-gradient-to-r from-primary to-secondary text-black shadow-neon'
+                                : 'bg-white/5 text-text-muted hover:bg-white/10'
                                 }`}
                         >
                             ✓ Sim
@@ -220,8 +223,8 @@ export default function RegistroDiarioPage() {
                             type="button"
                             onClick={() => setFormData(prev => ({ ...prev, exercicio_feito: false }))}
                             className={`flex-1 py-4 rounded-xl font-semibold transition-all ${!formData.exercicio_feito
-                                    ? 'bg-white/10 text-white border border-white/20'
-                                    : 'bg-white/5 text-text-muted hover:bg-white/10'
+                                ? 'bg-white/10 text-white border border-white/20'
+                                : 'bg-white/5 text-text-muted hover:bg-white/10'
                                 }`}
                         >
                             ✗ Não
@@ -243,8 +246,8 @@ export default function RegistroDiarioPage() {
                                 type="button"
                                 onClick={() => setFormData(prev => ({ ...prev, horas_sono: hours.toString() }))}
                                 className={`py-3 rounded-xl font-semibold transition-all ${formData.horas_sono === hours.toString()
-                                        ? 'bg-purple-400/30 text-purple-400 border-2 border-purple-400'
-                                        : 'bg-white/5 text-text-muted hover:bg-white/10'
+                                    ? 'bg-purple-400/30 text-purple-400 border-2 border-purple-400'
+                                    : 'bg-white/5 text-text-muted hover:bg-white/10'
                                     }`}
                             >
                                 {hours}h
@@ -267,8 +270,8 @@ export default function RegistroDiarioPage() {
                                 type="button"
                                 onClick={() => setFormData(prev => ({ ...prev, humor: mood.value }))}
                                 className={`p-4 rounded-xl transition-all ${formData.humor === mood.value
-                                        ? 'bg-yellow-400/30 border-2 border-yellow-400'
-                                        : 'bg-white/5 hover:bg-white/10'
+                                    ? 'bg-yellow-400/30 border-2 border-yellow-400'
+                                    : 'bg-white/5 hover:bg-white/10'
                                     }`}
                             >
                                 <div className="text-3xl mb-2">{mood.emoji}</div>
@@ -336,6 +339,15 @@ export default function RegistroDiarioPage() {
                     )}
                 </button>
             </form>
+
+            {/* Toast Notification */}
+            {toast && (
+                <Toast
+                    message={toast.message}
+                    type={toast.type}
+                    onClose={() => setToast(null)}
+                />
+            )}
         </div>
     );
 }

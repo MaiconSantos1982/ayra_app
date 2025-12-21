@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Send, Mic, X, Play, Pause, ChevronLeft, MoreVertical } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { getChatLimits, canSendChatMessage, incrementChatCount, getUserData } from '../lib/localStorage';
 import clsx from 'clsx';
 
 interface Message {
@@ -14,12 +15,10 @@ interface Message {
 }
 
 export default function Chat() {
-    const { profile } = useAuth();
+    const { user } = useAuth();
     const navigate = useNavigate();
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
-    const [count, setCount] = useState(3);
-    const maxCount = 7;
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     // Audio recording
@@ -35,17 +34,58 @@ export default function Chat() {
     // Webhook n8n configuration
     const WEBHOOK_URL = 'https://webhook.superadesafio.com.br/webhook/3becbefa-6552-4f94-8d42-6d737ba1e076';
 
-    const isPremium = profile?.plano === 'premium';
+    // Verifica premium e limites
+    const isPremium = user?.premium || false;
+    const chatLimits = getChatLimits();
+
+    // Busca data de criação do usuário do localStorage
+    const userCreatedAt = localStorage.getItem('ayra_user_created_at');
+
+    // Verifica se pode enviar mensagem
+    const canSend = canSendChatMessage(isPremium, userCreatedAt || undefined).canSend;
 
     useEffect(() => {
-        const initialMsg: Message = {
-            id: 'init',
-            text: `Olá ${profile?.nome || 'Atleta'}! 👋\n\nSou a Ayra, sua assistente nutricional! Estou aqui para te ajudar com dúvidas sobre alimentação, treino e saúde.\n\nPode digitar ou enviar um áudio! 🎤`,
-            sender: 'ayra',
-            timestamp: new Date()
-        };
-        setMessages([initialMsg]);
-    }, [profile]);
+        // Carrega mensagens salvas do localStorage
+        const savedMessages = localStorage.getItem('ayra_chat_messages');
+
+        if (savedMessages) {
+            try {
+                const parsed = JSON.parse(savedMessages);
+                // Converte timestamps de string para Date
+                const messagesWithDates = parsed.map((msg: any) => ({
+                    ...msg,
+                    timestamp: new Date(msg.timestamp)
+                }));
+                setMessages(messagesWithDates);
+            } catch (error) {
+                console.error('Erro ao carregar mensagens:', error);
+                // Se houver erro, mostra mensagem inicial
+                const initialMsg: Message = {
+                    id: 'init',
+                    text: `Olá ${user?.nome || 'Atleta'}! 👋\n\nSou a Ayra, sua assistente nutricional! Estou aqui para te ajudar com dúvidas sobre alimentação, treino e saúde.\n\nPode digitar ou enviar um áudio! 🎤`,
+                    sender: 'ayra',
+                    timestamp: new Date()
+                };
+                setMessages([initialMsg]);
+            }
+        } else {
+            // Primeira vez, mostra mensagem inicial
+            const initialMsg: Message = {
+                id: 'init',
+                text: `Olá ${user?.nome || 'Atleta'}! 👋\n\nSou a Ayra, sua assistente nutricional! Estou aqui para te ajudar com dúvidas sobre alimentação, treino e saúde.\n\nPode digitar ou enviar um áudio! 🎤`,
+                sender: 'ayra',
+                timestamp: new Date()
+            };
+            setMessages([initialMsg]);
+        }
+    }, [user]);
+
+    // Salva mensagens no localStorage sempre que mudam
+    useEffect(() => {
+        if (messages.length > 0) {
+            localStorage.setItem('ayra_chat_messages', JSON.stringify(messages));
+        }
+    }, [messages]);
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -53,8 +93,11 @@ export default function Chat() {
 
     const handleSend = async () => {
         if (!input.trim()) return;
-        if (!isPremium && count >= maxCount) {
-            alert('Limite de mensagens diárias atingido. Assine o Premium para continuar!');
+
+        // Verifica se pode enviar mensagem
+        const checkResult = canSendChatMessage(isPremium, userCreatedAt || undefined);
+        if (!checkResult.canSend) {
+            alert(checkResult.reason);
             return;
         }
 
@@ -68,10 +111,18 @@ export default function Chat() {
         setMessages(prev => [...prev, userMsg]);
         const messageToSend = input;
         setInput('');
-        if (!isPremium) setCount(prev => prev + 1);
+
+        // Incrementa contador apenas para usuários Free
+        if (!isPremium) {
+            incrementChatCount();
+        }
+
         setIsLoading(true);
 
         try {
+            // Obtém dados completos do perfil para contexto da IA
+            const userData = getUserData();
+
             // Send message to n8n webhook
             const response = await fetch(WEBHOOK_URL, {
                 method: 'POST',
@@ -80,9 +131,30 @@ export default function Chat() {
                 },
                 body: JSON.stringify({
                     message: messageToSend,
-                    userId: profile?.id || 'anonymous',
-                    userName: profile?.nome || 'Usuário',
-                    timestamp: new Date().toISOString()
+                    userId: user?.id || 'anonymous',
+                    userName: user?.nome || 'Usuário',
+                    timestamp: new Date().toISOString(),
+                    // Dados do perfil para contexto da IA
+                    userProfile: userData ? {
+                        nome: userData.profile.nome,
+                        idade: userData.profile.idade,
+                        objetivo: userData.profile.objetivo,
+                        restricoes: userData.profile.restricoes,
+                        peso: userData.profile.peso,
+                        altura: userData.profile.altura,
+                        segueDieta: userData.profile.segueDieta,
+                        customDiet: userData.profile.customDiet,
+                        goals: {
+                            calories: userData.goals.calories,
+                            protein: userData.goals.protein,
+                            carbs: userData.goals.carbs,
+                            fat: userData.goals.fat,
+                            water: userData.goals.water,
+                            exercise: userData.goals.exercise,
+                            sleep: userData.goals.sleep
+                        },
+                        premium: userData.premium
+                    } : null
                 })
             });
 
@@ -136,7 +208,11 @@ export default function Chat() {
                 };
 
                 setMessages(prev => [...prev, userMsg]);
-                if (!isPremium) setCount(prev => prev + 1);
+
+                // Incrementa contador apenas para usuários Free
+                if (!isPremium) {
+                    incrementChatCount();
+                }
 
                 // Send audio to webhook (future implementation)
                 // For now, show a message that audio was received
@@ -235,7 +311,7 @@ export default function Chat() {
 
                 {!isPremium && (
                     <span className="text-xs bg-[#25D366]/20 text-[#25D366] px-2 py-1 rounded-full border border-[#25D366]/30">
-                        {count}/{maxCount}
+                        {chatLimits.dailyCount}/5 hoje | {chatLimits.monthlyCount}/20 mês
                     </span>
                 )}
             </div>
@@ -382,7 +458,7 @@ export default function Chat() {
                                 onKeyPress={(e) => e.key === 'Enter' && !isLoading && handleSend()}
                                 placeholder={isLoading ? "Ayra está digitando..." : "Mensagem"}
                                 className="flex-1 bg-transparent text-white placeholder:text-[#8696A0] focus:outline-none text-[15px]"
-                                disabled={!isPremium && count >= maxCount || isLoading}
+                                disabled={!canSend || isLoading}
                             />
                             {isLoading && (
                                 <div className="flex gap-1">
@@ -396,7 +472,7 @@ export default function Chat() {
                         {input.trim() ? (
                             <button
                                 onClick={handleSend}
-                                disabled={!isPremium && count >= maxCount || isLoading}
+                                disabled={!canSend || isLoading}
                                 className="p-3 rounded-full bg-[#25D366] hover:bg-[#20BD5F] text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <Send size={20} />
@@ -404,7 +480,7 @@ export default function Chat() {
                         ) : (
                             <button
                                 onClick={startRecording}
-                                disabled={!isPremium && count >= maxCount}
+                                disabled={!canSend}
                                 className="p-3 rounded-full bg-[#25D366] hover:bg-[#20BD5F] text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <Mic size={20} />

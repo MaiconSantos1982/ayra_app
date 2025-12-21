@@ -57,7 +57,14 @@ O webhook deve retornar um JSON com a resposta da Ayra:
 }
 ```
 
-O chat irá procurar primeiro por `data.response`, depois por `data.message`.
+### Formato 3 (n8n padrão):
+```json
+{
+  "output": "Resposta da Ayra para o usuário"
+}
+```
+
+O chat irá procurar primeiro por `data.response`, depois por `data.output`, depois por `data.message`.
 
 ---
 

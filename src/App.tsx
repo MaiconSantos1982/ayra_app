@@ -4,28 +4,31 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Layout from './components/Layout';
 import AuthPage from './pages/AuthPage';
 
-import Dashboard from './pages/Dashboard';
-import Register from './pages/Register';
-import Chat from './pages/Chat';
-import Profile from './pages/Profile';
-import PremiumPage from './pages/PremiumPage';
-import CheckoutPage from './pages/CheckoutPage';
-import SuccessPage from './pages/SuccessPage';
+// Páginas MVP Simplificadas
+import DashboardSimple from './pages/DashboardSimple';
+import RegisterSimple from './pages/RegisterSimple';
+import OnboardingSimple from './pages/OnboardingSimple';
+import Chat from './pages/Chat'; // Chat original com funcionalidades completas
+import ProfileSimple from './pages/ProfileSimple';
+import HistoryPage from './pages/HistoryPage';
 import AnamnesePage from './pages/AnamnesePage';
 import MetasPage from './pages/MetasPage';
-import RegistroDiarioPage from './pages/RegistroDiarioPage';
-import RankingPage from './pages/RankingPage';
-import ProgressPage from './pages/ProgressPage';
-import AchievementsPage from './pages/AchievementsPage';
-import SettingsPage from './pages/SettingsPage';
-import AdminDashboard from './pages/AdminDashboard';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { session, loading } = useAuth();
+  const { user, loading } = useAuth();
 
-  if (loading) return <div className="flex h-screen items-center justify-center text-primary">Carregando...</div>;
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-primary font-semibold">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
 
-  if (!session) {
+  if (!user) {
     return <Navigate to="/login" replace />;
   }
 
@@ -38,24 +41,17 @@ export default function App() {
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<AuthPage />} />
-          <Route path="/premium/success" element={<ProtectedRoute><SuccessPage /></ProtectedRoute>} />
+          <Route path="/onboarding" element={<ProtectedRoute><OnboardingSimple /></ProtectedRoute>} />
 
           <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
             <Route index element={<Navigate to="/inicio" replace />} />
-            <Route path="inicio" element={<Dashboard />} />
-            <Route path="registro" element={<Register />} />
-            <Route path="registro-diario" element={<RegistroDiarioPage />} />
+            <Route path="inicio" element={<DashboardSimple />} />
+            <Route path="registro" element={<RegisterSimple />} />
             <Route path="chat" element={<Chat />} />
-            <Route path="perfil" element={<Profile />} />
-            <Route path="perfil/dados-pessoais" element={<AnamnesePage />} />
-            <Route path="perfil/metas" element={<MetasPage />} />
-            <Route path="ranking" element={<RankingPage />} />
-            <Route path="progresso" element={<ProgressPage />} />
-            <Route path="conquistas" element={<AchievementsPage />} />
-            <Route path="configuracoes" element={<SettingsPage />} />
-            <Route path="admin" element={<AdminDashboard />} />
-            <Route path="premium" element={<PremiumPage />} />
-            <Route path="premium/checkout" element={<CheckoutPage />} />
+            <Route path="perfil" element={<ProfileSimple />} />
+            <Route path="historico" element={<HistoryPage />} />
+            <Route path="anamnese" element={<AnamnesePage />} />
+            <Route path="metas" element={<MetasPage />} />
           </Route>
         </Routes>
       </AuthProvider>
