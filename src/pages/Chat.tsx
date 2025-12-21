@@ -136,6 +136,7 @@ export default function Chat() {
                     timestamp: new Date().toISOString(),
                     // Dados do perfil para contexto da IA
                     userProfile: userData ? {
+                        email: user?.email || '',
                         nome: userData.profile.nome,
                         idade: userData.profile.idade,
                         objetivo: userData.profile.objetivo,
