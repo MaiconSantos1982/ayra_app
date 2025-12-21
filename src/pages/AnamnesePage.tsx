@@ -345,18 +345,18 @@ export default function AnamnesePage() {
                         </div>
 
                         {/* Data de Nascimento */}
-                        <div>
+                        <div className="w-full">
                             <label className="block text-sm font-medium text-text-muted mb-2">
                                 Data de Nascimento *
                             </label>
-                            <div className="relative">
+                            <div className="relative w-full">
                                 <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted w-5 h-5 pointer-events-none" />
                                 <input
                                     type="date"
                                     name="data_nascimento"
                                     value={formData.data_nascimento}
                                     onChange={handleChange}
-                                    className="w-full pl-12 pr-4 py-3 rounded-xl bg-background border border-white/10 text-white placeholder:text-text-muted/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all [color-scheme:dark]"
+                                    className="w-full max-w-full min-w-0 pl-12 pr-4 py-3 rounded-xl bg-background border border-white/10 text-white placeholder:text-text-muted/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all appearance-none [color-scheme:dark]"
                                     required
                                 />
                             </div>
