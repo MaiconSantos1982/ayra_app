@@ -225,7 +225,7 @@ Responda de forma clara, objetiva e motivadora. Use emojis quando apropriado.`;
     }
 
     return (
-        <div className="flex flex-col h-full bg-background relative">
+        <div className="flex flex-col h-full bg-background relative pb-20">
             {/* Header - Fixo no topo do fluxo */}
             <div className="flex-none bg-gradient-to-br from-purple-900 to-purple-800 p-4 shadow-lg z-10">
                 <div className="flex items-center gap-3">
