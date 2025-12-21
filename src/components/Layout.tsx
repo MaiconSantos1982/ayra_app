@@ -2,12 +2,18 @@ import { Outlet, NavLink } from 'react-router-dom';
 import { Home, PlusCircle, MessageSquare, User } from 'lucide-react';
 import clsx from 'clsx';
 
+import PullToRefresh from './PullToRefresh';
+
 export default function Layout() {
     return (
         <div className="flex flex-col h-screen bg-background text-text overflow-hidden">
             {/* Main Content Area */}
-            <main className="flex-1 overflow-y-auto pb-20 p-4">
-                <Outlet />
+            <main className="flex-1 overflow-hidden relative">
+                <PullToRefresh>
+                    <div className="pb-24 p-4 min-h-screen">
+                        <Outlet />
+                    </div>
+                </PullToRefresh>
             </main>
 
             {/* Bottom Tab Bar */}
