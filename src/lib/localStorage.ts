@@ -15,6 +15,7 @@ export interface UserProfile {
     idade?: string;
     objetivo?: string;
     restricoes?: string;
+    data_nascimento?: string; // Novo campo
     peso?: number;
     altura?: number;
     telefone?: string;

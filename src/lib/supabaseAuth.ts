@@ -12,6 +12,7 @@ export interface AyraUser {
     plano: string | null;
     telefone?: string;
     idade?: number;
+    data_nascimento?: string; // Novo campo
     peso?: number;
     altura?: number;
     problemas_de_saude?: string;
@@ -20,6 +21,18 @@ export interface AyraUser {
     dificuldade?: string;
     tem_nutri_ou_dieta?: string;
     info_extra?: string;
+}
+
+// Função auxiliar para calcular idade
+function calculateAge(birthDate: string): number {
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+        age--;
+    }
+    return age;
 }
 
 /**
@@ -111,22 +124,33 @@ export async function loginUser(email: string): Promise<{ success: boolean; user
  */
 export async function updateUserData(userId: number, data: Partial<AyraUser>): Promise<{ success: boolean; error?: string }> {
     try {
+        const updatePayload: any = {
+            nome: data.nome,
+            telefone: data.telefone,
+            // idade: data.idade, // Será calculado abaixo se tiver data_nascimento
+            peso: data.peso,
+            altura: data.altura,
+            problemas_de_saude: data.problemas_de_saude,
+            restricoes: data.restricoes,
+            objetivo: data.objetivo,
+            dificuldade: data.dificuldade,
+            tem_nutri_ou_dieta: data.tem_nutri_ou_dieta,
+            info_extra: data.info_extra,
+            updated_at: new Date().toISOString()
+        };
+
+        // Lógica de Data de Nascimento e Idade
+        if (data.data_nascimento) {
+            updatePayload.data_nascimento = data.data_nascimento;
+            const calculatedAge = calculateAge(data.data_nascimento);
+            updatePayload.idade = calculatedAge; // Salva idade calculada automaticamente
+        } else if (data.idade) {
+            updatePayload.idade = data.idade; // Fallback para idade manual
+        }
+
         const { error } = await supabase
             .from('ayra_cadastro')
-            .update({
-                nome: data.nome,
-                telefone: data.telefone,
-                idade: data.idade,
-                peso: data.peso,
-                altura: data.altura,
-                problemas_de_saude: data.problemas_de_saude,
-                restricoes: data.restricoes,
-                objetivo: data.objetivo,
-                dificuldade: data.dificuldade,
-                tem_nutri_ou_dieta: data.tem_nutri_ou_dieta,
-                info_extra: data.info_extra,
-                updated_at: new Date().toISOString()
-            })
+            .update(updatePayload)
             .eq('id', userId);
 
         if (error) {
@@ -233,7 +257,6 @@ export async function refreshUserPremiumStatus(): Promise<boolean> {
  */
 export async function syncUserDataFromSupabase(userId: number): Promise<void> {
     try {
-
         const { data, error } = await supabase
             .from('ayra_cadastro')
             .select('*')
@@ -246,7 +269,6 @@ export async function syncUserDataFromSupabase(userId: number): Promise<void> {
         }
 
         if (data) {
-
             // Importa getUserData e saveUserData diretamente
             const { getUserData, saveUserData } = await import('./localStorage');
 
@@ -271,6 +293,7 @@ export async function syncUserDataFromSupabase(userId: number): Promise<void> {
             if (data.dificuldade) profileUpdates.dificuldade = data.dificuldade;
             if (data.tem_nutri_ou_dieta) profileUpdates.tem_nutri_ou_dieta = data.tem_nutri_ou_dieta;
             if (data.info_extra) profileUpdates.info_extra = data.info_extra;
+            if (data.data_nascimento) profileUpdates.data_nascimento = data.data_nascimento; // Novo campo
 
 
             // Atualiza localStorage com dados do Supabase
@@ -278,9 +301,7 @@ export async function syncUserDataFromSupabase(userId: number): Promise<void> {
                 currentData.profile = { ...currentData.profile, ...profileUpdates };
                 saveUserData(currentData);
                 console.log('✅ Dados sincronizados com sucesso!');
-            } else {
             }
-        } else {
         }
     } catch (error) {
         console.error('Erro na sincronização:', error);

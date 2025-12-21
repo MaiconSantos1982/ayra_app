@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Save, User, Clock, UtensilsCrossed, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, Save, User, Clock, UtensilsCrossed, Plus, Trash2, Calendar } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import CustomSelect from '../components/CustomSelect';
 import Toast from '../components/Toast';
@@ -17,6 +17,7 @@ export default function AnamnesePage() {
         nome: '',
         telefone: '',
         idade: '',
+        data_nascimento: '', // Novo campo
         peso: '',
         altura: '',
         problemas_de_saude: '',
@@ -72,6 +73,7 @@ export default function AnamnesePage() {
             nome: '',
             telefone: '',
             idade: '',
+            data_nascimento: '', // Novo campo
             peso: '',
             altura: '',
             problemas_de_saude: '',
@@ -87,6 +89,7 @@ export default function AnamnesePage() {
             const prof = userData.profile;
             loadedData.nome = prof.nome || '';
             loadedData.idade = prof.idade || '';
+            loadedData.data_nascimento = prof.data_nascimento || ''; // Carrega data
             loadedData.restricoes = prof.restricoes || '';
             loadedData.objetivo = prof.objetivo || '';
 
@@ -227,9 +230,11 @@ export default function AnamnesePage() {
 
         try {
             // Salva dieta no localStorage
+            // Salva dieta no localStorage
             updateProfile({
                 nome: formData.nome,
-                idade: formData.idade,
+                // idade removida
+                data_nascimento: formData.data_nascimento, // Novo campo
                 objetivo: formData.objetivo,
                 restricoes: formData.restricoes,
                 peso: formData.peso ? parseFloat(formData.peso.replace(',', '.')) : undefined,
@@ -253,7 +258,7 @@ export default function AnamnesePage() {
                 const result = await updateUserData(user.id, {
                     nome: formData.nome,
                     telefone: formData.telefone,
-                    idade: formData.idade ? parseInt(formData.idade) : undefined,
+                    data_nascimento: formData.data_nascimento, // Novo campo em vez de idade
                     peso: formData.peso ? parseFloat(formData.peso.replace(',', '.')) : undefined,
                     altura: formData.altura ? parseFloat(formData.altura.replace(',', '.')) : undefined,
                     problemas_de_saude: formData.problemas_de_saude,
@@ -339,20 +344,22 @@ export default function AnamnesePage() {
                             />
                         </div>
 
-                        {/* Idade */}
+                        {/* Data de Nascimento */}
                         <div>
                             <label className="block text-sm font-medium text-text-muted mb-2">
-                                Idade *
+                                Data de Nascimento *
                             </label>
-                            <input
-                                type="text"
-                                name="idade"
-                                value={formData.idade}
-                                onChange={handleChange}
-                                className="w-full px-4 py-3 rounded-xl bg-background border border-white/10 text-white placeholder:text-text-muted/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
-                                placeholder="Ex: 42"
-                                required
-                            />
+                            <div className="relative">
+                                <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted w-5 h-5 pointer-events-none" />
+                                <input
+                                    type="date"
+                                    name="data_nascimento"
+                                    value={formData.data_nascimento}
+                                    onChange={handleChange}
+                                    className="w-full pl-12 pr-4 py-3 rounded-xl bg-background border border-white/10 text-white placeholder:text-text-muted/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all [color-scheme:dark]"
+                                    required
+                                />
+                            </div>
                         </div>
 
                         {/* Peso */}

@@ -104,7 +104,7 @@ export default function InstallPWA() {
                             ) : (
                                 <button
                                     onClick={handleInstallClick}
-                                    className="w-full py-3 bg-primary hover:bg-primary-dark text-white rounded-xl font-semibold flex items-center justify-center gap-2 transition-colors"
+                                    className="w-full py-3 bg-green-500 hover:bg-green-600 text-black font-bold rounded-xl flex items-center justify-center gap-2 transition-colors shadow-lg shadow-green-500/20"
                                 >
                                     <Download size={20} />
                                     Instalar Agora
