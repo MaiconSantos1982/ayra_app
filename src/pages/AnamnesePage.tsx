@@ -99,6 +99,13 @@ export default function AnamnesePage() {
                 loadedData.altura = prof.altura.toString();
             }
 
+            // Novos campos
+            loadedData.telefone = prof.telefone || '';
+            loadedData.problemas_de_saude = prof.problemas_de_saude || '';
+            loadedData.dificuldade = prof.dificuldade || '';
+            loadedData.tem_nutri_ou_dieta = prof.tem_nutri_ou_dieta || '';
+            loadedData.info_extra = prof.info_extra || '';
+
             // Carrega dieta personalizada se existir
             if (prof.segueDieta !== undefined) {
                 setSegueDieta(prof.segueDieta);
