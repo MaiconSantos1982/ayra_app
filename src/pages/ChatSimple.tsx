@@ -144,7 +144,7 @@ Responda de forma clara, objetiva e motivadora. Use emojis quando apropriado.`;
             // Por enquanto, vou simular uma resposta
 
             // EXEMPLO DE INTEGRAÇÃO COM N8N:
-            const response = await fetch(process.env.VITE_WEBHOOK_URL || '', {
+            const response = await fetch(import.meta.env.VITE_WEBHOOK_URL || '', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -248,8 +248,8 @@ Responda de forma clara, objetiva e motivadora. Use emojis quando apropriado.`;
                     >
                         <div
                             className={`max-w-[80%] rounded-2xl p-4 ${message.role === 'user'
-                                    ? 'bg-gradient-to-br from-primary to-green-400 text-background'
-                                    : 'bg-card border border-white/10 text-white'
+                                ? 'bg-gradient-to-br from-primary to-green-400 text-background'
+                                : 'bg-card border border-white/10 text-white'
                                 }`}
                         >
                             <p className="whitespace-pre-wrap">{message.content}</p>

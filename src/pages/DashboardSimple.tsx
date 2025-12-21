@@ -1,11 +1,9 @@
 import { Flame, Droplet, Dumbbell, Moon, Smile, TrendingUp, Camera, Plus, Minus, Check, X } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getUserData, getDailyData, getStats, updateWater, updateExercise, updateSleep, updateMood } from '../lib/localStorage';
 
 export default function DashboardSimple() {
-    const { user } = useAuth();
     const navigate = useNavigate();
     const [userData, setUserData] = useState(getUserData());
     const [todayData, setTodayData] = useState(getDailyData());

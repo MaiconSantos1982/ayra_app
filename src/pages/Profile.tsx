@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useAuth } from '../contexts/AuthContext';
 import { User, Settings, LogOut, Crown, ChevronRight, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';

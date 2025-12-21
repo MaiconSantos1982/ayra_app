@@ -1,7 +1,7 @@
 import { AlertTriangle, Flame, Lock, TrendingUp, Target, Zap, Droplet, Dumbbell, Moon, Award, Scale, Smile } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { getUserData } from '../lib/localStorage';
 
 interface DailyProgress {
     calories: number;
@@ -23,8 +23,8 @@ interface DailyProgress {
 }
 
 export default function Dashboard() {
-    const { profile } = useAuth();
     const navigate = useNavigate();
+    const userData = getUserData();
     const [metas, setMetas] = useState<any>(null);
     const [dailyProgress, setDailyProgress] = useState<DailyProgress>({
         calories: 1250,
@@ -87,8 +87,8 @@ export default function Dashboard() {
     };
 
     const streakDays = 12;
-    const isPremium = profile?.plano === 'premium';
-    const hasAllergy = profile?.restricoes?.toLowerCase().includes('amendoim');
+    const isPremium = userData?.premium || false;
+    const hasAllergy = userData?.profile?.restricoes?.toLowerCase().includes('amendoim');
 
     const getProgress = (current: number, goal: number) => Math.min((current / goal) * 100, 100);
 
@@ -107,7 +107,7 @@ export default function Dashboard() {
             {/* Header */}
             <header className="animate-fade-in">
                 <h1 className="text-3xl font-bold text-white mb-1">
-                    Olá, <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">{profile?.nome || 'Atleta'}</span>
+                    Olá, <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">{userData?.profile?.nome || 'Atleta'}</span>
                 </h1>
                 <p className="text-text-muted flex items-center gap-2">
                     <Zap size={16} className="text-primary" />
