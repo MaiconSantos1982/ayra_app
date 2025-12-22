@@ -34,15 +34,20 @@ export default function Chat() {
     // Webhook n8n configuration
     const WEBHOOK_URL = 'https://webhook.superadesafio.com.br/webhook/3becbefa-6552-4f94-8d42-6d737ba1e076';
 
-    // Verifica premium e limites
+    // Verifica premium usando AuthContext (sincronizado com Supabase)
     const isPremium = user?.premium || false;
-    const chatLimits = getChatLimits();
+    const [limits, setLimits] = useState(getChatLimits());
+
+    // Update limits when messages change
+    useEffect(() => {
+        setLimits(getChatLimits());
+    }, [messages]);
 
     // Busca data de criação do usuário do localStorage
     const userCreatedAt = localStorage.getItem('ayra_user_created_at');
 
-    // Verifica se pode enviar mensagem
-    const canSend = canSendChatMessage(isPremium, userCreatedAt || undefined).canSend;
+    // Verifica se pode enviar mensagem (recalculado em todo render)
+    const canSend = isPremium || limits.dailyCount < 5;
 
     useEffect(() => {
         // Carrega mensagens salvas do localStorage
@@ -159,39 +164,99 @@ export default function Chat() {
                 })
             });
 
+            console.log('✅ Webhook response status:', response.status);
+            console.log('✅ Response headers:', Object.fromEntries(response.headers.entries()));
+
             if (!response.ok) {
+                console.error('❌ Webhook error:', response.status, response.statusText);
                 throw new Error('Erro ao enviar mensagem');
             }
 
-            const data = await response.json();
+            const rawText = await response.text();
+            console.log('📦 Raw response text:', rawText);
 
-            // Log para debug (remover depois)
-            console.log('Webhook response:', data);
-
-            // Tenta múltiplos formatos de resposta
-            let responseText = '';
-            if (typeof data === 'string') {
-                responseText = data;
-            } else if (data.response) {
-                responseText = data.response;
-            } else if (data.output) {
-                responseText = data.output;
-            } else if (data.message) {
-                responseText = data.message;
-            } else if (data.text) {
-                responseText = data.text;
-            } else {
-                responseText = "Desculpe, não consegui processar sua mensagem. Tente novamente!";
+            if (!rawText || rawText.trim() === '') {
+                console.warn('⚠️ Resposta vazia do webhook!');
+                setMessages(prev => [...prev, {
+                    id: (Date.now() + 1).toString(),
+                    text: "Recebi sua mensagem, mas não obtive resposta do servidor. Por favor, tente novamente!",
+                    sender: 'ayra',
+                    timestamp: new Date()
+                }]);
+                return;
             }
 
-            // Add Ayra's response
-            const ayraMsg: Message = {
-                id: (Date.now() + 1).toString(),
-                text: responseText,
-                sender: 'ayra',
-                timestamp: new Date()
-            };
-            setMessages(prev => [...prev, ayraMsg]);
+            const data = JSON.parse(rawText);
+
+            console.log('🔍 Webhook parsed data:', data);
+            console.log('📊 Is Array?', Array.isArray(data));
+            if (Array.isArray(data)) {
+                console.log('📏 Array length:', data.length);
+            }
+
+            // Normaliza para array sempre
+            const payloads = Array.isArray(data) ? data : [data];
+
+            console.log('🔄 Processing', payloads.length, 'payload(s)...');
+
+            // Itera sobre cada item do array (para suportar loops do n8n)
+            for (const payload of payloads) {
+                let responseTexts: string[] = [];
+
+                if (typeof payload === 'string') {
+                    responseTexts = [payload];
+                } else if (payload?.output?.mensagens && Array.isArray(payload.output.mensagens)) {
+                    // Formato n8n: { output: { mensagens: ["msg1", "msg2"] } }
+                    responseTexts = payload.output.mensagens;
+                } else if (payload?.['output.mensagens']) {
+                    responseTexts = [payload['output.mensagens']];
+                } else if (payload?.response) {
+                    responseTexts = [payload.response];
+                } else if (payload?.output) {
+                    responseTexts = [payload.output];
+                } else if (payload?.message) {
+                    responseTexts = [payload.message];
+                } else if (payload?.text) {
+                    responseTexts = [payload.text];
+                } else if (payload?.data && typeof payload.data === 'string') {
+                    responseTexts = [payload.data];
+                }
+
+                if (responseTexts.length > 0) {
+                    console.log('✅ Extracted', responseTexts.length, 'message(s)');
+
+                    // Adiciona cada mensagem separadamente
+                    for (const responseText of responseTexts) {
+                        if (responseText && typeof responseText === 'string') {
+                            console.log('💬 Adding message:', responseText.substring(0, 50) + '...');
+
+                            // Delay para efeito natural e garantir ordem
+                            await new Promise(resolve => setTimeout(resolve, 500));
+
+                            // Adiciona mensagem da Ayra
+                            setMessages(prev => [...prev, {
+                                id: (Date.now() + Math.random()).toString(),
+                                text: responseText,
+                                sender: 'ayra',
+                                timestamp: new Date()
+                            }]);
+                        }
+                    }
+                } else {
+                    console.warn('⚠️ No text extracted from payload:', payload);
+                }
+            }
+
+            // Se nenhum texto foi extraído de nenhum payload
+            if (payloads.length === 0 || !payloads.some((p: any) => p && (typeof p === 'string' || p['output.mensagens'] || p.response || p.output || p.message || p.text || (p.data && typeof p.data === 'string')))) {
+                console.error('❌ Formato de resposta desconhecido:', data);
+                setMessages(prev => [...prev, {
+                    id: (Date.now() + 1).toString(),
+                    text: "Desculpe, não consegui processar a resposta completa. Tente novamente!",
+                    sender: 'ayra',
+                    timestamp: new Date()
+                }]);
+            }
         } catch (error) {
             console.error('Error sending message to webhook:', error);
 
@@ -304,9 +369,11 @@ export default function Chat() {
     };
 
     return (
-        <div className="flex flex-col h-screen bg-[#0B141A]">{/* Changed from h-full to h-screen */}
-            {/* WhatsApp Header */}
-            <div className="bg-[#202C33] px-4 py-2 flex items-center gap-3 shadow-lg">
+        <div className="flex flex-col h-screen bg-[#0B141A] relative">
+            {/* WhatsApp Header - TOTALMENTE FIXO E FORA DO FLUXO */}
+            <header
+                className="fixed top-0 left-0 right-0 h-[60px] bg-[#202C33] px-4 flex items-center gap-3 shadow-md z-[9999]"
+            >
                 <button
                     onClick={() => navigate('/inicio')}
                     className="p-2 hover:bg-white/10 rounded-full transition-colors -ml-2"
@@ -314,37 +381,45 @@ export default function Chat() {
                     <ChevronLeft size={24} className="text-[#8696A0]" />
                 </button>
 
-                <img
-                    src="https://wp.superadesafio.com.br/wp-content/uploads/2025/11/AYRA-AVATAR.png"
-                    alt="Ayra"
-                    className="w-10 h-10 rounded-full object-cover"
-                />
-
-                <div className="flex-1">
-                    <h1 className="text-white font-medium text-[16px]">Ayra</h1>
-                    <p className="text-[#8696A0] text-[13px]">online</p>
+                <div className="relative">
+                    <img
+                        src="https://wp.superadesafio.com.br/wp-content/uploads/2025/11/AYRA-AVATAR.png"
+                        alt="Ayra"
+                        className="w-10 h-10 rounded-full object-cover"
+                    />
+                    <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-[#202C33]"></div>
                 </div>
+
+                <div className="flex-1 min-w-0">
+                    <h1 className="text-white font-medium text-[16px] truncate">Ayra</h1>
+                    <p className="text-[#8696A0] text-[13px] truncate">online</p>
+                </div>
+
+                {!isPremium && (
+                    <div className="bg-[#25D366]/10 border border-[#25D366]/30 px-3 py-1 rounded-full flex items-center justify-center min-w-[50px]">
+                        <span className="text-[#25D366] text-xs font-medium">
+                            {limits.dailyCount}/5
+                        </span>
+                    </div>
+                )}
 
                 <button className="p-2 hover:bg-white/10 rounded-full transition-colors">
                     <MoreVertical size={20} className="text-[#8696A0]" />
                 </button>
+            </header>
 
-                {!isPremium && (
-                    <span className="text-xs bg-[#25D366]/20 text-[#25D366] px-2 py-1 rounded-full border border-[#25D366]/30">
-                        {chatLimits.dailyCount}/5
-                    </span>
-                )}
-            </div>
-
-            {/* Messages Area with WhatsApp Background */}
+            {/* Messages Area - Com Padding Top para compensar o Header Fixo */}
             <div
-                className="flex-1 overflow-y-auto px-3 py-2"
+                className="flex-1 overflow-y-auto px-3 py-2" // Removed pt-[90px]
                 style={{
                     backgroundImage: `url("data:image/svg+xml,%3Csvg width='400' height='400' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='whatsapp-pattern' x='0' y='0' width='400' height='400' patternUnits='userSpaceOnUse'%3E%3Cpath d='M0 200 Q 100 150, 200 200 T 400 200' stroke='%23182229' stroke-width='1' fill='none' opacity='0.15'/%3E%3Cpath d='M0 250 Q 100 200, 200 250 T 400 250' stroke='%23182229' stroke-width='1' fill='none' opacity='0.15'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='400' height='400' fill='%230B141A'/%3E%3Crect width='400' height='400' fill='url(%23whatsapp-pattern)'/%3E%3C/svg%3E")`,
                     backgroundColor: '#0B141A'
                 }}
             >
                 <div className="space-y-2 py-2">
+                    {/* SPACER para compensar Header Fixo */}
+                    <div className="h-[110px] w-full shrink-0" />
+
                     {messages.map((msg) => (
                         <div
                             key={msg.id}
@@ -471,12 +546,15 @@ export default function Chat() {
                     // Normal input UI
                     <div className="flex gap-2 items-center">
                         <div className="flex-1 flex items-center gap-2 bg-[#2A3942] rounded-full px-4 py-2">
+                            {/* Debug log seguro */}
+                            {(() => { console.log('DEBUG INPUT:', { isPremium, canSend, isLoading }); return null; })()}
+
                             <input
                                 type="text"
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
-                                onKeyPress={(e) => e.key === 'Enter' && !isLoading && handleSend()}
-                                placeholder={isLoading ? "Ayra está digitando..." : "Mensagem"}
+                                onKeyPress={(e) => e.key === 'Enter' && canSend && !isLoading && handleSend()}
+                                placeholder={!canSend ? "Limite diário atingido" : "Mensagem"}
                                 className="flex-1 bg-transparent text-white placeholder:text-[#8696A0] focus:outline-none text-[15px]"
                                 disabled={!canSend || isLoading}
                             />
