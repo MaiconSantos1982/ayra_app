@@ -165,10 +165,29 @@ export default function Chat() {
 
             const data = await response.json();
 
+            // Log para debug (remover depois)
+            console.log('Webhook response:', data);
+
+            // Tenta múltiplos formatos de resposta
+            let responseText = '';
+            if (typeof data === 'string') {
+                responseText = data;
+            } else if (data.response) {
+                responseText = data.response;
+            } else if (data.output) {
+                responseText = data.output;
+            } else if (data.message) {
+                responseText = data.message;
+            } else if (data.text) {
+                responseText = data.text;
+            } else {
+                responseText = "Desculpe, não consegui processar sua mensagem. Tente novamente!";
+            }
+
             // Add Ayra's response
             const ayraMsg: Message = {
                 id: (Date.now() + 1).toString(),
-                text: data.response || data.message || "Desculpe, não consegui processar sua mensagem. Tente novamente!",
+                text: responseText,
                 sender: 'ayra',
                 timestamp: new Date()
             };
@@ -312,7 +331,7 @@ export default function Chat() {
 
                 {!isPremium && (
                     <span className="text-xs bg-[#25D366]/20 text-[#25D366] px-2 py-1 rounded-full border border-[#25D366]/30">
-                        {chatLimits.dailyCount}/5 hoje | {chatLimits.monthlyCount}/20 mês
+                        {chatLimits.dailyCount}/5
                     </span>
                 )}
             </div>
