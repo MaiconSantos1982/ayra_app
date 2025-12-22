@@ -144,17 +144,31 @@ export function usePushNotifications() {
             // Salva no banco de dados
             await saveSubscriptionToDatabase(subscription);
 
+            // Força atualização do estado
+            const currentEnabled = isNotificationEnabled();
+            const currentSubscription = await getCurrentSubscription();
+
             setState({
                 isSupported: true,
-                isEnabled: true,
+                isEnabled: currentEnabled,
                 isLoading: false,
-                subscription
+                subscription: currentSubscription
             });
 
             return subscription;
         } catch (error) {
             console.error('[Hook] Erro ao habilitar notificações:', error);
-            setState(prev => ({ ...prev, isLoading: false }));
+
+            // Atualiza estado mesmo em erro
+            const currentEnabled = isNotificationEnabled();
+            const currentSubscription = await getCurrentSubscription();
+
+            setState(prev => ({
+                ...prev,
+                isEnabled: currentEnabled,
+                subscription: currentSubscription,
+                isLoading: false
+            }));
             throw error;
         }
     }, [saveSubscriptionToDatabase]);
@@ -174,15 +188,29 @@ export function usePushNotifications() {
                 await unsubscribePushNotification();
             }
 
+            // Força verificação do estado real
+            const currentEnabled = isNotificationEnabled();
+            const checkSubscription = await getCurrentSubscription();
+
             setState({
                 isSupported: state.isSupported,
-                isEnabled: false,
+                isEnabled: currentEnabled,
                 isLoading: false,
-                subscription: null
+                subscription: checkSubscription
             });
         } catch (error) {
             console.error('[Hook] Erro ao desabilitar notificações:', error);
-            setState(prev => ({ ...prev, isLoading: false }));
+
+            // Atualiza estado mesmo em erro
+            const currentEnabled = isNotificationEnabled();
+            const checkSubscription = await getCurrentSubscription();
+
+            setState(prev => ({
+                ...prev,
+                isEnabled: currentEnabled,
+                subscription: checkSubscription,
+                isLoading: false
+            }));
             throw error;
         }
     }, [state.isSupported, removeSubscriptionFromDatabase]);
