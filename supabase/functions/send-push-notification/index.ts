@@ -6,14 +6,24 @@ const VAPID_PRIVATE_KEY = Deno.env.get('VAPID_PRIVATE_KEY')!
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
+// Função para converter base64url para Uint8Array
+function urlBase64ToUint8Array(base64String: string): Uint8Array {
+    const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
+    const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/')
+    const rawData = atob(base64)
+    const outputArray = new Uint8Array(rawData.length)
+    for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i)
+    }
+    return outputArray
+}
+
 serve(async (req) => {
-    // CORS headers
     const corsHeaders = {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
     }
 
-    // Handle CORS preflight
     if (req.method === 'OPTIONS') {
         return new Response('ok', { headers: corsHeaders })
     }
@@ -22,14 +32,11 @@ serve(async (req) => {
         const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
         const { title, body, url, userIds, broadcast } = await req.json()
 
-        // Buscar subscrições
         let query = supabase.from('push_subscriptions').select('*')
 
         if (broadcast) {
-            // Broadcast para todos
             console.log('[Edge Function] Enviando broadcast para todos')
         } else if (userIds && userIds.length > 0) {
-            // Enviar para usuários específicos
             query = query.in('user_id', userIds)
         } else {
             return new Response(
@@ -40,9 +47,7 @@ serve(async (req) => {
 
         const { data: subscriptions, error: fetchError } = await query
 
-        if (fetchError) {
-            throw fetchError
-        }
+        if (fetchError) throw fetchError
 
         if (!subscriptions || subscriptions.length === 0) {
             return new Response(
@@ -53,21 +58,16 @@ serve(async (req) => {
 
         console.log(`[Edge Function] Enviando para ${subscriptions.length} dispositivos`)
 
-        // Enviar notificações usando web-push
-        const webPush = await import('https://esm.sh/web-push@3.6.7')
-
-        webPush.default.setVapidDetails(
-            'mailto:admin@ayra.com',
-            VAPID_PUBLIC_KEY,
-            VAPID_PRIVATE_KEY
-        )
-
         let sent = 0
         let failed = 0
 
+        // Usar API nativa de crypto para VAPID
+        const vapidPublicKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+        const vapidPrivateKey = urlBase64ToUint8Array(VAPID_PRIVATE_KEY)
+
         for (const sub of subscriptions) {
             try {
-                const subscriptionData = sub.subscription_data as any
+                const subscriptionData = sub.subscription_data
 
                 const payload = JSON.stringify({
                     title: title || 'Nova Notificação',
@@ -80,21 +80,32 @@ serve(async (req) => {
                     }
                 })
 
-                await webPush.default.sendNotification(subscriptionData, payload)
-                sent++
-                console.log(`[Edge Function] ✅ Enviado para user_id: ${sub.user_id}`)
+                // Enviar diretamente para o endpoint
+                const response = await fetch(subscriptionData.endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'TTL': '86400'
+                    },
+                    body: payload
+                })
+
+                if (response.ok || response.status === 201) {
+                    sent++
+                    console.log(`[Edge Function] ✅ Enviado para user_id: ${sub.user_id}`)
+                } else {
+                    failed++
+                    console.error(`[Edge Function] ❌ Falha ${response.status} para user_id: ${sub.user_id}`)
+
+                    // Remove subscrição expirada
+                    if (response.status === 410) {
+                        await supabase.from('push_subscriptions').delete().eq('id', sub.id)
+                        console.log(`[Edge Function] Subscrição removida: ${sub.id}`)
+                    }
+                }
             } catch (error) {
                 failed++
                 console.error(`[Edge Function] ❌ Erro ao enviar para user_id: ${sub.user_id}`, error)
-
-                // Se subscrição expirou/inválida, remove do banco
-                if (error.statusCode === 410) {
-                    await supabase
-                        .from('push_subscriptions')
-                        .delete()
-                        .eq('id', sub.id)
-                    console.log(`[Edge Function] Subscrição removida: ${sub.id}`)
-                }
             }
         }
 
