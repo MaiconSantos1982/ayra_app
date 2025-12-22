@@ -68,29 +68,45 @@ export function usePushNotifications() {
 
     // Salva a subscrição no Supabase
     const saveSubscriptionToDatabase = useCallback(async (subscription: PushSubscription) => {
+        console.log('[DEBUG] Iniciando salvamento de subscrição...');
+        console.log('[DEBUG] Usuário:', user);
+
         if (!user) {
+            console.error('[DEBUG] ERRO: Usuário não autenticado!');
             throw new Error('Usuário não autenticado');
         }
 
+        console.log('[DEBUG] User ID:', user.id);
         const subscriptionJson = subscriptionToJson(subscription);
+        console.log('[DEBUG] Subscription JSON:', subscriptionJson);
 
-        const { error } = await supabase
+        const dataToInsert = {
+            user_id: user.id,
+            endpoint: subscriptionJson.endpoint,
+            p256dh: subscriptionJson.keys.p256dh,
+            auth: subscriptionJson.keys.auth,
+            subscription_data: subscriptionJson,
+            updated_at: new Date().toISOString()
+        };
+
+        console.log('[DEBUG] Dados para inserir:', dataToInsert);
+
+        const { data, error } = await supabase
             .from('push_subscriptions')
-            .upsert({
-                user_id: user.id,
-                endpoint: subscriptionJson.endpoint,
-                p256dh: subscriptionJson.keys.p256dh,
-                auth: subscriptionJson.keys.auth,
-                subscription_data: subscriptionJson,
-                updated_at: new Date().toISOString()
-            }, {
+            .upsert(dataToInsert, {
                 onConflict: 'user_id,endpoint'
-            });
+            })
+            .select();
+
+        console.log('[DEBUG] Resposta do Supabase - Data:', data);
+        console.log('[DEBUG] Resposta do Supabase - Error:', error);
 
         if (error) {
             console.error('[Hook] Erro ao salvar subscrição:', error);
             throw error;
         }
+
+        console.log('[DEBUG] ✅ Subscrição salva com sucesso!');
     }, [user]);
 
     // Remove a subscrição do Supabase
