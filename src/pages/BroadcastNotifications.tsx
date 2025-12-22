@@ -56,10 +56,10 @@ export default function BroadcastNotifications() {
         setResult(null);
 
         try {
-            // Busca todas as subscrições únicas (por user_id)
+            // Busca todas as subscrições com TODOS os campos necessários
             const { data: subscriptions, error: fetchError } = await supabase
                 .from('push_subscriptions')
-                .select('user_id, endpoint')
+                .select('*')
                 .order('created_at', { ascending: false });
 
             if (fetchError) throw fetchError;
@@ -109,12 +109,14 @@ export default function BroadcastNotifications() {
     const sendLocalBroadcast = async (subscriptions: any[]) => {
         try {
             console.log('[Broadcast] Enviando localmente para', subscriptions.length, 'dispositivos');
+            console.log('[Broadcast] Estrutura das subscrições:', subscriptions);
 
             let sent = 0;
             let failed = 0;
 
             for (const sub of subscriptions) {
                 try {
+                    console.log('[Broadcast] Processando subscrição:', sub);
                     const subscriptionData = sub.subscription_data;
 
                     const payload = JSON.stringify({
