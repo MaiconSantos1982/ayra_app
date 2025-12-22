@@ -1,4 +1,4 @@
-import { User, LogOut, /* Download, Upload, */ Settings, Crown, UtensilsCrossed, Target, RefreshCw, Smartphone } from 'lucide-react';
+import { User, LogOut, /* Download, Upload, */ Settings, Crown, UtensilsCrossed, Target, RefreshCw, Smartphone, Bell } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { getUserData, getStats, /* exportData, importData */ } from '../lib/localStorage';
@@ -313,6 +313,23 @@ export default function ProfileSimple() {
             <div className="px-6 mb-6">
                 <h2 className="text-lg font-bold text-white mb-3">Notificações Push</h2>
                 <PushNotificationSettings />
+
+                {/* Botão Admin - Enviar Broadcast */}
+                {user?.premium && (
+                    <button
+                        onClick={() => navigate('/broadcast')}
+                        className="w-full mt-3 bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/50 rounded-xl p-3 flex items-center justify-between hover:border-blue-500 transition-colors"
+                    >
+                        <div className="flex items-center gap-3">
+                            <Bell className="w-5 h-5 text-blue-400" />
+                            <div className="text-left">
+                                <span className="text-white font-semibold block text-sm">Enviar Notificação para Todos</span>
+                                <span className="text-xs text-gray-400">Broadcast para dispositivos ativos</span>
+                            </div>
+                        </div>
+                        <span className="text-blue-400">→</span>
+                    </button>
+                )}
             </div>
 
             {/* Sair */}

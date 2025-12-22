@@ -13,6 +13,7 @@ import ProfileSimple from './pages/ProfileSimple';
 import HistoryPage from './pages/HistoryPage';
 import AnamnesePage from './pages/AnamnesePage';
 import MetasPage from './pages/MetasPage';
+import BroadcastNotifications from './pages/BroadcastNotifications';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -55,6 +56,7 @@ export default function App() {
             <Route path="historico" element={<HistoryPage />} />
             <Route path="anamnese" element={<AnamnesePage />} />
             <Route path="metas" element={<MetasPage />} />
+            <Route path="broadcast" element={<BroadcastNotifications />} />
           </Route>
         </Routes>
       </AuthProvider>
