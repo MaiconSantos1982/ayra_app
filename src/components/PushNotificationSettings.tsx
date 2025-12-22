@@ -29,19 +29,30 @@ export default function PushNotificationSettings() {
         setIsIOSSafari(isIOS && !isStandalone);
     }, []);
 
+    // Log mudanças de estado
+    useEffect(() => {
+        console.log('[Component] Estado atualizado:', { isEnabled, isLoading, isSupported });
+    }, [isEnabled, isLoading, isSupported]);
+
     const handleToggleNotifications = async () => {
+        console.log('[Component] Toggle clicado. Estado atual:', { isEnabled, isLoading });
+
         try {
             setMessage(null);
 
             if (isEnabled) {
+                console.log('[Component] Desabilitando notificações...');
                 await disableNotifications();
+                console.log('[Component] Notificações desabilitadas!');
                 setMessage({ type: 'success', text: 'Notificações desabilitadas com sucesso!' });
             } else {
+                console.log('[Component] Habilitando notificações...');
                 await enableNotifications();
+                console.log('[Component] Notificações habilitadas!');
                 setMessage({ type: 'success', text: 'Notificações habilitadas com sucesso!' });
             }
         } catch (error) {
-            console.error('Erro ao alterar notificações:', error);
+            console.error('[Component] Erro ao alterar notificações:', error);
 
             // Mensagem específica para iOS
             if (isIOSSafari) {
