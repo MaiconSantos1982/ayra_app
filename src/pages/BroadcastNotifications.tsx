@@ -31,13 +31,17 @@ export default function BroadcastNotifications() {
 
     const fetchTotalSubscriptions = async () => {
         try {
-            const { count } = await supabase
+            console.log('[Broadcast] Buscando total de subscrições...');
+            const { count, error, data } = await supabase
                 .from('push_subscriptions')
                 .select('*', { count: 'exact', head: true });
 
+            console.log('[Broadcast] Resposta count:', count);
+            console.log('[Broadcast] Error:', error);
+
             setTotalSubscriptions(count || 0);
         } catch (err) {
-            console.error('Erro ao buscar subscrições:', err);
+            console.error('[Broadcast] Erro ao buscar subscrições:', err);
         }
     };
 

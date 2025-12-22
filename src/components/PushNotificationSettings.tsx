@@ -195,8 +195,13 @@ export default function PushNotificationSettings() {
             {isEnabled && (
                 <div className="pt-2 border-t border-zinc-800">
                     <button
-                        onClick={handleTestNotification}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleTestNotification();
+                        }}
                         disabled={isTestLoading}
+                        type="button"
                         className="
               inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium
               bg-zinc-800 hover:bg-zinc-700 text-white
