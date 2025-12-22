@@ -106,9 +106,63 @@ export default function BroadcastNotifications() {
     };
 
     // Método alternativo: enviar localmente (quando Edge Function não está disponível)
-    const sendLocalBroadcast = async (_subscriptions: any[]) => {
-        setError('⚠️ Edge Function não configurada. As notificações não podem ser enviadas do cliente por segurança.');
-        setIsLoading(false);
+    const sendLocalBroadcast = async (subscriptions: any[]) => {
+        try {
+            console.log('[Broadcast] Enviando localmente para', subscriptions.length, 'dispositivos');
+
+            let sent = 0;
+            let failed = 0;
+
+            for (const sub of subscriptions) {
+                try {
+                    const subscriptionData = sub.subscription_data;
+
+                    const payload = JSON.stringify({
+                        title,
+                        body,
+                        icon: '/icon-192.png',
+                        badge: '/icon-192.png',
+                        data: {
+                            url: url || '/',
+                            timestamp: Date.now()
+                        }
+                    });
+
+                    // Enviar via API nativa do browser (Web Push Protocol)
+                    const response = await fetch(subscriptionData.endpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'TTL': '86400'
+                        },
+                        body: payload
+                    });
+
+                    if (response.ok) {
+                        sent++;
+                        console.log('[Broadcast] ✅ Enviado para:', sub.user_id);
+                    } else {
+                        failed++;
+                        console.error('[Broadcast] ❌ Falha ao enviar para:', sub.user_id, response.status);
+                    }
+                } catch (error) {
+                    failed++;
+                    console.error('[Broadcast] ❌ Erro ao enviar para:', sub.user_id, error);
+                }
+            }
+
+            setResult({ sent, failed, total: subscriptions.length });
+
+            // Limpar campos após sucesso
+            if (sent > 0) {
+                setTitle('');
+                setBody('');
+                setUrl('/');
+            }
+        } catch (err) {
+            console.error('[Broadcast] Erro geral:', err);
+            setError('Erro ao enviar notificações localmente');
+        }
     };
 
     return (
