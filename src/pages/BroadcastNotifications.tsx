@@ -76,8 +76,7 @@ export default function BroadcastNotifications() {
                     title,
                     body,
                     url,
-                    icon: '/icon-192.png',
-                    badge: '/apple-touch-icon.png'
+                    broadcast: true  // Flag para enviar para todos
                 }
             });
 
