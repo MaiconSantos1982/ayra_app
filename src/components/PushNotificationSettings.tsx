@@ -2,8 +2,8 @@
  * Componente de configuração de notificações push
  */
 
-import { useState } from 'react';
-import { Bell, BellOff, Loader2, CheckCircle2, XCircle, TestTube2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Bell, BellOff, Loader2, CheckCircle2, XCircle, TestTube2, Smartphone } from 'lucide-react';
 import { usePushNotifications } from '../hooks/usePushNotifications';
 
 export default function PushNotificationSettings() {
@@ -16,8 +16,18 @@ export default function PushNotificationSettings() {
         sendTestNotification
     } = usePushNotifications();
 
-    const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+    const [message, setMessage] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
     const [isTestLoading, setIsTestLoading] = useState(false);
+    const [isIOSSafari, setIsIOSSafari] = useState(false);
+
+    // Detecta se é iOS Safari (sem PWA)
+    useEffect(() => {
+        const ua = navigator.userAgent;
+        const isIOS = /iPad|iPhone|iPod/.test(ua);
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+            (window.navigator as any).standalone === true;
+        setIsIOSSafari(isIOS && !isStandalone);
+    }, []);
 
     const handleToggleNotifications = async () => {
         try {
@@ -32,10 +42,19 @@ export default function PushNotificationSettings() {
             }
         } catch (error) {
             console.error('Erro ao alterar notificações:', error);
-            setMessage({
-                type: 'error',
-                text: error instanceof Error ? error.message : 'Erro ao alterar configuração de notificações'
-            });
+
+            // Mensagem específica para iOS
+            if (isIOSSafari) {
+                setMessage({
+                    type: 'error',
+                    text: 'Safari iOS requer que o app seja instalado. Toque em Compartilhar → Adicionar à Tela Inicial'
+                });
+            } else {
+                setMessage({
+                    type: 'error',
+                    text: error instanceof Error ? error.message : 'Erro ao alterar configuração de notificações'
+                });
+            }
         }
     };
 
@@ -55,6 +74,32 @@ export default function PushNotificationSettings() {
             setIsTestLoading(false);
         }
     };
+
+    // Aviso especial para iOS Safari
+    if (isIOSSafari) {
+        return (
+            <div className="bg-blue-500/10 backdrop-blur-sm border border-blue-500/30 rounded-lg p-6">
+                <div className="flex items-start gap-3">
+                    <Smartphone className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <div>
+                        <h3 className="text-white font-medium mb-2">📱 Instale o App</h3>
+                        <p className="text-sm text-zinc-300 mb-3">
+                            Para receber notificações no iPhone, instale o Ayra como aplicativo:
+                        </p>
+                        <ol className="text-sm text-zinc-300 space-y-2 list-decimal list-inside">
+                            <li>Toque no botão <strong>Compartilhar</strong> (ícone de compartilhar)</li>
+                            <li>Role e selecione <strong>"Adicionar à Tela Inicial"</strong></li>
+                            <li>Toque em <strong>"Adicionar"</strong></li>
+                            <li>Abra o app pela tela inicial e habilite notificações</li>
+                        </ol>
+                        <p className="text-xs text-blue-300 mt-3">
+                            💡 Requer iOS 16.4 ou superior
+                        </p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     if (!isSupported) {
         return (
@@ -163,7 +208,9 @@ export default function PushNotificationSettings() {
           p-3 rounded-lg text-sm flex items-start gap-2
           ${message.type === 'success'
                         ? 'bg-green-500/10 text-green-400 border border-green-500/20'
-                        : 'bg-red-500/10 text-red-400 border border-red-500/20'
+                        : message.type === 'info'
+                            ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                            : 'bg-red-500/10 text-red-400 border border-red-500/20'
                     }
         `}>
                     {message.type === 'success' ? (
