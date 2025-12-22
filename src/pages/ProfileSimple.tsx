@@ -5,6 +5,7 @@ import { getUserData, getStats, /* exportData, importData */ } from '../lib/loca
 import { useState /* , useRef */ } from 'react';
 import Toast from '../components/Toast';
 import type { ToastType } from '../components/Toast';
+import PushNotificationSettings from '../components/PushNotificationSettings';
 
 export default function ProfileSimple() {
     const { user, signOut, refreshPremium } = useAuth();
@@ -306,6 +307,12 @@ export default function ProfileSimple() {
                         <span className="text-gray-400">→</span>
                     </button>
                 </div>
+            </div>
+
+            {/* Push Notifications */}
+            <div className="px-6 mb-6">
+                <h2 className="text-lg font-bold text-white mb-3">Notificações Push</h2>
+                <PushNotificationSettings />
             </div>
 
             {/* Sair */}

@@ -1,6 +1,7 @@
 import { ChevronRight, Moon, Sun, Globe, Bell, Lock, Palette, Layout } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import PushNotificationSettings from '../components/PushNotificationSettings';
 
 interface Settings {
     theme: 'light' | 'dark' | 'auto';
@@ -145,8 +146,8 @@ export default function SettingsPage() {
                                     key={theme.value}
                                     onClick={() => updateTheme(theme.value as 'light' | 'dark' | 'auto')}
                                     className={`p-4 rounded-xl transition-all ${settings.theme === theme.value
-                                            ? 'bg-primary/20 border-2 border-primary text-primary'
-                                            : 'bg-white/5 border border-white/10 text-white hover:bg-white/10'
+                                        ? 'bg-primary/20 border-2 border-primary text-primary'
+                                        : 'bg-white/5 border border-white/10 text-white hover:bg-white/10'
                                         }`}
                                 >
                                     <Icon size={24} className="mx-auto mb-2" />
@@ -227,6 +228,9 @@ export default function SettingsPage() {
                         ))}
                     </div>
                 </div>
+
+                {/* Push Notifications */}
+                <PushNotificationSettings />
 
                 {/* Privacy */}
                 <div className="glass rounded-2xl p-6">

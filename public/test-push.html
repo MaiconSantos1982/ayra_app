@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Push Notifications - Ayra</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #09090b;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p {
+            color: #a1a1aa;
+            margin-bottom: 32px;
+        }
+
+        .status {
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status.info {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+        }
+
+        .status.success {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+        }
+
+        .status.error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #f87171;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 12px;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .code {
+            background: #000;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 24px;
+            font-family: 'Monaco', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+        }
+
+        .icon {
+            font-size: 24px;
+        }
+
+        #log {
+            margin-top: 24px;
+            max-height: 300px;
+            overflow-y: auto;
+            background: #000;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .log-entry {
+            padding: 8px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: 'Monaco', monospace;
+        }
+
+        .log-info {
+            background: rgba(59, 130, 246, 0.1);
+            color: #60a5fa;
+        }
+
+        .log-success {
+            background: rgba(34, 197, 94, 0.1);
+            color: #4ade80;
+        }
+
+        .log-error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #f87171;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔔 Teste de Push Notifications</h1>
+        <p>Ferramenta de teste para validar o sistema de notificações VAPID</p>
+
+        <div id="status" class="status info">
+            <span class="icon">ℹ️</span>
+            <span id="status-text">Verificando suporte...</span>
+        </div>
+
+        <button id="btn-permission" class="btn-primary" disabled>
+            Solicitar Permissão
+        </button>
+
+        <button id="btn-register" class="btn-secondary" disabled>
+            Registrar Service Worker
+        </button>
+
+        <button id="btn-subscribe" class="btn-secondary" disabled>
+            Criar Subscrição Push
+        </button>
+
+        <button id="btn-test" class="btn-secondary" disabled>
+            Enviar Notificação de Teste
+        </button>
+
+        <div class="code">
+            <strong>VAPID Public Key:</strong><br>
+            <span id="vapid-key">Carregando...</span>
+        </div>
+
+        <div id="log"></div>
+    </div>
+
+    <script>
+        const VAPID_PUBLIC_KEY = 'BN8tb729543anvsLKsJNXBGJFh4s-qUi-S9yTjq8hn9BRlQbWneD2p67GAZv5D9b2tTglxt0-uY1PavgMsKPouA';
+        
+        const $ = (id) => document.getElementById(id);
+        const log = (message, type = 'info') => {
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            $('log').prepend(logEntry);
+        };
+
+        const updateStatus = (text, type = 'info') => {
+            const status = $('status');
+            const icons = { info: 'ℹ️', success: '✅', error: '❌' };
+            status.className = `status ${type}`;
+            status.innerHTML = `<span class="icon">${icons[type]}</span><span>${text}</span>`;
+        };
+
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+            const rawData = window.atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+            for (let i = 0; i < rawData.length; ++i) {
+                outputArray[i] = rawData.charCodeAt(i);
+            }
+            return outputArray;
+        }
+
+        // Verificar suporte
+        window.addEventListener('load', () => {
+            $('vapid-key').textContent = VAPID_PUBLIC_KEY;
+
+            if ('serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window) {
+                updateStatus('✅ Navegador suporta Push Notifications!', 'success');
+                log('Navegador suporta Service Workers, Push API e Notifications', 'success');
+                $('btn-permission').disabled = false;
+            } else {
+                updateStatus('❌ Navegador não suporta Push Notifications', 'error');
+                log('Navegador não possui suporte completo', 'error');
+            }
+        });
+
+        // Solicitar permissão
+        $('btn-permission').addEventListener('click', async () => {
+            try {
+                log('Solicitando permissão de notificações...');
+                const permission = await Notification.requestPermission();
+                
+                if (permission === 'granted') {
+                    updateStatus('Permissão concedida!', 'success');
+                    log('Permissão de notificações concedida', 'success');
+                    $('btn-register').disabled = false;
+                } else {
+                    updateStatus('Permissão negada', 'error');
+                    log('Usuário negou permissão de notificações', 'error');
+                }
+            } catch (error) {
+                updateStatus('Erro ao solicitar permissão', 'error');
+                log(`Erro: ${error.message}`, 'error');
+            }
+        });
+
+        // Registrar Service Worker
+        $('btn-register').addEventListener('click', async () => {
+            try {
+                log('Registrando Service Worker...');
+                const registration = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+                
+                updateStatus('Service Worker registrado!', 'success');
+                log(`Service Worker registrado com escopo: ${registration.scope}`, 'success');
+                $('btn-subscribe').disabled = false;
+
+                // Aguardar ativação
+                if (registration.installing) {
+                    log('Service Worker instalando...');
+                    await new Promise((resolve) => {
+                        registration.installing.addEventListener('statechange', function() {
+                            if (this.state === 'activated') {
+                                log('Service Worker ativado!', 'success');
+                                resolve();
+                            }
+                        });
+                    });
+                }
+            } catch (error) {
+                updateStatus('Erro ao registrar Service Worker', 'error');
+                log(`Erro: ${error.message}`, 'error');
+            }
+        });
+
+        // Criar subscrição
+        $('btn-subscribe').addEventListener('click', async () => {
+            try {
+                log('Criando subscrição push...');
+                const registration = await navigator.serviceWorker.getRegistration('/');
+                
+                if (!registration) {
+                    throw new Error('Service Worker não encontrado');
+                }
+
+                const applicationServerKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
+                const subscription = await registration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey
+                });
+
+                updateStatus('Subscrição criada com sucesso!', 'success');
+                log('Subscrição push criada', 'success');
+                log(`Endpoint: ${subscription.endpoint.substring(0, 50)}...`);
+                $('btn-test').disabled = false;
+            } catch (error) {
+                updateStatus('Erro ao criar subscrição', 'error');
+                log(`Erro: ${error.message}`, 'error');
+            }
+        });
+
+        // Testar notificação
+        $('btn-test').addEventListener('click', async () => {
+            try {
+                log('Enviando notificação de teste...');
+                const registration = await navigator.serviceWorker.getRegistration('/');
+                
+                if (!registration) {
+                    throw new Error('Service Worker não encontrado');
+                }
+
+                await registration.showNotification('🎉 Teste de Notificação', {
+                    body: 'Se você está vendo isso, o sistema está funcionando perfeitamente!',
+                    icon: '/icon-192.png',
+                    badge: '/apple-touch-icon.png',
+                    tag: 'test-notification',
+                    data: { url: '/' }
+                });
+
+                updateStatus('Notificação enviada!', 'success');
+                log('Notificação de teste enviada com sucesso!', 'success');
+            } catch (error) {
+                updateStatus('Erro ao enviar notificação', 'error');
+                log(`Erro: ${error.message}`, 'error');
+            }
+        });
+    </script>
+</body>
+</html>
