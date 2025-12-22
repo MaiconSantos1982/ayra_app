@@ -33,9 +33,15 @@ export function isNotificationSupported(): boolean {
 
 /**
  * Verifica se as notificações estão habilitadas
+ * Retorna true apenas se tem permissão E subscrição ativa
  */
-export function isNotificationEnabled(): boolean {
-    return isNotificationSupported() && Notification.permission === 'granted';
+export async function isNotificationEnabled(): Promise<boolean> {
+    if (!isNotificationSupported() || Notification.permission !== 'granted') {
+        return false;
+    }
+
+    const subscription = await getCurrentSubscription();
+    return subscription !== null;
 }
 
 /**

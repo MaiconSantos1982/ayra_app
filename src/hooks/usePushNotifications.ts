@@ -38,7 +38,7 @@ export function usePushNotifications() {
         async function init() {
             try {
                 const supported = isNotificationSupported();
-                const enabled = isNotificationEnabled();
+                const enabled = await isNotificationEnabled(); // Agora é async
                 const subscription = await getCurrentSubscription();
 
                 setState({
@@ -145,7 +145,7 @@ export function usePushNotifications() {
             await saveSubscriptionToDatabase(subscription);
 
             // Força atualização do estado
-            const currentEnabled = isNotificationEnabled();
+            const currentEnabled = await isNotificationEnabled();
             const currentSubscription = await getCurrentSubscription();
 
             setState({
@@ -160,7 +160,7 @@ export function usePushNotifications() {
             console.error('[Hook] Erro ao habilitar notificações:', error);
 
             // Atualiza estado mesmo em erro
-            const currentEnabled = isNotificationEnabled();
+            const currentEnabled = await isNotificationEnabled();
             const currentSubscription = await getCurrentSubscription();
 
             setState(prev => ({
@@ -189,7 +189,7 @@ export function usePushNotifications() {
             }
 
             // Força verificação do estado real
-            const currentEnabled = isNotificationEnabled();
+            const currentEnabled = await isNotificationEnabled();
             const checkSubscription = await getCurrentSubscription();
 
             setState({
@@ -202,7 +202,7 @@ export function usePushNotifications() {
             console.error('[Hook] Erro ao desabilitar notificações:', error);
 
             // Atualiza estado mesmo em erro
-            const currentEnabled = isNotificationEnabled();
+            const currentEnabled = await isNotificationEnabled();
             const checkSubscription = await getCurrentSubscription();
 
             setState(prev => ({
@@ -231,8 +231,8 @@ export function usePushNotifications() {
             return;
         }
 
-        const handlePermissionChange = () => {
-            const enabled = isNotificationEnabled();
+        const handlePermissionChange = async () => {
+            const enabled = await isNotificationEnabled();
             setState(prev => ({ ...prev, isEnabled: enabled }));
         };
 
