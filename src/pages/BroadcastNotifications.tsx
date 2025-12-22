@@ -3,7 +3,7 @@
  * Permite enviar notificações push para todos os usuários com subscrições ativas
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Send, Users, Bell, Loader2, CheckCircle2, XCircle, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
@@ -25,9 +25,9 @@ export default function BroadcastNotifications() {
     const [totalSubscriptions, setTotalSubscriptions] = useState<number | null>(null);
 
     // Busca total de subscrições ao carregar
-    useState(() => {
+    useEffect(() => {
         fetchTotalSubscriptions();
-    });
+    }, []);
 
     const fetchTotalSubscriptions = async () => {
         try {
