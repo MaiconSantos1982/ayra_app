@@ -102,7 +102,7 @@ export default function BroadcastNotifications() {
     };
 
     // Método alternativo: enviar localmente (quando Edge Function não está disponível)
-    const sendLocalBroadcast = async (subscriptions: any[]) => {
+    const sendLocalBroadcast = async (_subscriptions: any[]) => {
         setError('⚠️ Edge Function não configurada. As notificações não podem ser enviadas do cliente por segurança.');
         setIsLoading(false);
     };
