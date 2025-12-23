@@ -40,13 +40,21 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-async function sendBroadcast(title, body, url = '/') {
+async function sendBroadcast(title, body, url = '/', plano = 'all') {
     try {
         console.log('🔍 Buscando subscrições...');
 
-        const { data: subscriptions, error } = await supabase
+        // Query com JOIN para pegar o plano do usuário
+        let query = supabase
             .from('push_subscriptions')
-            .select('*');
+            .select(`
+                *,
+                ayra_cadastro!push_subscriptions_user_id_fkey (
+                    plano
+                )
+            `);
+
+        const { data: subscriptions, error } = await query;
 
         if (error) throw error;
 
@@ -55,7 +63,30 @@ async function sendBroadcast(title, body, url = '/') {
             return;
         }
 
-        console.log(`📱 Encontradas ${subscriptions.length} subscrições`);
+        // Filtrar por plano se especificado
+        let filteredSubs = subscriptions;
+        if (plano !== 'all') {
+            filteredSubs = subscriptions.filter(sub => {
+                const userPlano = sub.ayra_cadastro?.plano;
+                if (plano === 'premium') {
+                    return userPlano === 'premium' || userPlano === 'vip';
+                } else if (plano === 'free') {
+                    return !userPlano || userPlano === 'free' || userPlano === 'gratuito';
+                }
+                return true;
+            });
+        }
+
+        console.log(`📱 Total de subscrições: ${subscriptions.length}`);
+        if (plano !== 'all') {
+            console.log(`🎯 Filtrando para: ${plano.toUpperCase()}`);
+            console.log(`📧 Enviando para: ${filteredSubs.length} usuários`);
+        }
+
+        if (filteredSubs.length === 0) {
+            console.log('⚠️  Nenhum usuário encontrado com o filtro especificado');
+            return;
+        }
 
         const payload = JSON.stringify({
             title,
@@ -68,11 +99,12 @@ async function sendBroadcast(title, body, url = '/') {
         let sent = 0;
         let failed = 0;
 
-        for (const sub of subscriptions) {
+        for (const sub of filteredSubs) {
             try {
                 await webPush.sendNotification(sub.subscription_data, payload);
                 sent++;
-                console.log(`✅ Enviado para user_id: ${sub.user_id}`);
+                const userPlano = sub.ayra_cadastro?.plano || 'free';
+                console.log(`✅ Enviado para user_id: ${sub.user_id} (${userPlano})`);
             } catch (error) {
                 failed++;
                 console.error(`❌ Erro user_id ${sub.user_id}:`, error.statusCode || error.message);
@@ -88,7 +120,7 @@ async function sendBroadcast(title, body, url = '/') {
         console.log(`\n📊 Resultado:`);
         console.log(`   ✅ Enviadas: ${sent}`);
         console.log(`   ❌ Falharam: ${failed}`);
-        console.log(`   📱 Total: ${subscriptions.length}`);
+        console.log(`   📱 Total: ${filteredSubs.length}`);
 
     } catch (error) {
         console.error('❌ Erro:', error);
@@ -100,10 +132,15 @@ async function sendBroadcast(title, body, url = '/') {
 const title = process.argv[2] || 'Nova Notificação';
 const body = process.argv[3] || 'Você tem uma nova notificação!';
 const url = process.argv[4] || '/';
+const plano = process.argv[5] || 'all'; // all, free, premium
 
 console.log(`\n📢 Enviando Broadcast:`);
 console.log(`   Título: ${title}`);
 console.log(`   Mensagem: ${body}`);
-console.log(`   URL: ${url}\n`);
+console.log(`   URL: ${url}`);
+if (plano !== 'all') {
+    console.log(`   🎯 Filtro: ${plano.toUpperCase()}`);
+}
+console.log();
 
-sendBroadcast(title, body, url);
+sendBroadcast(title, body, url, plano);
