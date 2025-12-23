@@ -70,6 +70,8 @@ export default function BroadcastNotifications() {
                 return;
             }
 
+            console.log('[Broadcast] Tentando enviar via Edge Function...');
+
             // Enviar notificação broadcast via Edge Function
             const { data, error: functionError } = await supabase.functions.invoke('send-push-notification', {
                 body: {
@@ -80,20 +82,23 @@ export default function BroadcastNotifications() {
                 }
             });
 
+            console.log('[Broadcast] Resposta Edge Function:', { data, error: functionError });
+
             if (functionError) {
                 // Se não tiver Edge Function, usa método alternativo (envio local)
-                console.warn('Edge Function não disponível. Enviando localmente...');
+                console.warn('[Broadcast] Edge Function falhou. Enviando localmente...', functionError);
                 await sendLocalBroadcast(subscriptions);
                 return;
             }
 
+            console.log('[Broadcast] Edge Function retornou sucesso:', data);
             setResult(data);
 
             // Limpar campos após sucesso
             if (data.sent > 0) {
                 setTitle('');
                 setBody('');
-                setUrl('/');
+                setUrl('');
             }
         } catch (err) {
             console.error('Erro ao enviar broadcast:', err);
