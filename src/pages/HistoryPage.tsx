@@ -133,7 +133,7 @@ export default function HistoryPage() {
                         </div>
 
                         <button
-                            onClick={() => window.open('https://youtu.be/SLioH4rHjFc', '_blank')}
+                            onClick={() => window.open('https://www.ayrislife.com/ayra?utm_source=app&utm_medium=gratuito', '_blank')}
                             className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold py-4 rounded-2xl hover:scale-105 transition-transform"
                         >
                             Fazer Upgrade Agora

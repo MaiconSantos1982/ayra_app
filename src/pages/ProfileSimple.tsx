@@ -175,7 +175,7 @@ export default function ProfileSimple() {
                         </div>
                         {!user?.premium && (
                             <button
-                                onClick={() => window.open('https://youtu.be/SLioH4rHjFc', '_blank')}
+                                onClick={() => window.open('https://www.ayrislife.com/ayra?utm_source=app&utm_medium=gratuito', '_blank')}
                                 className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-semibold px-4 py-2 rounded-xl text-sm hover:scale-105 transition-transform"
                             >
                                 Upgrade
