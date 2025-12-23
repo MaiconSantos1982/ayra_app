@@ -32,7 +32,7 @@ export default function BroadcastNotifications() {
     const fetchTotalSubscriptions = async () => {
         try {
             console.log('[Broadcast] Buscando total de subscrições...');
-            const { count, error, data } = await supabase
+            const { count, error } = await supabase
                 .from('push_subscriptions')
                 .select('*', { count: 'exact', head: true });
 
