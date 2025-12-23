@@ -6,6 +6,7 @@ import { useState /* , useRef */ } from 'react';
 import Toast from '../components/Toast';
 import type { ToastType } from '../components/Toast';
 import PushNotificationSettings from '../components/PushNotificationSettings';
+import ReminderSettings from '../components/ReminderSettings';
 
 export default function ProfileSimple() {
     const { user, signOut, refreshPremium } = useAuth();
@@ -330,6 +331,12 @@ export default function ProfileSimple() {
                         <span className="text-blue-400">→</span>
                     </button>
                 )}
+            </div>
+
+            {/* Lembretes Locais */}
+            <div className="px-6 mb-6">
+                <h2 className="text-lg font-bold text-white mb-3">Lembretes Automáticos</h2>
+                <ReminderSettings />
             </div>
 
             {/* Sair */}
