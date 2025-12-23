@@ -129,7 +129,21 @@ export async function subscribePushNotification(): Promise<PushSubscription> {
     }
 
     // Cria nova subscrição
-    const applicationServerKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY) as BufferSource;
+    console.log('[Push] Iniciando subscrição...');
+    console.log('[Push] VAPID Public Key length:', VAPID_PUBLIC_KEY.length);
+
+    if (!VAPID_PUBLIC_KEY || VAPID_PUBLIC_KEY.length < 10) {
+        throw new Error(`VAPID Public Key inválida (len=${VAPID_PUBLIC_KEY.length})`);
+    }
+
+    let applicationServerKey: Uint8Array;
+    try {
+        applicationServerKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
+        console.log('[Push] Key convertida com sucesso (bytes):', applicationServerKey.length);
+    } catch (e) {
+        console.error('[Push] Erro ao converter VAPID Key:', e);
+        throw new Error('Falha ao converter VAPID Public Key');
+    }
 
     try {
         subscription = await registration.pushManager.subscribe({

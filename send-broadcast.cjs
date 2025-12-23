@@ -8,18 +8,37 @@ const webPush = require('web-push');
 const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config();
 
-// Configurar VAPID
+// Configurar VAPID (Hardcoded para garantir funcionamento)
+const publicKey = 'BN8tb729543anvsLKsJNXBGJFh4s-qUi-S9yTjq8hn9BRlQbWneD2p67GAZv5D9b2tTglxt0-uY1PavgMsKPouA';
+const privateKey = process.env.VITE_VAPID_PRIVATE_KEY || 'fsi6Oj84qDVWiti0d1K41Id8bECQ1hn4dRx0Vo1gVI8';
+
+console.log('🔑 Configuração VAPID:');
+console.log('   Public Key:', publicKey ? `${publicKey.substring(0, 10)}... (${publicKey.length} chars)` : 'MISSING');
+console.log('   Private Key:', privateKey ? 'DEFINIDA' : 'MISSING');
+
+if (!publicKey || publicKey.length < 10) {
+    console.error('❌ Erro: VAPID Public Key inválida ou não encontrada');
+    process.exit(1);
+}
+
 webPush.setVapidDetails(
     'mailto:admin@ayra.com',
-    process.env.VITE_VAPID_PUBLIC_KEY,
-    process.env.VITE_VAPID_PRIVATE_KEY || 'fsi6Oj84qDVWiti0d1K41Id8bECQ1hn4dRx0Vo1gVI8'
+    publicKey,
+    privateKey
 );
 
 // Supabase client
-const supabase = createClient(
-    process.env.VITE_SUPABASE_URL,
-    process.env.VITE_SUPABASE_ANON_KEY
-);
+const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || 'https://ztlddoutgextdmyiwoxl.supabase.co';
+const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+    console.error('❌ Erro: Credenciais do Supabase não encontradas');
+    console.log('   URL:', supabaseUrl ? 'DEFINIDA' : 'MISSING');
+    console.log('   Key:', supabaseKey ? 'DEFINIDA' : 'MISSING');
+    process.exit(1);
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function sendBroadcast(title, body, url = '/') {
     try {
