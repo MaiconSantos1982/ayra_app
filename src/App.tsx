@@ -14,6 +14,7 @@ import HistoryPage from './pages/HistoryPage';
 import AnamnesePage from './pages/AnamnesePage';
 import MetasPage from './pages/MetasPage';
 import BroadcastNotifications from './pages/BroadcastNotifications';
+import { useReminders } from './hooks/useReminders';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -38,11 +39,18 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 import InstallPWA from './components/InstallPWA'; // Import adicionado
 
+// Componente para executar lembretes em background
+function GlobalReminders() {
+  useReminders(); // Executa hook globalmente
+  return null;
+}
+
 export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <InstallPWA /> {/* Componente PWA adicionado aqui */}
+        <GlobalReminders /> {/* Reminders rodando globalmente */}
         <Routes>
           <Route path="/login" element={<AuthPage />} />
           <Route path="/onboarding" element={<ProtectedRoute><OnboardingSimple /></ProtectedRoute>} />

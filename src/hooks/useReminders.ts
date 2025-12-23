@@ -70,12 +70,24 @@ export function useReminders() {
 
     // Lembrete de água
     const checkWaterReminder = useCallback(async () => {
-        if (!settings.waterEnabled) return;
+        console.log('[Reminders] checkWaterReminder chamado');
+        console.log('[Reminders] waterEnabled:', settings.waterEnabled);
+
+        if (!settings.waterEnabled) {
+            console.log('[Reminders] Água desabilitada, pulando');
+            return;
+        }
 
         const now = Date.now();
         const intervalMs = settings.waterInterval * 60 * 60 * 1000; // horas -> ms
 
+        console.log('[Reminders] Agora:', new Date(now).toLocaleTimeString());
+        console.log('[Reminders] Último lembrete:', lastWaterReminder ? new Date(lastWaterReminder).toLocaleTimeString() : 'Nunca');
+        console.log('[Reminders] Intervalo:', settings.waterInterval, 'horas');
+        console.log('[Reminders] Tempo desde último:', lastWaterReminder ? ((now - lastWaterReminder) / 1000 / 60).toFixed(1) + ' minutos' : 'N/A');
+
         if (!lastWaterReminder || (now - lastWaterReminder) >= intervalMs) {
+            console.log('[Reminders] ✅ Enviando lembrete de água!');
             await showNotification(
                 '💧 Hora de Beber Água!',
                 `Já se passaram ${settings.waterInterval} horas. Hidrate-se!`,
@@ -83,6 +95,8 @@ export function useReminders() {
             );
             setLastWaterReminder(now);
             localStorage.setItem('ayra_last_water_reminder', now.toString());
+        } else {
+            console.log('[Reminders] ⏱️ Ainda não é hora (faltam', ((intervalMs - (now - lastWaterReminder)) / 1000 / 60).toFixed(1), 'minutos)');
         }
     }, [settings, lastWaterReminder, showNotification]);
 
