@@ -8,6 +8,7 @@ import type { ToastType } from '../components/Toast';
 import ConfirmModal from '../components/ConfirmModal';
 import { updateProfile, getUserData } from '../lib/localStorage';
 import type { DietMeal } from '../lib/localStorage';
+import { saveDietMealsToSupabase } from '../lib/supabaseAuth';
 
 export default function AnamnesePage() {
     const navigate = useNavigate();
@@ -190,8 +191,32 @@ export default function AnamnesePage() {
         setFormData({ ...formData, altura: value });
     };
 
+    // Helper para salvar dieta imediatamente
+    const syncDiet = async (newMeals: DietMeal[]) => {
+        setDietMeals(newMeals);
+
+        // Atualiza LocalStorage
+        const currentData = getUserData();
+        if (currentData) {
+            updateProfile({
+                ...currentData.profile,
+                segueDieta: true,
+                customDiet: newMeals
+            });
+        }
+
+        // Atualiza Supabase (se logado)
+        if (user?.id) {
+            try {
+                await saveDietMealsToSupabase(user.id, newMeals);
+            } catch (error) {
+                console.error('Erro ao salvar dieta no Supabase:', error);
+            }
+        }
+    };
+
     // Adiciona uma refeição à dieta
-    const handleAddMeal = () => {
+    const handleAddMeal = async () => {
         if (!currentMeal.tipo || !currentMeal.horario || !currentMeal.descricao.trim()) {
             alert('Por favor, preencha o tipo, horário e descrição da refeição.');
             return;
@@ -209,7 +234,9 @@ export default function AnamnesePage() {
             gorduras: currentMeal.gorduras ? parseFloat(currentMeal.gorduras) : undefined
         };
 
-        setDietMeals([...dietMeals, newMeal]);
+        const updatedMeals = [...dietMeals, newMeal];
+        await syncDiet(updatedMeals); // Salva imediatamente
+        setToast({ message: 'Refeição salva e sincronizada!', type: 'success' });
 
         // Limpa o formulário atual
         setCurrentMeal({
@@ -229,10 +256,11 @@ export default function AnamnesePage() {
     };
 
     // Remove uma refeição da dieta (após confirmação)
-    const confirmRemoveMeal = () => {
+    const confirmRemoveMeal = async () => {
         if (confirmModal.mealId) {
-            setDietMeals(dietMeals.filter(meal => meal.id !== confirmModal.mealId));
-            setToast({ message: 'Refeição removida com sucesso!', type: 'success' });
+            const updatedMeals = dietMeals.filter(meal => meal.id !== confirmModal.mealId);
+            await syncDiet(updatedMeals); // Salva imediatamente
+            setToast({ message: 'Refeição removida e sincronizada!', type: 'success' });
         }
         setConfirmModal({ isOpen: false, mealId: null });
     };
@@ -264,7 +292,8 @@ export default function AnamnesePage() {
                 setTimeout(() => navigate('/perfil'), 1500);
             } else if (user?.id) {
                 // Importa e usa updateUserData do supabaseAuth
-                const { updateUserData, saveDietMealsToSupabase } = await import('../lib/supabaseAuth');
+                // Importa e usa updateUserData do supabaseAuth
+                const { updateUserData } = await import('../lib/supabaseAuth');
 
                 const result = await updateUserData(user.id, {
                     nome: formData.nome,

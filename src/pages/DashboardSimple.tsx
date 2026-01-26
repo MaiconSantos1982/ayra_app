@@ -1,7 +1,7 @@
-import { Flame, Droplet, Dumbbell, Moon, Smile, TrendingUp, Camera, Plus, Minus, Check, X } from 'lucide-react';
+import { Flame, Droplet, Dumbbell, Moon, Smile, TrendingUp, Camera, Plus, Minus, Check, X, Target } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { getUserData, getDailyData, getStats, updateWater, updateExercise, updateSleep, updateMood } from '../lib/localStorage';
+import { getUserData, getDailyData, getStats, updateWater, updateExercise, updateSleep, updateMood, getDailyNutrition } from '../lib/localStorage';
 
 export default function DashboardSimple() {
     const navigate = useNavigate();
@@ -177,6 +177,63 @@ export default function DashboardSimple() {
                         ))}
                     </div>
                 )}
+            </div>
+
+            {/* Nutrição de Hoje */}
+            <div className="px-6 mb-6">
+                <div className="bg-card/50 border border-white/5 rounded-2xl p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                        <Target className="text-primary" size={20} />
+                        <h2 className="text-lg font-bold text-white">Nutrição de Hoje</h2>
+                    </div>
+
+                    {(() => {
+                        // Calcula totais do dia usando a função auxiliar
+                        const nutrition = getDailyNutrition(new Date().toISOString().split('T')[0]);
+                        const hasNutrition = nutrition.calorias > 0 || nutrition.proteina > 0 || nutrition.carboidratos > 0 || nutrition.gorduras > 0;
+
+                        if (!hasNutrition) {
+                            return (
+                                <p className="text-center text-text-muted text-sm py-2">
+                                    Nenhum valor nutricional registrado hoje
+                                </p>
+                            );
+                        }
+
+                        return (
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="bg-background rounded-xl p-3 border border-white/5">
+                                    <div className="text-xs text-text-muted mb-1">Calorias</div>
+                                    <div className="text-xl font-bold text-primary">
+                                        {nutrition.calorias.toFixed(0)}
+                                    </div>
+                                    <div className="text-xs text-text-muted">kcal</div>
+                                </div>
+                                <div className="bg-background rounded-xl p-3 border border-white/5">
+                                    <div className="text-xs text-text-muted mb-1">Proteína</div>
+                                    <div className="text-xl font-bold text-blue-400">
+                                        {nutrition.proteina.toFixed(1)}
+                                    </div>
+                                    <div className="text-xs text-text-muted">g</div>
+                                </div>
+                                <div className="bg-background rounded-xl p-3 border border-white/5">
+                                    <div className="text-xs text-text-muted mb-1">Carboidratos</div>
+                                    <div className="text-xl font-bold text-yellow-400">
+                                        {nutrition.carboidratos.toFixed(1)}
+                                    </div>
+                                    <div className="text-xs text-text-muted">g</div>
+                                </div>
+                                <div className="bg-background rounded-xl p-3 border border-white/5">
+                                    <div className="text-xs text-text-muted mb-1">Gorduras</div>
+                                    <div className="text-xl font-bold text-orange-400">
+                                        {nutrition.gorduras.toFixed(1)}
+                                    </div>
+                                    <div className="text-xs text-text-muted">g</div>
+                                </div>
+                            </div>
+                        );
+                    })()}
+                </div>
             </div>
 
             {/* Lifestyle Tracking */}
@@ -390,10 +447,10 @@ export default function DashboardSimple() {
                                 </div>
                             </div>
                             <button
-                                onClick={() => navigate('/progresso')}
+                                onClick={() => navigate('/historico')}
                                 className="text-primary text-sm font-semibold hover:underline"
                             >
-                                Ver Progresso
+                                Ver Histórico
                             </button>
                         </div>
                     </div>
