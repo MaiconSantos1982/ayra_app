@@ -1,4 +1,4 @@
-import { Flame, Droplet, Dumbbell, Moon, Smile, TrendingUp, Camera, Plus, Minus, Check, X, Target } from 'lucide-react';
+import { Flame, Droplet, Dumbbell, Moon, Smile, TrendingUp, Camera, Plus, Minus, Check, Target } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getUserData, getDailyData, getStats, updateWater, updateExercise, updateSleep, updateMood, getDailyNutrition } from '../lib/localStorage';
@@ -9,7 +9,7 @@ export default function DashboardSimple() {
     const [todayData, setTodayData] = useState(getDailyData());
     const [stats, setStats] = useState(getStats());
     const [showSleepInput, setShowSleepInput] = useState(false);
-    const [showMoodSelector, setShowMoodSelector] = useState(false);
+
 
     useEffect(() => {
         // Verifica se usuário tem dados, senão redireciona para onboarding
@@ -93,18 +93,11 @@ export default function DashboardSimple() {
     const handleUpdateMood = (mood: 'great' | 'good' | 'ok' | 'bad') => {
         updateMood(mood);
         setTodayData(getDailyData());
-        setShowMoodSelector(false);
     };
 
-    // Calcula progresso de água
-    const waterProgress = userData?.goals.water
-        ? (todayData.water / userData.goals.water) * 100
-        : 0;
 
-    // Calcula progresso de sono
-    const sleepProgress = userData?.goals.sleep
-        ? (todayData.sleep / userData.goals.sleep) * 100
-        : 0;
+
+
 
     // Emoji de humor
     const moodEmojis = {
@@ -260,23 +253,44 @@ export default function DashboardSimple() {
                                 </div>
 
                                 {/* Macros - Grid Limpo */}
-                                <div className="grid grid-cols-3 gap-4">
-                                    <div className="text-center">
-                                        <p className="text-sm text-gray-400 mb-1">Proteína</p>
-                                        <div className="text-2xl font-bold text-blue-400">
-                                            {nutrition.proteina.toFixed(0)}<span className="text-xs text-gray-500 ml-0.5">g</span>
+                                {/* Macros - Lista Vertical */}
+                                <div className="space-y-3">
+                                    <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5">
+                                        <div className="flex items-center gap-3">
+                                            <div className="bg-blue-500/10 p-2 rounded-lg">
+                                                <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                                            </div>
+                                            <span className="text-gray-300 font-medium">Proteína</span>
+                                        </div>
+                                        <div className="flex items-baseline gap-1">
+                                            <span className="text-xl font-bold text-blue-400">{nutrition.proteina.toFixed(0)}</span>
+                                            <span className="text-xs text-gray-500">g</span>
                                         </div>
                                     </div>
-                                    <div className="text-center border-l border-white/10">
-                                        <p className="text-sm text-gray-400 mb-1">Carboidratos</p>
-                                        <div className="text-2xl font-bold text-yellow-400">
-                                            {nutrition.carboidratos.toFixed(0)}<span className="text-xs text-gray-500 ml-0.5">g</span>
+
+                                    <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5">
+                                        <div className="flex items-center gap-3">
+                                            <div className="bg-yellow-500/10 p-2 rounded-lg">
+                                                <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+                                            </div>
+                                            <span className="text-gray-300 font-medium">Carboidratos</span>
+                                        </div>
+                                        <div className="flex items-baseline gap-1">
+                                            <span className="text-xl font-bold text-yellow-400">{nutrition.carboidratos.toFixed(0)}</span>
+                                            <span className="text-xs text-gray-500">g</span>
                                         </div>
                                     </div>
-                                    <div className="text-center border-l border-white/10">
-                                        <p className="text-sm text-gray-400 mb-1">Gorduras</p>
-                                        <div className="text-2xl font-bold text-orange-400">
-                                            {nutrition.gorduras.toFixed(0)}<span className="text-xs text-gray-500 ml-0.5">g</span>
+
+                                    <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5">
+                                        <div className="flex items-center gap-3">
+                                            <div className="bg-orange-500/10 p-2 rounded-lg">
+                                                <div className="w-2 h-2 rounded-full bg-orange-500"></div>
+                                            </div>
+                                            <span className="text-gray-300 font-medium">Gorduras</span>
+                                        </div>
+                                        <div className="flex items-baseline gap-1">
+                                            <span className="text-xl font-bold text-orange-400">{nutrition.gorduras.toFixed(0)}</span>
+                                            <span className="text-xs text-gray-500">g</span>
                                         </div>
                                     </div>
                                 </div>
@@ -330,192 +344,153 @@ export default function DashboardSimple() {
             <div className="px-6 mb-6">
                 <h2 className="text-lg font-bold text-white mb-3">Hábitos de Hoje</h2>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-3">
                     {/* Água */}
                     <div className="bg-card rounded-2xl p-4 border border-white/5">
-                        <div className="flex items-center gap-2 mb-2">
-                            <Droplet className="w-5 h-5 text-blue-400" />
-                            <span className="text-sm text-gray-400">Água</span>
+                        <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-blue-500/10 p-2 rounded-full">
+                                    <Droplet className="w-5 h-5 text-blue-400" />
+                                </div>
+                                <div>
+                                    <span className="block text-base font-semibold text-white">Água</span>
+                                    <span className="text-xs text-gray-500">Meta: {((userData?.goals.water || 2000) / 1000).toFixed(1)}L</span>
+                                </div>
+                            </div>
+                            <p className="text-2xl font-bold text-white">{(todayData.water / 1000).toFixed(1)}L</p>
                         </div>
-                        <div className="mb-2">
-                            <p className="text-2xl font-bold text-white">
-                                {(todayData.water / 1000).toFixed(1)}L
-                            </p>
-                            <p className="text-xs text-gray-500">
-                                Meta: {((userData?.goals.water || 2000) / 1000).toFixed(1)}L
-                            </p>
-                        </div>
-                        <div className="w-full bg-white/10 rounded-full h-2 mb-3">
-                            <div
-                                className="bg-blue-400 h-2 rounded-full transition-all"
-                                style={{ width: `${Math.min(waterProgress, 100)}%` }}
-                            />
-                        </div>
-                        {/* Botões de controle */}
+
                         <div className="flex gap-2">
                             <button
                                 onClick={() => handleAddWater(-250)}
-                                className="flex-1 bg-white/5 hover:bg-white/10 text-white p-2 rounded-lg transition-colors flex items-center justify-center gap-1"
+                                className="flex-1 bg-white/5 hover:bg-white/10 text-white p-3 rounded-xl transition-colors flex items-center justify-center gap-2"
                             >
                                 <Minus className="w-4 h-4" />
-                                <span className="text-xs">250ml</span>
                             </button>
                             <button
                                 onClick={() => handleAddWater(250)}
-                                className="flex-1 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 p-2 rounded-lg transition-colors flex items-center justify-center gap-1"
+                                className="flex-[2] bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 p-3 rounded-xl transition-colors flex items-center justify-center gap-2 font-medium"
                             >
                                 <Plus className="w-4 h-4" />
-                                <span className="text-xs">250ml</span>
+                                Adicionar
                             </button>
                         </div>
                     </div>
 
                     {/* Exercício */}
-                    <div className="bg-card rounded-2xl p-4 border border-white/5">
-                        <div className="flex items-center gap-2 mb-2">
-                            <Dumbbell className="w-5 h-5 text-orange-400" />
-                            <span className="text-sm text-gray-400">Exercício</span>
+                    <div className="bg-card rounded-2xl p-4 border border-white/5 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="bg-orange-500/10 p-2 rounded-full">
+                                <Dumbbell className="w-5 h-5 text-orange-400" />
+                            </div>
+                            <div>
+                                <span className="block text-base font-semibold text-white">Exercício</span>
+                                <span className="text-xs text-gray-500">Meta: {userData?.goals.exercise || 30} min</span>
+                            </div>
                         </div>
-                        <div className="mb-2">
-                            <p className="text-2xl font-bold text-white">
-                                {todayData.exercise ? 'Feito' : 'Não'}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                                Meta: {userData?.goals.exercise || 30} min
-                            </p>
-                        </div>
-                        <div className="w-full bg-white/10 rounded-full h-2 mb-3">
-                            <div
-                                className={`h-2 rounded-full transition-all ${todayData.exercise ? 'bg-orange-400 w-full' : 'bg-white/20 w-0'
-                                    }`}
-                            />
-                        </div>
-                        {/* Botão de toggle */}
+
                         <button
                             onClick={handleToggleExercise}
-                            className={`w-full p-2 rounded-lg transition-all flex items-center justify-center gap-2 ${todayData.exercise
-                                ? 'bg-orange-500/20 text-orange-400 hover:bg-orange-500/30'
-                                : 'bg-white/5 text-white hover:bg-white/10'
+                            className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2 ${todayData.exercise
+                                ? 'bg-orange-500/20 text-orange-400 border border-orange-500/20'
+                                : 'bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10'
                                 }`}
                         >
                             {todayData.exercise ? (
-                                <>
-                                    <Check className="w-4 h-4" />
-                                    <span className="text-xs">Feito!</span>
-                                </>
+                                <> <Check size={16} /> Concluído </>
                             ) : (
-                                <>
-                                    <X className="w-4 h-4" />
-                                    <span className="text-xs">Marcar como feito</span>
-                                </>
+                                'Marcar Feito'
                             )}
                         </button>
                     </div>
 
                     {/* Sono */}
                     <div className="bg-card rounded-2xl p-4 border border-white/5">
-                        <div className="flex items-center gap-2 mb-2">
-                            <Moon className="w-5 h-5 text-purple-400" />
-                            <span className="text-sm text-gray-400">Sono</span>
-                        </div>
-                        <div className="mb-2">
-                            <p className="text-2xl font-bold text-white">
-                                {todayData.sleep}h
-                            </p>
-                            <p className="text-xs text-gray-500">
-                                Meta: {userData?.goals.sleep || 8}h
-                            </p>
-                        </div>
-                        <div className="w-full bg-white/10 rounded-full h-2 mb-3">
-                            <div
-                                className="bg-purple-400 h-2 rounded-full transition-all"
-                                style={{ width: `${Math.min(sleepProgress, 100)}%` }}
-                            />
-                        </div>
-                        {/* Input de sono */}
-                        {showSleepInput ? (
-                            <div className="flex gap-2">
-                                <input
-                                    type="number"
-                                    min="0"
-                                    max="24"
-                                    step="0.5"
-                                    defaultValue={todayData.sleep}
-                                    onKeyPress={(e) => {
-                                        if (e.key === 'Enter') {
-                                            handleUpdateSleep(parseFloat((e.target as HTMLInputElement).value));
-                                        }
-                                    }}
-                                    className="flex-1 bg-white/10 text-white px-2 py-1 rounded-lg text-sm focus:outline-none focus:bg-white/20"
-                                    autoFocus
-                                />
-                                <button
-                                    onClick={() => setShowSleepInput(false)}
-                                    className="bg-white/5 hover:bg-white/10 text-white px-2 rounded-lg"
-                                >
-                                    <X className="w-4 h-4" />
-                                </button>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-purple-500/10 p-2 rounded-full">
+                                    <Moon className="w-5 h-5 text-purple-400" />
+                                </div>
+                                <div>
+                                    <span className="block text-base font-semibold text-white">Sono</span>
+                                    <span className="text-xs text-gray-500">Meta: {userData?.goals.sleep || 8}h</span>
+                                </div>
                             </div>
-                        ) : (
-                            <button
-                                onClick={() => setShowSleepInput(true)}
-                                className="w-full bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 p-2 rounded-lg transition-colors text-xs"
-                            >
-                                Registrar sono
-                            </button>
-                        )}
+
+                            {!showSleepInput ? (
+                                <button
+                                    onClick={() => setShowSleepInput(true)}
+                                    className="bg-white/5 px-4 py-2 rounded-xl text-white font-bold hover:bg-white/10"
+                                >
+                                    {todayData.sleep}h
+                                </button>
+                            ) : (
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        onClick={() => handleUpdateSleep(Math.max(0, todayData.sleep - 1))}
+                                        className="p-2 bg-white/5 rounded-lg text-white"
+                                    >
+                                        <Minus size={16} />
+                                    </button>
+                                    <span className="text-xl font-bold w-8 text-center">{todayData.sleep}</span>
+                                    <button
+                                        onClick={() => handleUpdateSleep(todayData.sleep + 1)}
+                                        className="p-2 bg-white/5 rounded-lg text-white"
+                                    >
+                                        <Plus size={16} />
+                                    </button>
+                                    <button
+                                        onClick={() => setShowSleepInput(false)}
+                                        className="ml-2 text-primary"
+                                    >
+                                        <Check size={20} />
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {/* Humor */}
                     <div className="bg-card rounded-2xl p-4 border border-white/5">
-                        <div className="flex items-center gap-2 mb-2">
-                            <Smile className="w-5 h-5 text-yellow-400" />
-                            <span className="text-sm text-gray-400">Humor</span>
-                        </div>
-                        <div className="mb-2">
-                            <p className="text-3xl">
-                                {todayData.mood ? moodEmojis[todayData.mood] : '😶'}
-                            </p>
-                            <p className="text-xs text-gray-500 mt-1">
-                                {todayData.mood ? 'Registrado' : 'Não registrado'}
-                            </p>
-                        </div>
-                        {/* Seletor de humor */}
-                        {showMoodSelector ? (
-                            <div className="grid grid-cols-2 gap-1">
-                                <button
-                                    onClick={() => handleUpdateMood('great')}
-                                    className="bg-green-500/20 hover:bg-green-500/30 text-2xl p-1 rounded-lg transition-colors"
-                                >
-                                    😄
-                                </button>
-                                <button
-                                    onClick={() => handleUpdateMood('good')}
-                                    className="bg-blue-500/20 hover:bg-blue-500/30 text-2xl p-1 rounded-lg transition-colors"
-                                >
-                                    🙂
-                                </button>
-                                <button
-                                    onClick={() => handleUpdateMood('ok')}
-                                    className="bg-yellow-500/20 hover:bg-yellow-500/30 text-2xl p-1 rounded-lg transition-colors"
-                                >
-                                    😐
-                                </button>
-                                <button
-                                    onClick={() => handleUpdateMood('bad')}
-                                    className="bg-red-500/20 hover:bg-red-500/30 text-2xl p-1 rounded-lg transition-colors"
-                                >
-                                    😔
-                                </button>
+                        <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-yellow-500/10 p-2 rounded-full">
+                                    <Smile className="w-5 h-5 text-yellow-400" />
+                                </div>
+                                <div>
+                                    <span className="block text-base font-semibold text-white">Humor</span>
+                                    <span className="text-xs text-gray-500">
+                                        {todayData.mood ? 'Registrado' : 'Como você está?'}
+                                    </span>
+                                </div>
                             </div>
-                        ) : (
-                            <button
-                                onClick={() => setShowMoodSelector(true)}
-                                className="w-full bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-400 p-2 rounded-lg transition-colors text-xs"
-                            >
-                                {todayData.mood ? 'Alterar humor' : 'Registrar humor'}
-                            </button>
-                        )}
+
+                            {todayData.mood && (
+                                <div className="text-3xl animate-in fade-in zoom-in">
+                                    {moodEmojis[todayData.mood]}
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="flex justify-between gap-2">
+                            {(['great', 'good', 'ok', 'bad'] as const).map((mood) => (
+                                <button
+                                    key={mood}
+                                    onClick={() => handleUpdateMood(mood)}
+                                    className={`flex-1 p-3 rounded-xl transition-all ${todayData.mood === mood
+                                        ? 'bg-yellow-500/20 border border-yellow-500/50 scale-105 shadow-lg shadow-yellow-500/10'
+                                        : 'bg-white/5 hover:bg-white/10 border border-transparent'
+                                        }`}
+                                >
+                                    <div className="text-2xl text-center mb-1">{moodEmojis[mood]}</div>
+                                    <p className={`text-[10px] text-center font-medium ${todayData.mood === mood ? 'text-yellow-400' : 'text-gray-500'}`}>
+                                        {mood === 'great' ? 'Ótimo' :
+                                            mood === 'good' ? 'Bom' :
+                                                mood === 'ok' ? 'Ok' : 'Ruim'}
+                                    </p>
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>

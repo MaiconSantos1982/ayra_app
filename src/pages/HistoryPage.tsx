@@ -223,35 +223,34 @@ export default function HistoryPage() {
                         }
 
                         return (
-
-                            <div className="grid grid-cols-4 gap-2">
-                                <div className="bg-white/5 rounded-xl p-2 flex flex-col items-center justify-center text-center">
-                                    <div className="text-[10px] text-text-muted mb-0.5">Calorias</div>
-                                    <div className="text-lg font-bold text-primary leading-tight">
-                                        {nutrition.calorias.toFixed(0)}
+                            <div className="space-y-3">
+                                <div className="flex items-center justify-between p-2 border-b border-white/5 last:border-0">
+                                    <span className="text-sm text-gray-400">Calorias</span>
+                                    <div className="flex items-baseline gap-1">
+                                        <span className="text-xl font-bold text-primary">{nutrition.calorias.toFixed(0)}</span>
+                                        <span className="text-xs text-gray-500">kcal</span>
                                     </div>
-                                    <div className="text-[10px] text-text-muted">kcal</div>
                                 </div>
-                                <div className="bg-white/5 rounded-xl p-2 flex flex-col items-center justify-center text-center">
-                                    <div className="text-[10px] text-text-muted mb-0.5">Proteína</div>
-                                    <div className="text-lg font-bold text-blue-400 leading-tight">
-                                        {nutrition.proteina.toFixed(0)}
+                                <div className="flex items-center justify-between p-2 border-b border-white/5 last:border-0">
+                                    <span className="text-sm text-gray-400">Proteína</span>
+                                    <div className="flex items-baseline gap-1">
+                                        <span className="text-xl font-bold text-blue-400">{nutrition.proteina.toFixed(0)}</span>
+                                        <span className="text-xs text-gray-500">g</span>
                                     </div>
-                                    <div className="text-[10px] text-text-muted">g</div>
                                 </div>
-                                <div className="bg-white/5 rounded-xl p-2 flex flex-col items-center justify-center text-center">
-                                    <div className="text-[10px] text-text-muted mb-0.5">Carbo</div>
-                                    <div className="text-lg font-bold text-yellow-400 leading-tight">
-                                        {nutrition.carboidratos.toFixed(0)}
+                                <div className="flex items-center justify-between p-2 border-b border-white/5 last:border-0">
+                                    <span className="text-sm text-gray-400">Carboidratos</span>
+                                    <div className="flex items-baseline gap-1">
+                                        <span className="text-xl font-bold text-yellow-400">{nutrition.carboidratos.toFixed(0)}</span>
+                                        <span className="text-xs text-gray-500">g</span>
                                     </div>
-                                    <div className="text-[10px] text-text-muted">g</div>
                                 </div>
-                                <div className="bg-white/5 rounded-xl p-2 flex flex-col items-center justify-center text-center">
-                                    <div className="text-[10px] text-text-muted mb-0.5">Gorduras</div>
-                                    <div className="text-lg font-bold text-orange-400 leading-tight">
-                                        {nutrition.gorduras.toFixed(0)}
+                                <div className="flex items-center justify-between p-2 border-b border-white/5 last:border-0">
+                                    <span className="text-sm text-gray-400">Gorduras</span>
+                                    <div className="flex items-baseline gap-1">
+                                        <span className="text-xl font-bold text-orange-400">{nutrition.gorduras.toFixed(0)}</span>
+                                        <span className="text-xs text-gray-500">g</span>
                                     </div>
-                                    <div className="text-[10px] text-text-muted">g</div>
                                 </div>
                             </div>
                         );
@@ -262,47 +261,64 @@ export default function HistoryPage() {
 
             {/* Resumo do Dia */}
             <div className="px-6 mb-6">
-                <div className="grid grid-cols-4 gap-2">
-                    {/* Água */}
-                    <div className="bg-card rounded-2xl p-2 border border-white/5 flex flex-col items-center justify-center text-center h-24">
-                        <Droplet className="w-5 h-5 text-blue-400 mb-1" />
-                        <p className="text-sm font-bold text-white leading-tight">
-                            {(dayData.water / 1000).toFixed(1)}L
-                        </p>
-                        <p className="text-[10px] text-gray-500">
-                            Meta: {((userData?.goals.water || 2000) / 1000).toFixed(1)}L
-                        </p>
-                    </div>
+                {/* Resumo do Dia */}
+                <div className="px-6 mb-6">
+                    <div className="bg-card rounded-2xl p-4 border border-white/5 space-y-4">
+                        {/* Água */}
+                        <div className="flex items-center justify-between border-b border-white/5 pb-2 last:border-0 last:pb-0">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-blue-500/10 p-2 rounded-full">
+                                    <Droplet className="w-5 h-5 text-blue-400" />
+                                </div>
+                                <span className="text-base font-medium text-white">Água</span>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-xl font-bold text-white">{(dayData.water / 1000).toFixed(1)}L</p>
+                                <p className="text-xs text-gray-500">Meta: {((userData?.goals.water || 2000) / 1000).toFixed(1)}L</p>
+                            </div>
+                        </div>
 
-                    {/* Exercício */}
-                    <div className="bg-card rounded-2xl p-2 border border-white/5 flex flex-col items-center justify-center text-center h-24">
-                        <Dumbbell className="w-5 h-5 text-orange-400 mb-1" />
-                        <p className="text-sm font-bold text-white leading-tight">
-                            {dayData.exercise ? 'Sim' : 'Não'}
-                        </p>
-                        <p className="text-[10px] text-gray-500">
-                            Meta: {userData?.goals.exercise || 30} min
-                        </p>
-                    </div>
+                        {/* Exercício */}
+                        <div className="flex items-center justify-between border-b border-white/5 pb-2 last:border-0 last:pb-0">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-orange-500/10 p-2 rounded-full">
+                                    <Dumbbell className="w-5 h-5 text-orange-400" />
+                                </div>
+                                <span className="text-base font-medium text-white">Exercício</span>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-xl font-bold text-white">{dayData.exercise ? 'Feito' : 'Não'}</p>
+                                <p className="text-xs text-gray-500">Meta: {userData?.goals.exercise || 30} min</p>
+                            </div>
+                        </div>
 
-                    {/* Sono */}
-                    <div className="bg-card rounded-2xl p-2 border border-white/5 flex flex-col items-center justify-center text-center h-24">
-                        <Moon className="w-5 h-5 text-purple-400 mb-1" />
-                        <p className="text-sm font-bold text-white leading-tight">{dayData.sleep}h</p>
-                        <p className="text-[10px] text-gray-500">
-                            Meta: {userData?.goals.sleep || 8}h
-                        </p>
-                    </div>
+                        {/* Sono */}
+                        <div className="flex items-center justify-between border-b border-white/5 pb-2 last:border-0 last:pb-0">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-purple-500/10 p-2 rounded-full">
+                                    <Moon className="w-5 h-5 text-purple-400" />
+                                </div>
+                                <span className="text-base font-medium text-white">Sono</span>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-xl font-bold text-white">{dayData.sleep}h</p>
+                                <p className="text-xs text-gray-500">Meta: {userData?.goals.sleep || 8}h</p>
+                            </div>
+                        </div>
 
-                    {/* Humor */}
-                    <div className="bg-card rounded-2xl p-2 border border-white/5 flex flex-col items-center justify-center text-center h-24">
-                        <Smile className="w-5 h-5 text-yellow-400 mb-1" />
-                        <p className="text-xl mb-0 leading-tight">
-                            {dayData.mood ? moodEmojis[dayData.mood] : '😶'}
-                        </p>
-                        <p className="text-[10px] text-gray-500 mt-1">
-                            {dayData.mood ? moodLabels[dayData.mood] : '-'}
-                        </p>
+                        {/* Humor */}
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-yellow-500/10 p-2 rounded-full">
+                                    <Smile className="w-5 h-5 text-yellow-400" />
+                                </div>
+                                <span className="text-base font-medium text-white">Humor</span>
+                            </div>
+                            <div className="text-right flex items-center gap-2">
+                                <span className="text-2xl">{dayData.mood ? moodEmojis[dayData.mood] : '😶'}</span>
+                                <span className="text-sm text-gray-400">{dayData.mood ? moodLabels[dayData.mood] : '-'}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
