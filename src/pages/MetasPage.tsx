@@ -7,6 +7,7 @@ import { supabase } from '../lib/supabase';
 import CustomSelect from '../components/CustomSelect';
 import Toast from '../components/Toast';
 import type { ToastType } from '../components/Toast';
+import { getUserData, updateGoals } from '../lib/localStorage';
 
 export default function MetasPage() {
     const navigate = useNavigate();
@@ -34,6 +35,23 @@ export default function MetasPage() {
 
     const loadMetas = async () => {
         try {
+            // Tenta carregar do localStorage (Sistema Simples/Offline)
+            const localData = getUserData();
+            if (localData && localData.goals) {
+                setFormData({
+                    calorias_diarias: localData.goals.calories.toString(),
+                    proteina_g: localData.goals.protein.toString(),
+                    carboidrato_g: localData.goals.carbs.toString(),
+                    gordura_g: localData.goals.fat.toString(),
+                    agua_ml: localData.goals.water.toString(),
+                    dias_exercicio_semana: '5', // Padrão pois localStorage salva em minutos
+                    horas_sono: localData.goals.sleep.toString(),
+                    peso_corporal_kg: localData.profile?.peso?.toString() || '',
+                    meta_consistencia_dias: '5'
+                });
+                return;
+            }
+
             const demoMetas = localStorage.getItem('demo_metas');
             if (demoMetas) {
                 const metas = JSON.parse(demoMetas);
@@ -156,21 +174,42 @@ export default function MetasPage() {
                 meta_consistencia_dias: parseInt(formData.meta_consistencia_dias) || 5
             };
 
+            // 1. Atualizar no LocalStorage (Sistema Simples/Offline)
+            // Isso garante que o DashboardSimple veja as alterações imediatamente
+            updateGoals({
+                calories: metasData.calorias_diarias,
+                protein: metasData.proteina_g,
+                carbs: metasData.carboidrato_g,
+                fat: metasData.gordura_g,
+                water: metasData.agua_ml || 2000,
+                sleep: metasData.horas_sono || 8,
+                // exercise (minutos) não tem mapeamento direto aqui, ignorando por enquanto ou mantendo valor antigo
+            });
+
+            // 2. Fluxo Legado (Supabase / Demo Metas)
             const demoUser = localStorage.getItem('demo_user');
             if (demoUser) {
                 localStorage.setItem('demo_metas', JSON.stringify(metasData));
                 setToast({ message: 'Metas salvas com sucesso!', type: 'success' });
+                // Dispara evento de storage para atualizar componentes
+                window.dispatchEvent(new Event('storage'));
                 setTimeout(() => navigate('/perfil'), 1500);
             } else {
-                const { error } = await supabase
-                    .from('ayra_metas')
-                    .insert({
-                        id_usuario: user?.id,
-                        ...metasData
-                    });
+                // Se tiver usuário logado no Supabase, salva lá também
+                if (user) {
+                    const { error } = await supabase
+                        .from('ayra_metas')
+                        .insert({
+                            id_usuario: user?.id,
+                            ...metasData
+                        });
 
-                if (error) throw error;
+                    if (error) throw error;
+                }
+
+                // Mesmo se salvou no Supabase, atualizamos o local para feedback instantâneo no DashboardSimple
                 setToast({ message: 'Metas salvas com sucesso!', type: 'success' });
+                window.dispatchEvent(new Event('storage'));
                 setTimeout(() => navigate('/perfil'), 1500);
             }
         } catch (error: any) {
