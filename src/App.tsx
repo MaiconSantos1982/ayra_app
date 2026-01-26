@@ -14,6 +14,7 @@ import HistoryPage from './pages/HistoryPage';
 import AnamnesePage from './pages/AnamnesePage';
 import MetasPage from './pages/MetasPage';
 import BroadcastNotifications from './pages/BroadcastNotifications';
+import NutritionHistoryPage from './pages/NutritionHistoryPage';
 import { useReminders } from './hooks/useReminders';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -62,6 +63,7 @@ export default function App() {
             <Route path="chat" element={<Chat />} />
             <Route path="perfil" element={<ProfileSimple />} />
             <Route path="historico" element={<HistoryPage />} />
+            <Route path="historico-nutricional" element={<NutritionHistoryPage />} />
             <Route path="anamnese" element={<AnamnesePage />} />
             <Route path="metas" element={<MetasPage />} />
             <Route path="broadcast" element={<BroadcastNotifications />} />
