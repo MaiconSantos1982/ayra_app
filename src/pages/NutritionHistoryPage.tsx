@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Calendar as CalendarIcon, ChevronRight, TrendingUp, Filter } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { getDailyNutrition } from '../lib/localStorage';
+import { getDailyNutrition, getUserData } from '../lib/localStorage';
 import {
     BarChart,
     Bar,
@@ -19,10 +19,13 @@ type Period = 'this_week' | 'this_month' | '7_days' | '15_days' | '30_days' | 'c
 
 export default function NutritionHistoryPage() {
     const navigate = useNavigate();
+    const [viewMode, setViewMode] = useState<'avg' | 'total'>('avg');
     const [period, setPeriod] = useState<Period>('this_week');
     const [customStartDate, setCustomStartDate] = useState('');
     const [customEndDate, setCustomEndDate] = useState('');
     const [showFilters, setShowFilters] = useState(false);
+
+    const userGoals = useMemo(() => getUserData()?.goals, []);
 
     // Helper para formatar data (YYYY-MM-DD -> DD/MM)
     const formatDate = (dateStr: string) => {
@@ -133,6 +136,7 @@ export default function NutritionHistoryPage() {
 
         return {
             total,
+            days: daysWithData,
             avg: {
                 calorias: Math.round(total.calorias / daysWithData),
                 proteina: Math.round(total.proteina / daysWithData),
@@ -141,6 +145,33 @@ export default function NutritionHistoryPage() {
             }
         };
     }, [chartData]);
+
+    const activeStats = viewMode === 'avg' ? stats.avg : stats.total;
+
+    // Calcula metas baseado no modo (Total ou Média)
+    const activeGoals = useMemo(() => {
+        if (!userGoals) return null;
+        if (viewMode === 'avg') return userGoals;
+
+        // Se for total, multiplica pelo número de dias com dados (ou dias do range? 
+        // O usuário pediu "total do período", mas se tiver dias vazios, a meta deve ser proporcional aos dias corridos ou dias com dados?
+        // Geralmente "Total do Período" implica a meta acumulada de todos os dias do período.
+        const numberOfDays = dateRange.length || 1;
+
+        return {
+            calories: userGoals.calories * numberOfDays,
+            protein: userGoals.protein * numberOfDays,
+            carbs: userGoals.carbs * numberOfDays,
+            fat: userGoals.fat * numberOfDays // Note: interface key is 'fat', not 'gorduras'
+        };
+    }, [userGoals, viewMode, dateRange.length]);
+
+    const getProgressColor = (current: number, goal: number) => {
+        const percentage = (current / goal) * 100;
+        if (percentage > 110) return 'text-red-400';
+        if (percentage >= 90) return 'text-green-400';
+        return 'text-white';
+    };
 
     return (
         <div className="min-h-screen bg-background pb-20">
@@ -171,8 +202,24 @@ export default function NutritionHistoryPage() {
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-white font-bold flex items-center gap-2">
                             <CalendarIcon size={18} className="text-primary" />
-                            Período
+                            Filtros
                         </h3>
+
+                        <div className="flex bg-white/5 rounded-lg p-1">
+                            <button
+                                onClick={() => setViewMode('avg')}
+                                className={`px-3 py-1 rounded-md text-xs font-semibold transition-all ${viewMode === 'avg' ? 'bg-primary text-black' : 'text-text-muted hover:text-white'}`}
+                            >
+                                Média
+                            </button>
+                            <button
+                                onClick={() => setViewMode('total')}
+                                className={`px-3 py-1 rounded-md text-xs font-semibold transition-all ${viewMode === 'total' ? 'bg-primary text-black' : 'text-text-muted hover:text-white'}`}
+                            >
+                                Total
+                            </button>
+                        </div>
+
                         <button
                             onClick={() => setShowFilters(!showFilters)}
                             className="text-text-muted hover:text-white transition-colors"
@@ -250,22 +297,100 @@ export default function NutritionHistoryPage() {
 
                 {/* Resumo do Período */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <div className="bg-card p-3 rounded-xl border border-white/5">
-                        <p className="text-xs text-text-muted mb-1">Média Calorias</p>
-                        <p className="text-xl font-bold text-white">{stats.avg.calorias}</p>
-                        <p className="text-[10px] text-text-muted">kcal/dia</p>
+                    <div className="bg-card p-4 rounded-xl border border-white/5 relative overflow-hidden group">
+                        <p className="text-xs text-text-muted mb-1 uppercase tracking-wider">{viewMode === 'avg' ? 'Média Calorias' : 'Total Calorias'}</p>
+                        <div className="flex items-baseline gap-1">
+                            <p className={`text-2xl font-black ${activeGoals ? getProgressColor(activeStats.calorias, activeGoals.calories) : 'text-white'}`}>
+                                {activeStats.calorias.toLocaleString()}
+                            </p>
+                            <span className="text-[10px] text-text-muted">kcal</span>
+                        </div>
+                        {activeGoals && (
+                            <div className="mt-2">
+                                <div className="flex justify-between text-[10px] text-gray-400 mb-1">
+                                    <span>Meta: {activeGoals.calories.toLocaleString()}</span>
+                                    <span>{Math.round((activeStats.calorias / activeGoals.calories) * 100)}%</span>
+                                </div>
+                                <div className="h-1 bg-white/10 rounded-full overflow-hidden">
+                                    <div
+                                        className={`h-full rounded-full ${activeStats.calorias > activeGoals.calories ? 'bg-red-500' : 'bg-primary'}`}
+                                        style={{ width: `${Math.min(100, (activeStats.calorias / activeGoals.calories) * 100)}%` }}
+                                    ></div>
+                                </div>
+                            </div>
+                        )}
                     </div>
-                    <div className="bg-card p-3 rounded-xl border border-white/5">
-                        <p className="text-xs text-text-muted mb-1">Média Proteína</p>
-                        <p className="text-xl font-bold text-blue-400">{stats.avg.proteina}g</p>
+
+                    <div className="bg-card p-4 rounded-xl border border-white/5 relative overflow-hidden">
+                        <p className="text-xs text-text-muted mb-1 uppercase tracking-wider">{viewMode === 'avg' ? 'Média Proteína' : 'Total Proteína'}</p>
+                        <div className="flex items-baseline gap-1">
+                            <p className="text-2xl font-black text-blue-400">
+                                {activeStats.proteina.toLocaleString()}
+                            </p>
+                            <span className="text-[10px] text-text-muted">g</span>
+                        </div>
+                        {activeGoals && (
+                            <div className="mt-2">
+                                <div className="flex justify-between text-[10px] text-gray-400 mb-1">
+                                    <span>Meta: {activeGoals.protein.toLocaleString()}</span>
+                                    <span>{Math.round((activeStats.proteina / activeGoals.protein) * 100)}%</span>
+                                </div>
+                                <div className="h-1 bg-white/10 rounded-full overflow-hidden">
+                                    <div
+                                        className="h-full rounded-full bg-blue-500"
+                                        style={{ width: `${Math.min(100, (activeStats.proteina / activeGoals.protein) * 100)}%` }}
+                                    ></div>
+                                </div>
+                            </div>
+                        )}
                     </div>
-                    <div className="bg-card p-3 rounded-xl border border-white/5">
-                        <p className="text-xs text-text-muted mb-1">Média Carbo</p>
-                        <p className="text-xl font-bold text-yellow-400">{stats.avg.carboidratos}g</p>
+
+                    <div className="bg-card p-4 rounded-xl border border-white/5 relative overflow-hidden">
+                        <p className="text-xs text-text-muted mb-1 uppercase tracking-wider">{viewMode === 'avg' ? 'Média Carbo' : 'Total Carbo'}</p>
+                        <div className="flex items-baseline gap-1">
+                            <p className="text-2xl font-black text-yellow-400">
+                                {activeStats.carboidratos.toLocaleString()}
+                            </p>
+                            <span className="text-[10px] text-text-muted">g</span>
+                        </div>
+                        {activeGoals && (
+                            <div className="mt-2">
+                                <div className="flex justify-between text-[10px] text-gray-400 mb-1">
+                                    <span>Meta: {activeGoals.carbs.toLocaleString()}</span>
+                                    <span>{Math.round((activeStats.carboidratos / activeGoals.carbs) * 100)}%</span>
+                                </div>
+                                <div className="h-1 bg-white/10 rounded-full overflow-hidden">
+                                    <div
+                                        className="h-full rounded-full bg-yellow-500"
+                                        style={{ width: `${Math.min(100, (activeStats.carboidratos / activeGoals.carbs) * 100)}%` }}
+                                    ></div>
+                                </div>
+                            </div>
+                        )}
                     </div>
-                    <div className="bg-card p-3 rounded-xl border border-white/5">
-                        <p className="text-xs text-text-muted mb-1">Média Gorduras</p>
-                        <p className="text-xl font-bold text-orange-400">{stats.avg.gorduras}g</p>
+
+                    <div className="bg-card p-4 rounded-xl border border-white/5 relative overflow-hidden">
+                        <p className="text-xs text-text-muted mb-1 uppercase tracking-wider">{viewMode === 'avg' ? 'Média Gorduras' : 'Total Gorduras'}</p>
+                        <div className="flex items-baseline gap-1">
+                            <p className="text-2xl font-black text-orange-400">
+                                {activeStats.gorduras.toLocaleString()}
+                            </p>
+                            <span className="text-[10px] text-text-muted">g</span>
+                        </div>
+                        {activeGoals && (
+                            <div className="mt-2">
+                                <div className="flex justify-between text-[10px] text-gray-400 mb-1">
+                                    <span>Meta: {activeGoals.fat.toLocaleString()}</span>
+                                    <span>{Math.round((activeStats.gorduras / activeGoals.fat) * 100)}%</span>
+                                </div>
+                                <div className="h-1 bg-white/10 rounded-full overflow-hidden">
+                                    <div
+                                        className="h-full rounded-full bg-orange-500"
+                                        style={{ width: `${Math.min(100, (activeStats.gorduras / activeGoals.fat) * 100)}%` }}
+                                    ></div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
 
