@@ -1,7 +1,10 @@
 import { useState, useRef } from 'react';
-import { Camera, X, Send, Coffee, Sun, Cookie, Moon, Pizza, Sandwich, IceCream } from 'lucide-react';
+import { Camera, X, Send, Coffee, Sun, Cookie, Moon, Pizza, Sandwich, IceCream, Calendar, Clock, UtensilsCrossed, ChevronDown, ChevronUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../lib/supabase';
 import { addMeal, getUserData } from '../lib/localStorage';
+import type { DietMeal } from '../lib/localStorage';
 import Toast from '../components/Toast';
 import type { ToastType } from '../components/Toast';
 import ConfirmModal from '../components/ConfirmModal';
@@ -18,16 +21,32 @@ const MEAL_TYPES = [
 
 export default function RegisterSimple() {
     const navigate = useNavigate();
+    const { user } = useAuth();
     const [selectedMeal, setSelectedMeal] = useState('');
     const [description, setDescription] = useState('');
     const [photo, setPhoto] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+
+    // Controles de Data e Hora (Retroativo)
+    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+    const [selectedTime, setSelectedTime] = useState(new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }));
+
+    // Controles de Macros (Opcional)
+    const [showMacros, setShowMacros] = useState(false);
+    const [macros, setMacros] = useState({
+        calorias: '',
+        proteina: '',
+        carboidratos: '',
+        gorduras: ''
+    });
+
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Estados para Toast e Modal
     const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
     const [showDietModal, setShowDietModal] = useState(false);
     const [pendingMealType, setPendingMealType] = useState('');
+    const [pendingDietMeal, setPendingDietMeal] = useState<DietMeal | null>(null);
 
     // Verifica se usuário tem dieta personalizada
     const userData = getUserData();
@@ -60,6 +79,7 @@ export default function RegisterSimple() {
             const dietMeal = userData?.profile?.customDiet?.find(m => m.tipo === mealType);
             if (dietMeal) {
                 setPendingMealType(mealType);
+                setPendingDietMeal(dietMeal);
                 setShowDietModal(true);
                 return;
             }
@@ -71,18 +91,31 @@ export default function RegisterSimple() {
 
     // Handler para confirmar uso da dieta personalizada
     const handleUseDietMeal = () => {
-        const dietMeal = userData?.profile?.customDiet?.find(m => m.tipo === pendingMealType);
-        if (dietMeal) {
-            setDescription(dietMeal.descricao);
+        if (pendingDietMeal) {
+            setDescription(pendingDietMeal.descricao);
             setSelectedMeal(pendingMealType);
+
+            // Auto-preenche macros se disponível na dieta
+            if (pendingDietMeal.calorias || pendingDietMeal.proteina || pendingDietMeal.carboidratos || pendingDietMeal.gorduras) {
+                setMacros({
+                    calorias: pendingDietMeal.calorias?.toString() || '',
+                    proteina: pendingDietMeal.proteina?.toString() || '',
+                    carboidratos: pendingDietMeal.carboidratos?.toString() || '',
+                    gorduras: pendingDietMeal.gorduras?.toString() || ''
+                });
+                setShowMacros(true); // Abre a aba de macros para mostrar que preencheu
+            }
+
             setShowDietModal(false);
-            setToast({ message: 'Descrição preenchida com sua dieta!', type: 'success' });
+            setToast({ message: 'Refeição da dieta carregada!', type: 'success' });
         }
     };
 
     // Handler para NÃO usar dieta personalizada
     const handleCustomMeal = () => {
         setSelectedMeal(pendingMealType);
+        // Limpa macros caso tenha sujeira
+        setMacros({ calorias: '', proteina: '', carboidratos: '', gorduras: '' });
         setShowDietModal(false);
     };
 
@@ -98,17 +131,68 @@ export default function RegisterSimple() {
         setLoading(true);
 
         try {
-            // Salva refeição no localStorage
+            // Prepara objetos de macros (converte para number ou undefined)
+            const nutritionValues = {
+                calorias: macros.calorias ? parseFloat(macros.calorias) : undefined,
+                proteina: macros.proteina ? parseFloat(macros.proteina) : undefined,
+                carboidratos: macros.carboidratos ? parseFloat(macros.carboidratos) : undefined,
+                gorduras: macros.gorduras ? parseFloat(macros.gorduras) : undefined
+            };
+
+            // Salva refeição no localStorage (Modo Offline / Backup)
             addMeal({
                 tipo: selectedMeal,
                 descricao: description.trim(),
                 foto: photo || undefined,
-            });
+                ...nutritionValues
+            }, selectedDate, selectedTime);
+
+            // Tenta salvar no Supabase se usuário estiver autenticado (Modo Nuvem)
+            if (user && user.id) {
+                try {
+                    // 1. Garante que existe o Header do dia
+                    const { data: headerData, error: headerError } = await supabase
+                        .from('ayra_diario_header')
+                        .upsert({
+                            id_usuario: user.id,
+                            data_consumo: selectedDate
+                        }, { onConflict: 'id_usuario,data_consumo' })
+                        .select()
+                        .single();
+
+                    if (headerError) throw headerError;
+
+                    // 2. Insere os detalhes da refeição
+                    const { error: detailError } = await supabase
+                        .from('ayra_diario_detalhes')
+                        .insert({
+                            id_diario_header: headerData.id,
+                            horario_refeicao: selectedTime,
+                            tipo_refeicao: selectedMeal,
+                            alimento_descricao: description.trim(),
+                            macros_estimados_json: {
+                                calorias: nutritionValues.calorias || 0,
+                                proteina: nutritionValues.proteina || 0,
+                                carboidrato: nutritionValues.carboidratos || 0, // Nota: DB usa singular 'carboidrato'
+                                gordura: nutritionValues.gorduras || 0   // Nota: DB usa singular 'gordura'
+                            }
+                        });
+
+                    if (detailError) throw detailError;
+
+                } catch (supaError) {
+                    console.error('Erro ao sincronizar com Supabase:', supaError);
+                    // Não impede o fluxo de sucesso pois já salvou no localStorage
+                }
+            }
 
             // Limpa formulário
             setSelectedMeal('');
             setDescription('');
             setPhoto(null);
+            setMacros({ calorias: '', proteina: '', carboidratos: '', gorduras: '' });
+            setShowMacros(false);
+
             if (fileInputRef.current) {
                 fileInputRef.current.value = '';
             }
@@ -126,7 +210,7 @@ export default function RegisterSimple() {
     return (
         <div className="min-h-screen bg-background pb-20">
             {/* Header */}
-            <div className="bg-gradient-to-br from-purple-900 to-purple-800 p-6 rounded-b-3xl shadow-lg mb-6">
+            <div className="bg-gradient-to-br from-purple-900 to-purple-800 p-6 rounded-b-3xl shadow-lg mb-6 sticky top-0 z-10">
                 <h1 className="text-2xl font-bold text-white">Registrar Refeição 🍽️</h1>
                 <p className="text-purple-200 text-sm mt-1">
                     Conte-me o que você comeu
@@ -134,6 +218,34 @@ export default function RegisterSimple() {
             </div>
 
             <form onSubmit={handleSubmit} className="px-6 space-y-6">
+
+                {/* Data e Hora (Retroativo) */}
+                <div className="flex gap-4">
+                    <div className="flex-1">
+                        <label className="block text-sm font-medium text-text-muted mb-2 flex items-center gap-1">
+                            <Calendar size={14} /> Data
+                        </label>
+                        <input
+                            type="date"
+                            value={selectedDate}
+                            onChange={(e) => setSelectedDate(e.target.value)}
+                            max={new Date().toISOString().split('T')[0]}
+                            className="w-full px-3 py-2 rounded-xl bg-card border border-white/10 text-white text-sm focus:border-primary focus:outline-none"
+                        />
+                    </div>
+                    <div className="w-1/3">
+                        <label className="block text-sm font-medium text-text-muted mb-2 flex items-center gap-1">
+                            <Clock size={14} /> Hora
+                        </label>
+                        <input
+                            type="time"
+                            value={selectedTime}
+                            onChange={(e) => setSelectedTime(e.target.value)}
+                            className="w-full px-3 py-2 rounded-xl bg-card border border-white/10 text-white text-sm focus:border-primary focus:outline-none"
+                        />
+                    </div>
+                </div>
+
                 {/* Tipo de Refeição */}
                 <div>
                     <label className="block text-white font-semibold mb-3">
@@ -199,6 +311,66 @@ export default function RegisterSimple() {
                     </p>
                 </div>
 
+                {/* MACRONUTRIENTES (Accordion) */}
+                <div className="bg-card border border-white/10 rounded-2xl overflow-hidden">
+                    <button
+                        type="button"
+                        onClick={() => setShowMacros(!showMacros)}
+                        className="w-full flex items-center justify-between p-4 text-white font-medium hover:bg-white/5 transition-colors"
+                    >
+                        <span className="flex items-center gap-2">
+                            <UtensilsCrossed size={18} className="text-primary" />
+                            Valores Nutricionais (Opcional)
+                        </span>
+                        {showMacros ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                    </button>
+
+                    {showMacros && (
+                        <div className="p-4 pt-0 grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-xs text-text-muted mb-1">Calorias (kcal)</label>
+                                <input
+                                    type="number"
+                                    value={macros.calorias}
+                                    onChange={(e) => setMacros({ ...macros, calorias: e.target.value })}
+                                    placeholder="0"
+                                    className="w-full px-3 py-2 rounded-lg bg-background border border-white/10 text-white text-sm focus:border-primary focus:outline-none"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs text-text-muted mb-1">Proteína (g)</label>
+                                <input
+                                    type="number"
+                                    value={macros.proteina}
+                                    onChange={(e) => setMacros({ ...macros, proteina: e.target.value })}
+                                    placeholder="0"
+                                    className="w-full px-3 py-2 rounded-lg bg-background border border-white/10 text-white text-sm focus:border-primary focus:outline-none"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs text-text-muted mb-1">Carboidratos (g)</label>
+                                <input
+                                    type="number"
+                                    value={macros.carboidratos}
+                                    onChange={(e) => setMacros({ ...macros, carboidratos: e.target.value })}
+                                    placeholder="0"
+                                    className="w-full px-3 py-2 rounded-lg bg-background border border-white/10 text-white text-sm focus:border-primary focus:outline-none"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs text-text-muted mb-1">Gorduras (g)</label>
+                                <input
+                                    type="number"
+                                    value={macros.gorduras}
+                                    onChange={(e) => setMacros({ ...macros, gorduras: e.target.value })}
+                                    placeholder="0"
+                                    className="w-full px-3 py-2 rounded-lg bg-background border border-white/10 text-white text-sm focus:border-primary focus:outline-none"
+                                />
+                            </div>
+                        </div>
+                    )}
+                </div>
+
                 {/* Foto (Opcional) */}
                 <div>
                     <label className="block text-white font-semibold mb-3">
@@ -250,11 +422,11 @@ export default function RegisterSimple() {
                 <button
                     type="submit"
                     disabled={loading || !selectedMeal || !description.trim()}
-                    className="w-full bg-gradient-to-r from-primary to-green-400 text-background font-bold py-4 px-6 rounded-2xl shadow-lg flex items-center justify-center gap-3 hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                    className="w-full bg-gradient-to-r from-primary to-green-400 text-black font-bold py-4 px-6 rounded-2xl shadow-lg flex items-center justify-center gap-3 hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 >
                     {loading ? (
                         <>
-                            <div className="w-5 h-5 border-2 border-background border-t-transparent rounded-full animate-spin" />
+                            <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
                             Salvando...
                         </>
                     ) : (
@@ -298,7 +470,7 @@ export default function RegisterSimple() {
             <ConfirmModal
                 isOpen={showDietModal}
                 title="Usar Dieta Personalizada?"
-                message={`Você tem uma refeição cadastrada na sua dieta para "${pendingMealType}". Deseja usar a descrição da sua dieta?`}
+                message={`Você tem uma refeição cadastrada na sua dieta para "${pendingMealType}". Deseja usar a descrição e os valores nutricionais da sua dieta?`}
                 confirmText="Sim, usar dieta"
                 cancelText="Não, vou descrever"
                 type="info"

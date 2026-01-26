@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 // import { useNavigate } from 'react-router-dom'; // Não utilizado no momento
-import { Save, Coffee, Sun, Sunset, Moon, Apple, Cookie, Pizza, Droplet, Dumbbell, BedDouble, Smile, Plus, Minus, Check } from 'lucide-react';
+import { Save, Coffee, Sun, Sunset, Moon, Apple, Cookie, Pizza, Droplet, Dumbbell, BedDouble, Smile, Plus, Minus, Check, Calendar, ChevronDown } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import clsx from 'clsx';
@@ -22,7 +22,17 @@ export default function Register() {
     // Meal registration
     const [description, setDescription] = useState('');
     const [mealType, setMealType] = useState('Café');
+    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
     const [loading, setLoading] = useState(false);
+
+    // Nutritional values (optional)
+    const [showMacros, setShowMacros] = useState(false);
+    const [macros, setMacros] = useState({
+        calorias: '',
+        proteina: '',
+        carboidratos: '',
+        gorduras: ''
+    });
 
     // Lifestyle tracking
     const [lifestyleData, setLifestyleData] = useState({
@@ -87,21 +97,26 @@ export default function Register() {
         setLoading(true);
 
         try {
-            const today = new Date().toISOString().split('T')[0];
-
             // Demo mode
             const demoUser = localStorage.getItem('demo_user');
             if (demoUser) {
-                const meals = JSON.parse(localStorage.getItem(`demo_meals_${today}`) || '[]');
+                const meals = JSON.parse(localStorage.getItem(`demo_meals_${selectedDate}`) || '[]');
                 meals.push({
                     tipo_refeicao: mealType,
                     alimento_descricao: description,
-                    horario_refeicao: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+                    horario_refeicao: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+                    // Valores nutricionais opcionais
+                    calorias: macros.calorias ? parseFloat(macros.calorias) : undefined,
+                    proteina: macros.proteina ? parseFloat(macros.proteina) : undefined,
+                    carboidratos: macros.carboidratos ? parseFloat(macros.carboidratos) : undefined,
+                    gorduras: macros.gorduras ? parseFloat(macros.gorduras) : undefined
                 });
-                localStorage.setItem(`demo_meals_${today}`, JSON.stringify(meals));
+                localStorage.setItem(`demo_meals_${selectedDate}`, JSON.stringify(meals));
 
                 alert('Refeição registrada!');
                 setDescription('');
+                setMacros({ calorias: '', proteina: '', carboidratos: '', gorduras: '' });
+                setShowMacros(false);
                 setLoading(false);
                 return;
             }
@@ -111,12 +126,19 @@ export default function Register() {
                 .from('ayra_diario_header')
                 .upsert({
                     id_usuario: user?.id,
-                    data_consumo: today
+                    data_consumo: selectedDate
                 }, { onConflict: 'id_usuario,data_consumo' })
                 .select()
                 .single();
 
             if (headerError) throw headerError;
+
+            const macrosJson = {
+                calorias: macros.calorias ? parseFloat(macros.calorias) : 0,
+                proteina: macros.proteina ? parseFloat(macros.proteina) : 0,
+                carboidrato: macros.carboidratos ? parseFloat(macros.carboidratos) : 0,
+                gordura: macros.gorduras ? parseFloat(macros.gorduras) : 0
+            };
 
             const { error: detailError } = await supabase
                 .from('ayra_diario_detalhes')
@@ -125,13 +147,15 @@ export default function Register() {
                     horario_refeicao: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
                     tipo_refeicao: mealType,
                     alimento_descricao: description,
-                    macros_estimados_json: { calorias: 300, proteina: 20, carboidrato: 30, gordura: 10 }
+                    macros_estimados_json: macrosJson
                 });
 
             if (detailError) throw detailError;
 
             alert('Refeição registrada!');
             setDescription('');
+            setMacros({ calorias: '', proteina: '', carboidratos: '', gorduras: '' });
+            setShowMacros(false);
         } catch (error: any) {
             console.error('Error saving meal:', error);
             alert('Erro ao salvar: ' + error.message);
@@ -221,6 +245,24 @@ export default function Register() {
                     Registrar Refeição
                 </h2>
 
+                {/* Date Selector */}
+                <div className="space-y-2">
+                    <label className="text-sm text-text-muted flex items-center gap-2">
+                        <Calendar size={14} />
+                        Data da Refeição
+                    </label>
+                    <input
+                        type="date"
+                        value={selectedDate}
+                        onChange={(e) => setSelectedDate(e.target.value)}
+                        max={new Date().toISOString().split('T')[0]}
+                        className="w-full p-3 rounded-xl bg-background border border-white/10 text-white focus:border-primary focus:outline-none"
+                    />
+                    {selectedDate !== new Date().toISOString().split('T')[0] && (
+                        <p className="text-xs text-yellow-500">📅 Registrando em data retroativa</p>
+                    )}
+                </div>
+
                 {/* Meal Type Selector */}
                 <div className="space-y-2">
                     <label className="text-sm text-text-muted">Tipo de Refeição</label>
@@ -259,6 +301,76 @@ export default function Register() {
                         placeholder="Ex: Omelete com 3 ovos, 1 fatia de pão integral..."
                         required
                     />
+                </div>
+
+                {/* Optional Macros Section */}
+                <div className="space-y-2">
+                    <button
+                        type="button"
+                        onClick={() => setShowMacros(!showMacros)}
+                        className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors"
+                    >
+                        <ChevronDown size={16} className={clsx("transition-transform", showMacros && "rotate-180")} />
+                        {showMacros ? 'Ocultar' : 'Adicionar'} valores nutricionais (opcional)
+                    </button>
+
+                    {showMacros && (
+                        <div className="grid grid-cols-2 gap-3 p-4 bg-white/5 rounded-xl border border-white/10">
+                            <div className="space-y-1">
+                                <label className="text-xs text-text-muted">Calorias (kcal)</label>
+                                <input
+                                    type="number"
+                                    value={macros.calorias}
+                                    onChange={(e) => setMacros(prev => ({ ...prev, calorias: e.target.value }))}
+                                    placeholder="0"
+                                    min="0"
+                                    step="1"
+                                    className="w-full p-2 rounded-lg bg-background border border-white/10 text-white text-sm focus:border-primary focus:outline-none"
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-xs text-text-muted">Proteína (g)</label>
+                                <input
+                                    type="number"
+                                    value={macros.proteina}
+                                    onChange={(e) => setMacros(prev => ({ ...prev, proteina: e.target.value }))}
+                                    placeholder="0"
+                                    min="0"
+                                    step="0.1"
+                                    className="w-full p-2 rounded-lg bg-background border border-white/10 text-white text-sm focus:border-primary focus:outline-none"
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-xs text-text-muted">Carboidratos (g)</label>
+                                <input
+                                    type="number"
+                                    value={macros.carboidratos}
+                                    onChange={(e) => setMacros(prev => ({ ...prev, carboidratos: e.target.value }))}
+                                    placeholder="0"
+                                    min="0"
+                                    step="0.1"
+                                    className="w-full p-2 rounded-lg bg-background border border-white/10 text-white text-sm focus:border-primary focus:outline-none"
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-xs text-text-muted">Gorduras (g)</label>
+                                <input
+                                    type="number"
+                                    value={macros.gorduras}
+                                    onChange={(e) => setMacros(prev => ({ ...prev, gorduras: e.target.value }))}
+                                    placeholder="0"
+                                    min="0"
+                                    step="0.1"
+                                    className="w-full p-2 rounded-lg bg-background border border-white/10 text-white text-sm focus:border-primary focus:outline-none"
+                                />
+                            </div>
+                            <div className="col-span-2">
+                                <p className="text-xs text-text-muted/70 text-center">
+                                    💡 Dica: Valores nutricionais podem ser encontrados em rótulos ou apps de nutrição
+                                </p>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 <button

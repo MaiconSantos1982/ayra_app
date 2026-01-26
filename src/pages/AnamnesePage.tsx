@@ -13,11 +13,13 @@ export default function AnamnesePage() {
     const navigate = useNavigate();
     const { user } = useAuth();
     const [loading, setLoading] = useState(false);
+
+    // Estados do Formulário
     const [formData, setFormData] = useState({
         nome: '',
         telefone: '',
         idade: '',
-        data_nascimento: '', // Novo campo
+        data_nascimento: '',
         peso: '',
         altura: '',
         problemas_de_saude: '',
@@ -31,10 +33,16 @@ export default function AnamnesePage() {
     // Estados para Dieta Personalizada
     const [segueDieta, setSegueDieta] = useState(false);
     const [dietMeals, setDietMeals] = useState<DietMeal[]>([]);
+
     const [currentMeal, setCurrentMeal] = useState({
         tipo: '',
         horario: '',
-        descricao: ''
+        descricao: '',
+        // Novos campos de macros
+        calorias: '',
+        proteina: '',
+        carboidratos: '',
+        gorduras: ''
     });
 
     // Estados para Toast e Modal
@@ -89,10 +97,9 @@ export default function AnamnesePage() {
             const prof = userData.profile;
             loadedData.nome = prof.nome || '';
             loadedData.idade = prof.idade || '';
-            loadedData.data_nascimento = prof.data_nascimento || ''; // Carrega data
+            loadedData.data_nascimento = prof.data_nascimento || '';
             loadedData.restricoes = prof.restricoes || '';
             loadedData.objetivo = prof.objetivo || '';
-
 
             // Carrega peso e altura separadamente
             if (prof.peso) {
@@ -152,7 +159,7 @@ export default function AnamnesePage() {
 
     // Máscara para telefone: (11) 99999-9999
     const handleTelefoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        let value = e.target.value.replace(/\D/g, ''); // Remove tudo que não é dígito
+        let value = e.target.value.replace(/\D/g, '');
 
         if (value.length <= 11) {
             if (value.length > 6) {
@@ -169,12 +176,10 @@ export default function AnamnesePage() {
 
     // Máscara para altura: x,xx (metros)
     const handleAlturaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        let value = e.target.value.replace(/\D/g, ''); // Remove tudo que não é dígito
+        let value = e.target.value.replace(/\D/g, '');
 
         if (value.length > 0) {
-            // Limita a 3 dígitos (ex: 173 -> 1,73)
             value = value.slice(0, 3);
-
             if (value.length === 3) {
                 value = `${value[0]},${value.slice(1)}`;
             } else if (value.length === 2) {
@@ -185,11 +190,10 @@ export default function AnamnesePage() {
         setFormData({ ...formData, altura: value });
     };
 
-
     // Adiciona uma refeição à dieta
     const handleAddMeal = () => {
         if (!currentMeal.tipo || !currentMeal.horario || !currentMeal.descricao.trim()) {
-            alert('Por favor, preencha todos os campos da refeição.');
+            alert('Por favor, preencha o tipo, horário e descrição da refeição.');
             return;
         }
 
@@ -197,7 +201,12 @@ export default function AnamnesePage() {
             id: `meal_${Date.now()}`,
             tipo: currentMeal.tipo as DietMeal['tipo'],
             horario: currentMeal.horario,
-            descricao: currentMeal.descricao.trim()
+            descricao: currentMeal.descricao.trim(),
+            // Salva macros se preenchidos
+            calorias: currentMeal.calorias ? parseFloat(currentMeal.calorias) : undefined,
+            proteina: currentMeal.proteina ? parseFloat(currentMeal.proteina) : undefined,
+            carboidratos: currentMeal.carboidratos ? parseFloat(currentMeal.carboidratos) : undefined,
+            gorduras: currentMeal.gorduras ? parseFloat(currentMeal.gorduras) : undefined
         };
 
         setDietMeals([...dietMeals, newMeal]);
@@ -206,7 +215,11 @@ export default function AnamnesePage() {
         setCurrentMeal({
             tipo: '',
             horario: '',
-            descricao: ''
+            descricao: '',
+            calorias: '',
+            proteina: '',
+            carboidratos: '',
+            gorduras: ''
         });
     };
 
@@ -230,11 +243,9 @@ export default function AnamnesePage() {
 
         try {
             // Salva dieta no localStorage
-            // Salva dieta no localStorage
             updateProfile({
                 nome: formData.nome,
-                // idade removida
-                data_nascimento: formData.data_nascimento, // Novo campo
+                data_nascimento: formData.data_nascimento,
                 objetivo: formData.objetivo,
                 restricoes: formData.restricoes,
                 peso: formData.peso ? parseFloat(formData.peso.replace(',', '.')) : undefined,
@@ -253,12 +264,12 @@ export default function AnamnesePage() {
                 setTimeout(() => navigate('/perfil'), 1500);
             } else if (user?.id) {
                 // Importa e usa updateUserData do supabaseAuth
-                const { updateUserData } = await import('../lib/supabaseAuth');
+                const { updateUserData, saveDietMealsToSupabase } = await import('../lib/supabaseAuth');
 
                 const result = await updateUserData(user.id, {
                     nome: formData.nome,
                     telefone: formData.telefone,
-                    data_nascimento: formData.data_nascimento, // Novo campo em vez de idade
+                    data_nascimento: formData.data_nascimento,
                     peso: formData.peso ? parseFloat(formData.peso.replace(',', '.')) : undefined,
                     altura: formData.altura ? parseFloat(formData.altura.replace(',', '.')) : undefined,
                     problemas_de_saude: formData.problemas_de_saude,
@@ -271,6 +282,14 @@ export default function AnamnesePage() {
 
                 if (!result.success) {
                     throw new Error(result.error || 'Erro ao salvar dados');
+                }
+
+                // SALVA A DIETA SEPARADAMENTE (NOVA TABELA) - SE usuário segue dieta
+                if (segueDieta) {
+                    await saveDietMealsToSupabase(user.id, dietMeals);
+                } else {
+                    // Se desmarcou, salva lista vazia para limpar
+                    await saveDietMealsToSupabase(user.id, []);
                 }
 
                 setToast({ message: 'Dados salvos com sucesso!', type: 'success' });
@@ -526,7 +545,15 @@ export default function AnamnesePage() {
                                     onClick={() => {
                                         setSegueDieta(false);
                                         setDietMeals([]);
-                                        setCurrentMeal({ tipo: '', horario: '', descricao: '' });
+                                        setCurrentMeal({
+                                            tipo: '',
+                                            horario: '',
+                                            descricao: '',
+                                            calorias: '',
+                                            proteina: '',
+                                            carboidratos: '',
+                                            gorduras: ''
+                                        });
                                     }}
                                     className={`
                                         flex-1 py-3 px-4 rounded-xl border-2 font-semibold transition-all
@@ -569,6 +596,15 @@ export default function AnamnesePage() {
                                                         <p className="text-white text-sm">
                                                             {meal.descricao}
                                                         </p>
+                                                        {/* Mostra resumo de macros se tiver */}
+                                                        {(meal.calorias || meal.proteina || meal.carboidratos || meal.gorduras) && (
+                                                            <div className="flex gap-3 mt-2 text-xs text-text-muted">
+                                                                {meal.calorias && <span>{meal.calorias} kcal</span>}
+                                                                {meal.proteina && <span className="text-blue-300">{meal.proteina}g P</span>}
+                                                                {meal.carboidratos && <span className="text-yellow-300">{meal.carboidratos}g C</span>}
+                                                                {meal.gorduras && <span className="text-orange-300">{meal.gorduras}g G</span>}
+                                                            </div>
+                                                        )}
                                                     </div>
                                                     <button
                                                         type="button"
@@ -632,6 +668,57 @@ export default function AnamnesePage() {
                                                 className="w-full px-4 py-3 rounded-xl bg-background border border-white/10 text-white placeholder:text-text-muted/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none"
                                                 placeholder="Ex: 2 fatias de pão integral, 2 ovos mexidos, 1 copo de café com leite desnatado"
                                             />
+                                        </div>
+
+                                        {/* MACRONUTRIENTES (Novo) */}
+                                        <div className="border-t border-white/10 pt-4 mt-2">
+                                            <p className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+                                                <UtensilsCrossed size={14} className="text-secondary" />
+                                                Metas Nutricionais da Refeição (Opcional)
+                                            </p>
+
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div>
+                                                    <label className="block text-xs font-medium text-text-muted mb-1">Calorias (kcal)</label>
+                                                    <input
+                                                        type="number"
+                                                        value={currentMeal.calorias}
+                                                        onChange={(e) => setCurrentMeal({ ...currentMeal, calorias: e.target.value })}
+                                                        placeholder="0"
+                                                        className="w-full px-3 py-2 rounded-lg bg-background border border-white/10 text-white text-sm focus:border-primary focus:outline-none"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs font-medium text-text-muted mb-1">Proteína (g)</label>
+                                                    <input
+                                                        type="number"
+                                                        value={currentMeal.proteina}
+                                                        onChange={(e) => setCurrentMeal({ ...currentMeal, proteina: e.target.value })}
+                                                        placeholder="0"
+                                                        className="w-full px-3 py-2 rounded-lg bg-background border border-white/10 text-white text-sm focus:border-primary focus:outline-none"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs font-medium text-text-muted mb-1">Carboidratos (g)</label>
+                                                    <input
+                                                        type="number"
+                                                        value={currentMeal.carboidratos}
+                                                        onChange={(e) => setCurrentMeal({ ...currentMeal, carboidratos: e.target.value })}
+                                                        placeholder="0"
+                                                        className="w-full px-3 py-2 rounded-lg bg-background border border-white/10 text-white text-sm focus:border-primary focus:outline-none"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs font-medium text-text-muted mb-1">Gorduras (g)</label>
+                                                    <input
+                                                        type="number"
+                                                        value={currentMeal.gorduras}
+                                                        onChange={(e) => setCurrentMeal({ ...currentMeal, gorduras: e.target.value })}
+                                                        placeholder="0"
+                                                        className="w-full px-3 py-2 rounded-lg bg-background border border-white/10 text-white text-sm focus:border-primary focus:outline-none"
+                                                    />
+                                                </div>
+                                            </div>
                                         </div>
 
                                         {/* Botão Salvar Refeição */}

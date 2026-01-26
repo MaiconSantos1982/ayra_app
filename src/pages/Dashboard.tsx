@@ -1,7 +1,7 @@
 import { AlertTriangle, Flame, Lock, TrendingUp, Target, Zap, Droplet, Dumbbell, Moon, Award, Scale, Smile } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { getUserData } from '../lib/localStorage';
+import { getUserData, getDailyNutrition } from '../lib/localStorage';
 
 interface DailyProgress {
     calories: number;
@@ -73,15 +73,34 @@ export default function Dashboard() {
     const loadTodayLifestyle = () => {
         const today = new Date().toISOString().split('T')[0];
         const todayLifestyle = localStorage.getItem(`demo_lifestyle_${today}`);
+
+        // Carrega valores reais de nutrição das refeições
+        const nutrition = getDailyNutrition(today);
+
         if (todayLifestyle) {
             const lifestyleData = JSON.parse(todayLifestyle);
             setDailyProgress(prev => ({
                 ...prev,
+                // Valores nutricionais reais das refeições
+                calories: nutrition.calorias,
+                protein: nutrition.proteina,
+                carbs: nutrition.carboidratos,
+                fat: nutrition.gorduras,
+                // Lifestyle data
                 water: lifestyleData.agua_ml || 0,
                 exercise: lifestyleData.exercicio_feito || false,
                 sleep: lifestyleData.horas_sono ? parseFloat(lifestyleData.horas_sono) : prev.sleep,
                 mood: lifestyleData.humor || null,
                 weight: lifestyleData.peso_kg ? parseFloat(lifestyleData.peso_kg) : null
+            }));
+        } else {
+            // Mesmo sem lifestyle data, atualiza os valores nutricionais
+            setDailyProgress(prev => ({
+                ...prev,
+                calories: nutrition.calorias,
+                protein: nutrition.proteina,
+                carbs: nutrition.carboidratos,
+                fat: nutrition.gorduras
             }));
         }
     };

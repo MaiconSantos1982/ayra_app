@@ -8,6 +8,11 @@ export interface DietMeal {
     tipo: 'Café da manhã' | 'Lanche da manhã' | 'Almoço' | 'Lanche da tarde' | 'Jantar' | 'Ceia' | 'Outros';
     horario: string; // formato HH:MM
     descricao: string;
+    // Novos campos nutricionais opcionais para a dieta
+    calorias?: number;
+    proteina?: number;
+    carboidratos?: number;
+    gorduras?: number;
 }
 
 export interface UserProfile {
@@ -31,10 +36,16 @@ export interface MealRecord {
     id: string;
     tipo: string;
     descricao: string;
-    timestamp: string;
+    timestamp: string; // ISO String completa (Data + Hora)
     foto?: string; // base64 ou URL
+    // Valores nutricionais
+    calorias?: number;
+    proteina?: number; // gramas
+    carboidratos?: number; // gramas
+    gorduras?: number; // gramas
 }
 
+// ... Rest of interfaces unchanged ...
 export interface DailyData {
     date: string; // YYYY-MM-DD
     meals: MealRecord[];
@@ -180,16 +191,38 @@ export function saveDailyData(dailyData: DailyData): void {
 }
 
 /**
- * Adiciona uma refeição ao dia atual
+ * Adiciona uma refeição a uma data específica (padrão: hoje)
+ * Aceita timestamp completo ou combina date (YYYY-MM-DD) com time (HH:MM)
  */
-export function addMeal(meal: Omit<MealRecord, 'id' | 'timestamp'>): void {
-    const today = new Date().toISOString().split('T')[0];
-    const dailyData = getDailyData(today);
+export function addMeal(meal: Omit<MealRecord, 'id' | 'timestamp'>, date?: string, time?: string): void {
+    const targetDate = date || new Date().toISOString().split('T')[0];
+    const dailyData = getDailyData(targetDate);
+
+    // Constrói o timestamp correto
+    let timestamp = new Date().toISOString();
+
+    if (date && time) {
+        // Se forneceu data E hora, cria o ISO String combinado
+        try {
+            // Cria data local
+            const dateTimeString = `${date}T${time}:00`;
+            timestamp = new Date(dateTimeString).toISOString();
+        } catch (e) {
+            console.error('Erro ao criar timestamp personalizado', e);
+        }
+    } else if (date) {
+        // Se só forneceu data (legado), tenta manter a hora atual se for hoje, ou meio dia se for outro dia
+        if (date === new Date().toISOString().split('T')[0]) {
+            timestamp = new Date().toISOString();
+        } else {
+            timestamp = new Date(`${date}T12:00:00`).toISOString();
+        }
+    }
 
     const newMeal: MealRecord = {
         ...meal,
         id: `meal_${Date.now()}`,
-        timestamp: new Date().toISOString(),
+        timestamp: timestamp,
     };
 
     dailyData.meals.push(newMeal);
@@ -298,6 +331,30 @@ export function getWeightHistory(): Array<{ date: string; weight: number }> {
     });
 
     return history.slice(-30); // Últimos 30 registros
+}
+
+/**
+ * Calcula o total de calorias e macronutrientes de um dia
+ */
+export function getDailyNutrition(date?: string): {
+    calorias: number;
+    proteina: number;
+    carboidratos: number;
+    gorduras: number;
+} {
+    const dailyData = getDailyData(date);
+
+    const totals = dailyData.meals.reduce(
+        (acc, meal) => ({
+            calorias: acc.calorias + (meal.calorias || 0),
+            proteina: acc.proteina + (meal.proteina || 0),
+            carboidratos: acc.carboidratos + (meal.carboidratos || 0),
+            gorduras: acc.gorduras + (meal.gorduras || 0),
+        }),
+        { calorias: 0, proteina: 0, carboidratos: 0, gorduras: 0 }
+    );
+
+    return totals;
 }
 
 /**

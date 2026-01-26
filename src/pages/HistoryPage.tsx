@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Calendar, ChevronLeft, ChevronRight, Droplet, Dumbbell, Moon, Smile, Utensils, Crown, X } from 'lucide-react';
-import { getUserData, getDailyData } from '../lib/localStorage';
+import { Calendar, ChevronLeft, ChevronRight, Droplet, Dumbbell, Moon, Smile, Utensils, Crown, X, Target } from 'lucide-react';
+import { getUserData, getDailyData, getDailyNutrition } from '../lib/localStorage';
 import { useNavigate } from 'react-router-dom';
 
 export default function HistoryPage() {
@@ -190,6 +190,62 @@ export default function HistoryPage() {
                     >
                         <ChevronRight className="w-5 h-5 text-white" />
                     </button>
+                </div>
+            </div>
+
+            {/* Nutritional Summary */}
+            <div className="px-6 mb-6">
+                <div className="glass rounded-2xl p-6">
+                    <div className="flex items-center gap-2 mb-4">
+                        <Target className="text-primary" size={20} />
+                        <h2 className="text-lg font-bold text-white">Nutrição do Dia</h2>
+                    </div>
+
+                    {(() => {
+                        const nutrition = getDailyNutrition(selectedDate);
+                        const hasNutrition = nutrition.calorias > 0 || nutrition.proteina > 0 || nutrition.carboidratos > 0 || nutrition.gorduras > 0;
+
+                        if (!hasNutrition) {
+                            return (
+                                <p className="text-center text-text-muted text-sm py-2">
+                                    Nenhum valor nutricional registrado neste dia
+                                </p>
+                            );
+                        }
+
+                        return (
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="bg-white/5 rounded-xl p-3">
+                                    <div className="text-xs text-text-muted mb-1">Calorias</div>
+                                    <div className="text-2xl font-bold text-primary">
+                                        {nutrition.calorias.toFixed(0)}
+                                    </div>
+                                    <div className="text-xs text-text-muted">kcal</div>
+                                </div>
+                                <div className="bg-white/5 rounded-xl p-3">
+                                    <div className="text-xs text-text-muted mb-1">Proteína</div>
+                                    <div className="text-2xl font-bold text-blue-400">
+                                        {nutrition.proteina.toFixed(1)}
+                                    </div>
+                                    <div className="text-xs text-text-muted">g</div>
+                                </div>
+                                <div className="bg-white/5 rounded-xl p-3">
+                                    <div className="text-xs text-text-muted mb-1">Carboidratos</div>
+                                    <div className="text-2xl font-bold text-yellow-400">
+                                        {nutrition.carboidratos.toFixed(1)}
+                                    </div>
+                                    <div className="text-xs text-text-muted">g</div>
+                                </div>
+                                <div className="bg-white/5 rounded-xl p-3">
+                                    <div className="text-xs text-text-muted mb-1">Gorduras</div>
+                                    <div className="text-2xl font-bold text-orange-400">
+                                        {nutrition.gorduras.toFixed(1)}
+                                    </div>
+                                    <div className="text-xs text-text-muted">g</div>
+                                </div>
+                            </div>
+                        );
+                    })()}
                 </div>
             </div>
 
