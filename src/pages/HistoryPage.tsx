@@ -223,95 +223,85 @@ export default function HistoryPage() {
                         }
 
                         return (
-                            <div className="grid grid-cols-2 gap-3">
-                                <div className="bg-white/5 rounded-xl p-3">
-                                    <div className="text-xs text-text-muted mb-1">Calorias</div>
-                                    <div className="text-2xl font-bold text-primary">
+
+                            <div className="grid grid-cols-4 gap-2">
+                                <div className="bg-white/5 rounded-xl p-2 flex flex-col items-center justify-center text-center">
+                                    <div className="text-[10px] text-text-muted mb-0.5">Calorias</div>
+                                    <div className="text-lg font-bold text-primary leading-tight">
                                         {nutrition.calorias.toFixed(0)}
                                     </div>
-                                    <div className="text-xs text-text-muted">kcal</div>
+                                    <div className="text-[10px] text-text-muted">kcal</div>
                                 </div>
-                                <div className="bg-white/5 rounded-xl p-3">
-                                    <div className="text-xs text-text-muted mb-1">Proteína</div>
-                                    <div className="text-2xl font-bold text-blue-400">
-                                        {nutrition.proteina.toFixed(1)}
+                                <div className="bg-white/5 rounded-xl p-2 flex flex-col items-center justify-center text-center">
+                                    <div className="text-[10px] text-text-muted mb-0.5">Proteína</div>
+                                    <div className="text-lg font-bold text-blue-400 leading-tight">
+                                        {nutrition.proteina.toFixed(0)}
                                     </div>
-                                    <div className="text-xs text-text-muted">g</div>
+                                    <div className="text-[10px] text-text-muted">g</div>
                                 </div>
-                                <div className="bg-white/5 rounded-xl p-3">
-                                    <div className="text-xs text-text-muted mb-1">Carboidratos</div>
-                                    <div className="text-2xl font-bold text-yellow-400">
-                                        {nutrition.carboidratos.toFixed(1)}
+                                <div className="bg-white/5 rounded-xl p-2 flex flex-col items-center justify-center text-center">
+                                    <div className="text-[10px] text-text-muted mb-0.5">Carbo</div>
+                                    <div className="text-lg font-bold text-yellow-400 leading-tight">
+                                        {nutrition.carboidratos.toFixed(0)}
                                     </div>
-                                    <div className="text-xs text-text-muted">g</div>
+                                    <div className="text-[10px] text-text-muted">g</div>
                                 </div>
-                                <div className="bg-white/5 rounded-xl p-3">
-                                    <div className="text-xs text-text-muted mb-1">Gorduras</div>
-                                    <div className="text-2xl font-bold text-orange-400">
-                                        {nutrition.gorduras.toFixed(1)}
+                                <div className="bg-white/5 rounded-xl p-2 flex flex-col items-center justify-center text-center">
+                                    <div className="text-[10px] text-text-muted mb-0.5">Gorduras</div>
+                                    <div className="text-lg font-bold text-orange-400 leading-tight">
+                                        {nutrition.gorduras.toFixed(0)}
                                     </div>
-                                    <div className="text-xs text-text-muted">g</div>
+                                    <div className="text-[10px] text-text-muted">g</div>
                                 </div>
                             </div>
                         );
                     })()}
+
                 </div>
             </div>
 
             {/* Resumo do Dia */}
             <div className="px-6 mb-6">
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-4 gap-2">
                     {/* Água */}
-                    <div className="bg-card rounded-2xl p-4 border border-white/5">
-                        <div className="flex items-center gap-2 mb-2">
-                            <Droplet className="w-5 h-5 text-blue-400" />
-                            <span className="text-sm text-gray-400">Água</span>
-                        </div>
-                        <p className="text-2xl font-bold text-white">
+                    <div className="bg-card rounded-2xl p-2 border border-white/5 flex flex-col items-center justify-center text-center h-24">
+                        <Droplet className="w-5 h-5 text-blue-400 mb-1" />
+                        <p className="text-sm font-bold text-white leading-tight">
                             {(dayData.water / 1000).toFixed(1)}L
                         </p>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-[10px] text-gray-500">
                             Meta: {((userData?.goals.water || 2000) / 1000).toFixed(1)}L
                         </p>
                     </div>
 
                     {/* Exercício */}
-                    <div className="bg-card rounded-2xl p-4 border border-white/5">
-                        <div className="flex items-center gap-2 mb-2">
-                            <Dumbbell className="w-5 h-5 text-orange-400" />
-                            <span className="text-sm text-gray-400">Exercício</span>
-                        </div>
-                        <p className="text-2xl font-bold text-white">
-                            {dayData.exercise ? 'Feito ✓' : 'Não'}
+                    <div className="bg-card rounded-2xl p-2 border border-white/5 flex flex-col items-center justify-center text-center h-24">
+                        <Dumbbell className="w-5 h-5 text-orange-400 mb-1" />
+                        <p className="text-sm font-bold text-white leading-tight">
+                            {dayData.exercise ? 'Sim' : 'Não'}
                         </p>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-[10px] text-gray-500">
                             Meta: {userData?.goals.exercise || 30} min
                         </p>
                     </div>
 
                     {/* Sono */}
-                    <div className="bg-card rounded-2xl p-4 border border-white/5">
-                        <div className="flex items-center gap-2 mb-2">
-                            <Moon className="w-5 h-5 text-purple-400" />
-                            <span className="text-sm text-gray-400">Sono</span>
-                        </div>
-                        <p className="text-2xl font-bold text-white">{dayData.sleep}h</p>
-                        <p className="text-xs text-gray-500 mt-1">
+                    <div className="bg-card rounded-2xl p-2 border border-white/5 flex flex-col items-center justify-center text-center h-24">
+                        <Moon className="w-5 h-5 text-purple-400 mb-1" />
+                        <p className="text-sm font-bold text-white leading-tight">{dayData.sleep}h</p>
+                        <p className="text-[10px] text-gray-500">
                             Meta: {userData?.goals.sleep || 8}h
                         </p>
                     </div>
 
                     {/* Humor */}
-                    <div className="bg-card rounded-2xl p-4 border border-white/5">
-                        <div className="flex items-center gap-2 mb-2">
-                            <Smile className="w-5 h-5 text-yellow-400" />
-                            <span className="text-sm text-gray-400">Humor</span>
-                        </div>
-                        <p className="text-3xl mb-1">
+                    <div className="bg-card rounded-2xl p-2 border border-white/5 flex flex-col items-center justify-center text-center h-24">
+                        <Smile className="w-5 h-5 text-yellow-400 mb-1" />
+                        <p className="text-xl mb-0 leading-tight">
                             {dayData.mood ? moodEmojis[dayData.mood] : '😶'}
                         </p>
-                        <p className="text-xs text-gray-500">
-                            {dayData.mood ? moodLabels[dayData.mood] : 'Não registrado'}
+                        <p className="text-[10px] text-gray-500 mt-1">
+                            {dayData.mood ? moodLabels[dayData.mood] : '-'}
                         </p>
                     </div>
                 </div>
