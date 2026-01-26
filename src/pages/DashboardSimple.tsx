@@ -31,46 +31,9 @@ export default function DashboardSimple() {
         return () => window.removeEventListener('storage', loadData);
     }, [navigate]);
 
-    // Cálculos para o Resumo Mensal
-    const monthlyOverview = (() => {
-        if (!userData?.goals) return null;
 
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = today.getMonth();
 
-        const dailyGoal = userData.goals.calories;
 
-        let daysWithinGoal = 0;
-        let daysExceeded = 0;
-        let daysBelowData = 0; // Dias com pouco ou nenhum registro
-
-        // Itera do dia 1 até ontem (ou hoje)
-        for (let d = 1; d <= today.getDate(); d++) {
-            // Create local YYYY-MM-DD
-
-            const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-
-            const nutrition = getDailyNutrition(dateKey);
-
-            if (nutrition.calorias === 0) {
-                // Ignora dias futuros ou sem dados se quisermos, ou conta como 'Missed'
-                // Vamos contar só dias passados que tenham algum registro significante (> 500kcal?) ou considerar todos os passados?
-                // Para não desanimar, vamos considerar apenas dias COM registro.
-            } else {
-                // Margem de erro de 10%
-                if (nutrition.calorias > dailyGoal * 1.10) {
-                    daysExceeded++;
-                } else if (nutrition.calorias >= dailyGoal * 0.8 && nutrition.calorias <= dailyGoal * 1.10) { // Adjusted to include the 10% upper bound for "within goal"
-                    daysWithinGoal++;
-                } else {
-                    daysBelowData++; // Comeu muito pouco? (Pode ser considerado "na meta" dependendo do objetivo, mas vamos separar)
-                }
-            }
-        }
-
-        return { daysWithinGoal, daysExceeded, daysBelowData };
-    })();
 
     // Handlers para atualizar hábitos
     const handleAddWater = (amount: number) => {
@@ -106,6 +69,34 @@ export default function DashboardSimple() {
         ok: '😐',
         bad: '😔',
     };
+
+    // Calcular resumo mensal
+    const monthlyOverview = (() => {
+        if (!userData) return { daysWithinGoal: 0, daysExceeded: 0 };
+
+        const currentMonth = new Date().toISOString().substring(0, 7); // YYYY-MM
+        const goalCalories = userData.goals.calories;
+        const tolerance = 0.1; // 10%
+
+        let daysWithinGoal = 0;
+        let daysExceeded = 0;
+
+        Object.values(userData.dailyRecords).forEach(day => {
+            if (day.date.startsWith(currentMonth) && day.meals.length > 0) {
+                const totalCals = day.meals.reduce((sum, meal) => sum + (meal.calorias || 0), 0);
+                const lowerBound = goalCalories * (1 - tolerance);
+                const upperBound = goalCalories * (1 + tolerance);
+
+                if (totalCals >= lowerBound && totalCals <= upperBound) {
+                    daysWithinGoal++;
+                } else {
+                    daysExceeded++;
+                }
+            }
+        });
+
+        return { daysWithinGoal, daysExceeded };
+    })();
 
     return (
         <div className="min-h-screen bg-background pb-20">
