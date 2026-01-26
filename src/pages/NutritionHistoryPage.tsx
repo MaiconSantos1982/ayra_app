@@ -13,6 +13,8 @@ import {
     Legend
 } from 'recharts';
 
+import { getLocalDateKey } from '../lib/dateUtils';
+
 type Period = 'this_week' | 'this_month' | '7_days' | '15_days' | '30_days' | 'custom';
 
 export default function NutritionHistoryPage() {
@@ -22,69 +24,79 @@ export default function NutritionHistoryPage() {
     const [customEndDate, setCustomEndDate] = useState('');
     const [showFilters, setShowFilters] = useState(false);
 
-
-
     // Helper para formatar data (YYYY-MM-DD -> DD/MM)
     const formatDate = (dateStr: string) => {
         const [, month, day] = dateStr.split('-');
         return `${day}/${month}`;
     };
 
-    // Helper para gerar intervalo de datas
+    // Helper para gerar intervalo de datas (Strings YYYY-MM-DD local)
     const getDatesInRange = (startDate: Date, endDate: Date) => {
         const dates = [];
-        let currentDate = new Date(startDate);
-        while (currentDate <= endDate) {
-            dates.push(currentDate.toISOString().split('T')[0]);
-            currentDate.setDate(currentDate.getDate() + 1);
+        // Clona datas e itera usando data local para garantir que o loop cubra todos os dias
+        let current = new Date(startDate);
+        current.setHours(0, 0, 0, 0);
+
+        // Define fim do loop com margem de segurança
+        const end = new Date(endDate);
+        end.setHours(0, 0, 0, 0);
+
+        while (current <= end) {
+            dates.push(getLocalDateKey(current));
+            current.setDate(current.getDate() + 1);
         }
         return dates;
     };
 
     // Calcula intervalo de datas com base no período selecionado
     const dateRange = useMemo(() => {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        let start = new Date();
-        let end = new Date();
+        const today = new Date(); // Data local atual
+
+        // Inicializa start e end como hoje
+        let start = new Date(today);
+        let end = new Date(today);
 
         switch (period) {
             case 'this_week': {
                 // Segunda a Domingo desta semana
-                const day = today.getDay();
-                const diff = today.getDate() - day + (day === 0 ? -6 : 1); // ajusta quando é domingo
+                const day = today.getDay(); // 0 = Domingo, 1 = Segunda...
+                const diff = today.getDate() - day + (day === 0 ? -6 : 1); // ajusta p/ segunda
                 start.setDate(diff);
+                // End = Domingo (start + 6 dias)
+                end = new Date(start);
                 end.setDate(start.getDate() + 6);
-                // Ajusta end para não passar de hoje se quiser mostrar só até hoje
-                // Mas a pedido: "considerando de segunda a domingo"
                 break;
             }
             case 'this_month': {
                 start.setDate(1); // Dia 1 do mês atual
-                end = today; // Até hoje
+                // End = hoje
                 break;
             }
             case '7_days': {
                 start.setDate(today.getDate() - 6);
-                end = today;
+                // End = hoje
                 break;
             }
             case '15_days': {
                 start.setDate(today.getDate() - 14);
-                end = today;
+                // End = hoje
                 break;
             }
             case '30_days': {
                 start.setDate(today.getDate() - 29);
-                end = today;
+                // End = hoje
                 break;
             }
             case 'custom': {
                 if (customStartDate && customEndDate) {
-                    start = new Date(customStartDate + 'T00:00:00');
-                    end = new Date(customEndDate + 'T00:00:00');
+                    // split YYYY-MM-DD local
+                    const [sY, sM, sD] = customStartDate.split('-').map(Number);
+                    start = new Date(sY, sM - 1, sD);
+
+                    const [eY, eM, eD] = customEndDate.split('-').map(Number);
+                    end = new Date(eY, eM - 1, eD);
                 } else {
-                    return []; // Intervalo inválido ou incompleto
+                    return [];
                 }
                 break;
             }

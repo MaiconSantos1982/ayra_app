@@ -150,13 +150,22 @@ export default function HistoryPage() {
             <div className="bg-gradient-to-br from-purple-900 to-purple-800 p-6 rounded-b-3xl shadow-lg mb-6">
                 <div className="flex items-center justify-between mb-4">
                     <h1 className="text-2xl font-bold text-white">Histórico 📅</h1>
-                    {!isPremium && (
-                        <div className="bg-yellow-500/20 px-3 py-1 rounded-full border border-yellow-500/30">
-                            <p className="text-yellow-500 text-xs font-semibold">
-                                {FREE_HISTORY_DAYS} dias
-                            </p>
-                        </div>
-                    )}
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => navigate('/historico-nutricional')}
+                            className="bg-white/10 p-2 rounded-full hover:bg-white/20 transition-colors"
+                            title="Ver Histórico Nutricional"
+                        >
+                            <Target className="text-primary w-5 h-5" />
+                        </button>
+                        {!isPremium && (
+                            <div className="bg-yellow-500/20 px-3 py-1 rounded-full border border-yellow-500/30">
+                                <p className="text-yellow-500 text-xs font-semibold">
+                                    {FREE_HISTORY_DAYS} dias
+                                </p>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* Navegação de Data */}

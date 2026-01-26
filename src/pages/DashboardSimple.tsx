@@ -233,6 +233,13 @@ export default function DashboardSimple() {
                             </div>
                         );
                     })()}
+                    <button
+                        onClick={() => navigate('/historico-nutricional')}
+                        className="w-full mt-3 py-2 bg-white/5 hover:bg-white/10 rounded-xl text-primary text-xs font-semibold transition-colors flex items-center justify-center gap-1"
+                    >
+                        <TrendingUp size={14} />
+                        Ver Histórico Nutricional
+                    </button>
                 </div>
             </div>
 
