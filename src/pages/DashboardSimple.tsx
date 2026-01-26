@@ -72,30 +72,75 @@ export default function DashboardSimple() {
 
     // Calcular resumo mensal
     const monthlyOverview = (() => {
-        if (!userData) return { daysWithinGoal: 0, daysExceeded: 0 };
+        if (!userData) return {
+            daysWithinGoal: 0,
+            daysExceeded: 0,
+            averages: { calories: 0, carbs: 0, protein: 0, fat: 0 },
+            goals: { calories: 0, carbs: 0, protein: 0, fat: 0 }
+        };
 
         const currentMonth = new Date().toISOString().substring(0, 7); // YYYY-MM
-        const goalCalories = userData.goals.calories;
+        const goals = userData.goals;
         const tolerance = 0.1; // 10%
 
         let daysWithinGoal = 0;
         let daysExceeded = 0;
 
+        let totalStats = {
+            calories: 0,
+            carbs: 0,
+            protein: 0,
+            fat: 0
+        };
+        let validDaysCount = 0;
+
         Object.values(userData.dailyRecords).forEach(day => {
             if (day.date.startsWith(currentMonth) && day.meals.length > 0) {
-                const totalCals = day.meals.reduce((sum, meal) => sum + (meal.calorias || 0), 0);
-                const lowerBound = goalCalories * (1 - tolerance);
-                const upperBound = goalCalories * (1 + tolerance);
+                // Calcular totais do dia
+                const dailyTotals = day.meals.reduce((acc, meal) => ({
+                    calories: acc.calories + (meal.calorias || 0),
+                    carbs: acc.carbs + (meal.carboidratos || 0),
+                    protein: acc.protein + (meal.proteina || 0),
+                    fat: acc.fat + (meal.gorduras || 0)
+                }), { calories: 0, carbs: 0, protein: 0, fat: 0 });
 
-                if (totalCals >= lowerBound && totalCals <= upperBound) {
+                // Verificação de Dias na Meta (baseado em Calorias)
+                const lowerBound = goals.calories * (1 - tolerance);
+                const upperBound = goals.calories * (1 + tolerance);
+
+                if (dailyTotals.calories >= lowerBound && dailyTotals.calories <= upperBound) {
                     daysWithinGoal++;
                 } else {
                     daysExceeded++;
                 }
+
+                // Somar para médias
+                totalStats.calories += dailyTotals.calories;
+                totalStats.carbs += dailyTotals.carbs;
+                totalStats.protein += dailyTotals.protein;
+                totalStats.fat += dailyTotals.fat;
+                validDaysCount++;
             }
         });
 
-        return { daysWithinGoal, daysExceeded };
+        const averages = {
+            calories: validDaysCount ? Math.round(totalStats.calories / validDaysCount) : 0,
+            carbs: validDaysCount ? Math.round(totalStats.carbs / validDaysCount) : 0,
+            protein: validDaysCount ? Math.round(totalStats.protein / validDaysCount) : 0,
+            fat: validDaysCount ? Math.round(totalStats.fat / validDaysCount) : 0
+        };
+
+        return {
+            daysWithinGoal,
+            daysExceeded,
+            averages,
+            goals: {
+                calories: goals.calories,
+                carbs: goals.carbs,
+                protein: goals.protein,
+                fat: goals.fat
+            }
+        };
     })();
 
     return (
@@ -311,7 +356,8 @@ export default function DashboardSimple() {
                             <h2 className="text-xl font-bold text-white">Resumo do Mês</h2>
                         </div>
 
-                        <div className="flex items-center gap-4 mb-4">
+                        {/* Card Inicial: Dias na Meta */}
+                        <div className="flex items-center gap-4 mb-8">
                             <div className="flex-1 text-center bg-green-500/10 p-4 rounded-2xl border border-green-500/20">
                                 <span className="text-3xl font-bold text-green-500 block">{monthlyOverview.daysWithinGoal}</span>
                                 <span className="text-xs text-green-300 font-medium uppercase tracking-wide">Dias na Meta</span>
@@ -322,10 +368,53 @@ export default function DashboardSimple() {
                             </div>
                         </div>
 
-                        <p className="text-center text-xs text-gray-500">
-                            *Considerando dias com registro de refeições.
+                        {/* Novas Barras de Metas (Macros) */}
+                        <div className="space-y-5">
+                            {[
+                                { label: 'Carboidratos', current: monthlyOverview.averages.carbs, goal: monthlyOverview.goals.carbs, unit: 'g' },
+                                { label: 'Proteínas', current: monthlyOverview.averages.protein, goal: monthlyOverview.goals.protein, unit: 'g' },
+                                { label: 'Gorduras', current: monthlyOverview.averages.fat, goal: monthlyOverview.goals.fat, unit: 'g' },
+                                { label: 'Calorias', current: monthlyOverview.averages.calories, goal: monthlyOverview.goals.calories, unit: 'kcal' }
+                            ].map((item) => {
+                                const percentage = item.goal > 0 ? (item.current / item.goal) * 100 : 0;
+                                let colorClass = 'bg-green-500';
+                                let textColorClass = 'text-green-500';
+
+                                // Lógica de cores baseada em quão acima da meta está
+                                if (percentage > 120) {
+                                    colorClass = 'bg-red-500';
+                                    textColorClass = 'text-red-500';
+                                } else if (percentage > 110) {
+                                    colorClass = 'bg-orange-500';
+                                    textColorClass = 'text-orange-500';
+                                } else if (percentage > 100) {
+                                    colorClass = 'bg-yellow-500';
+                                    textColorClass = 'text-yellow-500';
+                                }
+
+                                return (
+                                    <div key={item.label}>
+                                        <div className="flex justify-between text-sm mb-2">
+                                            <span className="text-gray-400 font-medium">{item.label}</span>
+                                            <span className={textColorClass + " font-bold"}>
+                                                {item.current} / {item.goal}{item.unit}
+                                            </span>
+                                        </div>
+                                        <div className="h-2.5 bg-gray-700/50 rounded-full overflow-hidden border border-white/5">
+                                            <div
+                                                className={`h-full ${colorClass} transition-all duration-500`}
+                                                style={{ width: `${Math.min(percentage, 100)}%` }}
+                                            />
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        <p className="text-center text-xs text-gray-500 mt-6 border-t border-white/5 pt-4">
+                            *Médias diárias baseadas nos dias com registros.
                             <br />
-                            Margem de tolerância: 10%
+                            Cores indicam o nível de desvio da meta.
                         </p>
                     </div>
                 </div>
