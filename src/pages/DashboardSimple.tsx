@@ -20,23 +20,57 @@ export default function DashboardSimple() {
         }
 
         // Função para recarregar dados
-        const reloadData = () => {
+        const loadData = () => {
             setUserData(getUserData());
             setTodayData(getDailyData());
             setStats(getStats());
         };
 
-        // Recarrega dados quando a página é focada
-        window.addEventListener('focus', reloadData);
-
-        // Recarrega dados a cada 5 segundos (para pegar atualizações de outras abas)
-        const interval = setInterval(reloadData, 5000);
-
-        return () => {
-            window.removeEventListener('focus', reloadData);
-            clearInterval(interval);
-        };
+        loadData();
+        window.addEventListener('storage', loadData);
+        return () => window.removeEventListener('storage', loadData);
     }, [navigate]);
+
+    // Cálculos para o Resumo Mensal
+    const monthlyOverview = (() => {
+        if (!userData?.goals) return null;
+
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = today.getMonth();
+
+        const dailyGoal = userData.goals.calories;
+
+        let daysWithinGoal = 0;
+        let daysExceeded = 0;
+        let daysBelowData = 0; // Dias com pouco ou nenhum registro
+
+        // Itera do dia 1 até ontem (ou hoje)
+        for (let d = 1; d <= today.getDate(); d++) {
+            // Create local YYYY-MM-DD
+
+            const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+
+            const nutrition = getDailyNutrition(dateKey);
+
+            if (nutrition.calorias === 0) {
+                // Ignora dias futuros ou sem dados se quisermos, ou conta como 'Missed'
+                // Vamos contar só dias passados que tenham algum registro significante (> 500kcal?) ou considerar todos os passados?
+                // Para não desanimar, vamos considerar apenas dias COM registro.
+            } else {
+                // Margem de erro de 10%
+                if (nutrition.calorias > dailyGoal * 1.10) {
+                    daysExceeded++;
+                } else if (nutrition.calorias >= dailyGoal * 0.8 && nutrition.calorias <= dailyGoal * 1.10) { // Adjusted to include the 10% upper bound for "within goal"
+                    daysWithinGoal++;
+                } else {
+                    daysBelowData++; // Comeu muito pouco? (Pode ser considerado "na meta" dependendo do objetivo, mas vamos separar)
+                }
+            }
+        }
+
+        return { daysWithinGoal, daysExceeded, daysBelowData };
+    })();
 
     // Handlers para atualizar hábitos
     const handleAddWater = (amount: number) => {
@@ -87,7 +121,7 @@ export default function DashboardSimple() {
                 <div className="flex items-center justify-between mb-4">
                     <div>
                         <h1 className="text-2xl font-bold text-white">
-                            Olá, {userData?.profile.nome || 'Usuário'}! 👋
+                            Olá, {userData?.profile.nome || 'Usuário'} 👋
                         </h1>
                         <p className="text-purple-200 text-sm mt-1">
                             {new Date().toLocaleDateString('pt-BR', {
@@ -260,6 +294,37 @@ export default function DashboardSimple() {
                     })()}
                 </div>
             </div>
+
+            {/* Resumo Mensal de Metas (Novo) */}
+            {monthlyOverview && (monthlyOverview.daysWithinGoal > 0 || monthlyOverview.daysExceeded > 0) && (
+                <div className="px-6 mb-6">
+                    <div className="bg-card/50 border border-white/5 rounded-3xl p-6">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="bg-purple-500/20 p-2 rounded-full">
+                                <Target className="text-purple-400 w-6 h-6" />
+                            </div>
+                            <h2 className="text-xl font-bold text-white">Resumo do Mês</h2>
+                        </div>
+
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="flex-1 text-center bg-green-500/10 p-4 rounded-2xl border border-green-500/20">
+                                <span className="text-3xl font-bold text-green-500 block">{monthlyOverview.daysWithinGoal}</span>
+                                <span className="text-xs text-green-300 font-medium uppercase tracking-wide">Dias na Meta</span>
+                            </div>
+                            <div className="flex-1 text-center bg-red-500/10 p-4 rounded-2xl border border-red-500/20">
+                                <span className="text-3xl font-bold text-red-500 block">{monthlyOverview.daysExceeded}</span>
+                                <span className="text-xs text-red-300 font-medium uppercase tracking-wide">Dias Fora</span>
+                            </div>
+                        </div>
+
+                        <p className="text-center text-xs text-gray-500">
+                            *Considerando dias com registro de refeições.
+                            <br />
+                            Margem de tolerância: 10%
+                        </p>
+                    </div>
+                </div>
+            )}
 
             {/* Lifestyle Tracking */}
             <div className="px-6 mb-6">

@@ -15,12 +15,13 @@ import {
 
 import { getLocalDateKey } from '../lib/dateUtils';
 
-type Period = 'this_week' | 'this_month' | '7_days' | '15_days' | '30_days' | 'custom';
+type Period = 'this_week' | 'this_month' | 'specific_month' | '7_days' | '15_days' | '30_days' | 'custom';
 
 export default function NutritionHistoryPage() {
     const navigate = useNavigate();
     const [viewMode, setViewMode] = useState<'avg' | 'total'>('avg');
     const [period, setPeriod] = useState<Period>('this_week');
+    const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7)); // YYYY-MM
     const [customStartDate, setCustomStartDate] = useState('');
     const [customEndDate, setCustomEndDate] = useState('');
     const [showFilters, setShowFilters] = useState(false);
@@ -75,6 +76,25 @@ export default function NutritionHistoryPage() {
                 // End = hoje
                 break;
             }
+            case 'specific_month': {
+                if (selectedMonth) {
+                    const [year, month] = selectedMonth.split('-').map(Number);
+                    start = new Date(year, month - 1, 1);
+                    // Último dia do mês
+                    end = new Date(year, month, 0);
+
+                    // Se o mês selecionado for o atual, terminar em "hoje" para não mostrar dias futuros zerados?
+                    // O usuário pediu "histórico", então ver dias futuros com 0 pode ser confuso ou desejado (para ver quanto falta).
+                    // Vamos manter até o fim do mês para "Metas do Mês" fazerem sentido (meta total).
+                    // Porém, para gráficos de linha, o futuro cai para zero.
+                    // Vamos travar em "hoje" se for o mês corrente, senão fim do mês.
+                    const now = new Date();
+                    if (year === now.getFullYear() && (month - 1) === now.getMonth()) {
+                        end = now;
+                    }
+                }
+                break;
+            }
             case '7_days': {
                 start.setDate(today.getDate() - 6);
                 // End = hoje
@@ -106,7 +126,7 @@ export default function NutritionHistoryPage() {
         }
 
         return getDatesInRange(start, end);
-    }, [period, customStartDate, customEndDate]);
+    }, [period, customStartDate, customEndDate, selectedMonth]);
 
     // Busca dados nutricionais para o intervalo
     const chartData = useMemo(() => {
@@ -262,6 +282,12 @@ export default function NutritionHistoryPage() {
                                     Últimos 30 dias
                                 </button>
                                 <button
+                                    onClick={() => setPeriod('specific_month')}
+                                    className={`p-2 rounded-lg text-sm font-medium transition-all ${period === 'specific_month' ? 'bg-primary text-black' : 'bg-white/5 text-text-muted hover:bg-white/10'}`}
+                                >
+                                    Mês Específico
+                                </button>
+                                <button
                                     onClick={() => setPeriod('custom')}
                                     className={`p-2 rounded-lg text-sm font-medium transition-all ${period === 'custom' ? 'bg-primary text-black' : 'bg-white/5 text-text-muted hover:bg-white/10'}`}
                                 >
@@ -270,6 +296,18 @@ export default function NutritionHistoryPage() {
                             </>
                         )}
                     </div>
+
+                    {period === 'specific_month' && (
+                        <div className="mt-4 animate-in fade-in slide-in-from-top-2">
+                            <label className="block text-xs text-text-muted mb-1">Selecione o Mês</label>
+                            <input
+                                type="month"
+                                value={selectedMonth}
+                                onChange={(e) => setSelectedMonth(e.target.value)}
+                                className="w-full bg-background border border-white/10 rounded-lg px-2 py-2 text-sm text-white focus:border-primary focus:outline-none"
+                            />
+                        </div>
+                    )}
 
                     {period === 'custom' && (
                         <div className="mt-4 grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2">
