@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Save, User, Clock, UtensilsCrossed, Plus, Trash2, Calendar } from 'lucide-react';
+import { ArrowLeft, Save, User, Clock, UtensilsCrossed, Plus, Trash2, Calendar, Check } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import CustomSelect from '../components/CustomSelect';
 import Toast from '../components/Toast';
@@ -650,101 +650,110 @@ export default function AnamnesePage() {
 
                                 {/* Formulário para nova refeição */}
                                 {availableMealTypes.length > 0 ? (
-                                    <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 space-y-4">
-                                        <p className="text-white font-semibold flex items-center gap-2">
-                                            <Plus size={18} className="text-primary" />
-                                            Adicionar Refeição
-                                        </p>
+                                    <div className="space-y-6 pt-2">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <div className="bg-primary/20 p-2 rounded-full">
+                                                <Plus size={20} className="text-primary" />
+                                            </div>
+                                            <h3 className="text-xl font-bold text-white">Adicionar Refeição</h3>
+                                        </div>
 
                                         {/* Tipo de Refeição */}
                                         <div>
-                                            <label className="block text-sm font-medium text-text-muted mb-2">
+                                            <label className="block text-base font-semibold text-gray-300 mb-2">
                                                 Tipo de Refeição
                                             </label>
                                             <CustomSelect
                                                 value={currentMeal.tipo}
                                                 onChange={(value) => setCurrentMeal({ ...currentMeal, tipo: value })}
                                                 options={availableMealTypes.map(type => ({ value: type, label: type }))}
-                                                placeholder="Selecione o tipo de refeição"
+                                                placeholder="Selecione..."
                                             />
                                         </div>
 
                                         {/* Horário */}
                                         <div>
-                                            <label className="block text-sm font-medium text-text-muted mb-2">
-                                                Horário (horário médio da refeição)
+                                            <label className="block text-base font-semibold text-gray-300 mb-2">
+                                                Horário Médio
                                             </label>
-                                            <input
-                                                type="time"
-                                                value={currentMeal.horario}
-                                                onChange={(e) => setCurrentMeal({ ...currentMeal, horario: e.target.value })}
-                                                className="w-full max-w-full min-w-0 px-4 py-3 rounded-xl bg-background border border-white/10 text-white focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all appearance-none [color-scheme:dark]"
-                                            />
-                                            <p className="text-xs text-text-muted/70 mt-1">
-                                                Informe o horário aproximado que você costuma fazer esta refeição
-                                            </p>
+                                            <div className="relative">
+                                                <input
+                                                    type="time"
+                                                    value={currentMeal.horario}
+                                                    onChange={(e) => setCurrentMeal({ ...currentMeal, horario: e.target.value })}
+                                                    className="w-full px-5 py-4 rounded-xl bg-white/5 border border-white/10 text-white text-lg focus:border-primary focus:outline-none transition-all"
+                                                />
+                                                <Clock className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={20} />
+                                            </div>
                                         </div>
 
                                         {/* Descrição */}
                                         <div>
-                                            <label className="block text-sm font-medium text-text-muted mb-2">
-                                                Descrição (quantidade e alimento)
+                                            <label className="block text-base font-semibold text-gray-300 mb-2">
+                                                O que você come?
                                             </label>
                                             <textarea
                                                 value={currentMeal.descricao}
                                                 onChange={(e) => setCurrentMeal({ ...currentMeal, descricao: e.target.value })}
                                                 rows={3}
-                                                className="w-full px-4 py-3 rounded-xl bg-background border border-white/10 text-white placeholder:text-text-muted/50 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none"
-                                                placeholder="Ex: 2 fatias de pão integral, 2 ovos mexidos, 1 copo de café com leite desnatado"
+                                                className="w-full px-5 py-4 rounded-xl bg-white/5 border border-white/10 text-white text-lg placeholder:text-gray-600 focus:border-primary focus:outline-none transition-all resize-none"
+                                                placeholder="Ex: 2 fatias de pão, café com leite..."
                                             />
                                         </div>
 
-                                        {/* MACRONUTRIENTES (Novo) */}
-                                        <div className="border-t border-white/10 pt-4 mt-2">
-                                            <p className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
-                                                <UtensilsCrossed size={14} className="text-secondary" />
-                                                Metas Nutricionais da Refeição (Opcional)
-                                            </p>
+                                        {/* MACRONUTRIENTES (Opcional) - Visual Limpo */}
+                                        <div className="pt-4 border-t border-white/10">
+                                            <button
+                                                type="button"
+                                                className="flex items-center gap-2 text-primary font-medium mb-4 hover:opacity-80"
+                                                onClick={(e) => {
+                                                    const content = e.currentTarget.nextElementSibling;
+                                                    if (content) content.classList.toggle('hidden');
+                                                }}
+                                            >
+                                                <UtensilsCrossed size={18} />
+                                                Adicionar Macros (Opcional)
+                                            </button>
 
-                                            <div className="grid grid-cols-2 gap-3">
-                                                <div>
-                                                    <label className="block text-xs font-medium text-text-muted mb-1">Calorias (kcal)</label>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="bg-white/5 rounded-xl p-3 border border-white/5">
+                                                    <label className="block text-xs text-gray-400 mb-1">Calorias (kcal)</label>
                                                     <input
                                                         type="number"
                                                         value={currentMeal.calorias}
                                                         onChange={(e) => setCurrentMeal({ ...currentMeal, calorias: e.target.value })}
                                                         placeholder="0"
-                                                        className="w-full px-3 py-2 rounded-lg bg-background border border-white/10 text-white text-sm focus:border-primary focus:outline-none"
+                                                        className="w-full bg-transparent text-white text-xl font-bold focus:outline-none placeholder:text-white/10"
                                                     />
                                                 </div>
-                                                <div>
-                                                    <label className="block text-xs font-medium text-text-muted mb-1">Proteína (g)</label>
+                                                <div className="bg-white/5 rounded-xl p-3 border border-white/5">
+                                                    <label className="block text-xs text-blue-300 mb-1">Proteína (g)</label>
                                                     <input
                                                         type="number"
                                                         value={currentMeal.proteina}
                                                         onChange={(e) => setCurrentMeal({ ...currentMeal, proteina: e.target.value })}
                                                         placeholder="0"
-                                                        className="w-full px-3 py-2 rounded-lg bg-background border border-white/10 text-white text-sm focus:border-primary focus:outline-none"
+                                                        className="w-full bg-transparent text-white text-xl font-bold focus:outline-none placeholder:text-white/10"
                                                     />
                                                 </div>
-                                                <div>
-                                                    <label className="block text-xs font-medium text-text-muted mb-1">Carboidratos (g)</label>
+                                                <div className="bg-white/5 rounded-xl p-3 border border-white/5">
+                                                    <label className="block text-xs text-yellow-300 mb-1">Carboidratos (g)</label>
                                                     <input
                                                         type="number"
                                                         value={currentMeal.carboidratos}
                                                         onChange={(e) => setCurrentMeal({ ...currentMeal, carboidratos: e.target.value })}
                                                         placeholder="0"
-                                                        className="w-full px-3 py-2 rounded-lg bg-background border border-white/10 text-white text-sm focus:border-primary focus:outline-none"
+                                                        className="w-full bg-transparent text-white text-xl font-bold focus:outline-none placeholder:text-white/10"
                                                     />
                                                 </div>
-                                                <div>
-                                                    <label className="block text-xs font-medium text-text-muted mb-1">Gorduras (g)</label>
+                                                <div className="bg-white/5 rounded-xl p-3 border border-white/5">
+                                                    <label className="block text-xs text-orange-300 mb-1">Gorduras (g)</label>
                                                     <input
                                                         type="number"
                                                         value={currentMeal.gorduras}
                                                         onChange={(e) => setCurrentMeal({ ...currentMeal, gorduras: e.target.value })}
                                                         placeholder="0"
-                                                        className="w-full px-3 py-2 rounded-lg bg-background border border-white/10 text-white text-sm focus:border-primary focus:outline-none"
+                                                        className="w-full bg-transparent text-white text-xl font-bold focus:outline-none placeholder:text-white/10"
                                                     />
                                                 </div>
                                             </div>
@@ -754,16 +763,19 @@ export default function AnamnesePage() {
                                         <button
                                             type="button"
                                             onClick={handleAddMeal}
-                                            className="w-full bg-gradient-to-r from-primary to-secondary text-black font-bold py-3 rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2"
+                                            className="w-full bg-gradient-to-r from-primary to-green-400 text-black font-bold py-4 rounded-xl text-lg shadow-lg hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
                                         >
-                                            <Plus size={20} />
+                                            <Plus size={24} />
                                             Salvar Refeição
                                         </button>
                                     </div>
                                 ) : (
-                                    <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-4">
-                                        <p className="text-green-400 text-sm text-center">
-                                            ✅ Todas as refeições foram adicionadas!
+                                    <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-6 text-center">
+                                        <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                                            <Check className="text-green-500 w-6 h-6" />
+                                        </div>
+                                        <p className="text-green-400 font-medium">
+                                            Todas as refeições foram adicionadas!
                                         </p>
                                     </div>
                                 )}

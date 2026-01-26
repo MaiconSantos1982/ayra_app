@@ -181,65 +181,83 @@ export default function DashboardSimple() {
 
             {/* Nutrição de Hoje */}
             <div className="px-6 mb-6">
-                <div className="bg-card/50 border border-white/5 rounded-2xl p-4">
-                    <div className="flex items-center gap-2 mb-3">
-                        <Target className="text-primary" size={20} />
-                        <h2 className="text-lg font-bold text-white">Nutrição de Hoje</h2>
+                <div className="bg-card/50 border border-white/5 rounded-3xl p-6">
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="bg-primary/20 p-2 rounded-full">
+                            <Target className="text-primary w-6 h-6" />
+                        </div>
+                        <h2 className="text-xl font-bold text-white">Nutrição de Hoje</h2>
                     </div>
 
                     {(() => {
-                        // Calcula totais do dia usando a função auxiliar
                         const nutrition = getDailyNutrition(new Date().toISOString().split('T')[0]);
                         const hasNutrition = nutrition.calorias > 0 || nutrition.proteina > 0 || nutrition.carboidratos > 0 || nutrition.gorduras > 0;
 
                         if (!hasNutrition) {
                             return (
-                                <p className="text-center text-text-muted text-sm py-2">
-                                    Nenhum valor nutricional registrado hoje
-                                </p>
+                                <div className="text-center py-8">
+                                    <p className="text-gray-400 mb-4">Nenhum dado registrado hoje</p>
+                                    <button
+                                        onClick={() => navigate('/registro')}
+                                        className="text-primary font-semibold hover:underline"
+                                    >
+                                        Registrar primeira refeição
+                                    </button>
+                                </div>
                             );
                         }
 
                         return (
-                            <div className="grid grid-cols-2 gap-3">
-                                <div className="bg-background rounded-xl p-3 border border-white/5">
-                                    <div className="text-xs text-text-muted mb-1">Calorias</div>
-                                    <div className="text-xl font-bold text-primary">
-                                        {nutrition.calorias.toFixed(0)}
+                            <div className="space-y-6">
+                                {/* Calorias - Destaque */}
+                                <div className="flex items-end justify-between bg-white/5 rounded-2xl p-5 border border-white/5">
+                                    <div>
+                                        <p className="text-gray-400 font-medium mb-1">Calorias</p>
+                                        <div className="flex items-baseline gap-1">
+                                            <span className="text-4xl font-black text-white tracking-tight">
+                                                {nutrition.calorias.toFixed(0)}
+                                            </span>
+                                            <span className="text-sm font-medium text-gray-500">kcal</span>
+                                        </div>
                                     </div>
-                                    <div className="text-xs text-text-muted">kcal</div>
-                                </div>
-                                <div className="bg-background rounded-xl p-3 border border-white/5">
-                                    <div className="text-xs text-text-muted mb-1">Proteína</div>
-                                    <div className="text-xl font-bold text-blue-400">
-                                        {nutrition.proteina.toFixed(1)}
+                                    <div className="h-2 w-24 bg-white/10 rounded-full overflow-hidden mb-2">
+                                        <div className="h-full bg-primary" style={{ width: '40%' }}></div> {/* Exemplo de barra visual */}
                                     </div>
-                                    <div className="text-xs text-text-muted">g</div>
                                 </div>
-                                <div className="bg-background rounded-xl p-3 border border-white/5">
-                                    <div className="text-xs text-text-muted mb-1">Carboidratos</div>
-                                    <div className="text-xl font-bold text-yellow-400">
-                                        {nutrition.carboidratos.toFixed(1)}
+
+                                {/* Macros - Grid Limpo */}
+                                <div className="grid grid-cols-3 gap-4">
+                                    <div className="text-center">
+                                        <p className="text-sm text-gray-400 mb-1">Proteína</p>
+                                        <div className="text-2xl font-bold text-blue-400">
+                                            {nutrition.proteina.toFixed(0)}<span className="text-xs text-gray-500 ml-0.5">g</span>
+                                        </div>
                                     </div>
-                                    <div className="text-xs text-text-muted">g</div>
-                                </div>
-                                <div className="bg-background rounded-xl p-3 border border-white/5">
-                                    <div className="text-xs text-text-muted mb-1">Gorduras</div>
-                                    <div className="text-xl font-bold text-orange-400">
-                                        {nutrition.gorduras.toFixed(1)}
+                                    <div className="text-center border-l border-white/10">
+                                        <p className="text-sm text-gray-400 mb-1">Carboidratos</p>
+                                        <div className="text-2xl font-bold text-yellow-400">
+                                            {nutrition.carboidratos.toFixed(0)}<span className="text-xs text-gray-500 ml-0.5">g</span>
+                                        </div>
                                     </div>
-                                    <div className="text-xs text-text-muted">g</div>
+                                    <div className="text-center border-l border-white/10">
+                                        <p className="text-sm text-gray-400 mb-1">Gorduras</p>
+                                        <div className="text-2xl font-bold text-orange-400">
+                                            {nutrition.gorduras.toFixed(0)}<span className="text-xs text-gray-500 ml-0.5">g</span>
+                                        </div>
+                                    </div>
                                 </div>
+
+                                {/* Botão Histórico - Grande e Visível */}
+                                <button
+                                    onClick={() => navigate('/historico-nutricional')}
+                                    className="w-full bg-primary hover:bg-primary/90 text-black font-bold py-4 rounded-xl shadow-lg shadow-primary/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                                >
+                                    <TrendingUp size={20} className="stroke-[3]" />
+                                    VER HISTÓRICO COMPLETO
+                                </button>
                             </div>
                         );
                     })()}
-                    <button
-                        onClick={() => navigate('/historico-nutricional')}
-                        className="w-full mt-3 py-2 bg-white/5 hover:bg-white/10 rounded-xl text-primary text-xs font-semibold transition-colors flex items-center justify-center gap-1"
-                    >
-                        <TrendingUp size={14} />
-                        Ver Histórico Nutricional
-                    </button>
                 </div>
             </div>
 
