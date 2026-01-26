@@ -676,14 +676,15 @@ export default function AnamnesePage() {
                                             <label className="block text-base font-semibold text-gray-300 mb-2">
                                                 Horário Médio
                                             </label>
-                                            <div className="relative">
+                                            <div className="relative w-full">
                                                 <input
                                                     type="time"
                                                     value={currentMeal.horario}
                                                     onChange={(e) => setCurrentMeal({ ...currentMeal, horario: e.target.value })}
-                                                    className="w-full px-5 py-4 rounded-xl bg-white/5 border border-white/10 text-white text-lg focus:border-primary focus:outline-none transition-all"
+                                                    className="w-full px-5 py-4 rounded-xl bg-white/5 border border-white/10 text-white text-lg focus:border-primary focus:outline-none transition-all appearance-none"
+                                                    style={{ colorScheme: 'dark' }}
                                                 />
-                                                <Clock className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={20} />
+                                                <Clock className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none bg-transparent" size={20} />
                                             </div>
                                         </div>
 
@@ -715,45 +716,45 @@ export default function AnamnesePage() {
                                                 Adicionar Macros (Opcional)
                                             </button>
 
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div className="bg-white/5 rounded-xl p-3 border border-white/5">
-                                                    <label className="block text-xs text-gray-400 mb-1">Calorias (kcal)</label>
+                                            <div className="grid grid-cols-1 gap-3">
+                                                <div className="bg-white/5 rounded-xl p-4 border border-white/5 flex items-center justify-between">
+                                                    <label className="text-sm font-medium text-gray-400">Calorias (kcal)</label>
                                                     <input
                                                         type="number"
                                                         value={currentMeal.calorias}
                                                         onChange={(e) => setCurrentMeal({ ...currentMeal, calorias: e.target.value })}
                                                         placeholder="0"
-                                                        className="w-full bg-transparent text-white text-xl font-bold focus:outline-none placeholder:text-white/10"
+                                                        className="bg-transparent text-white text-xl font-bold focus:outline-none text-right placeholder:text-white/10 w-24"
                                                     />
                                                 </div>
-                                                <div className="bg-white/5 rounded-xl p-3 border border-white/5">
-                                                    <label className="block text-xs text-blue-300 mb-1">Proteína (g)</label>
+                                                <div className="bg-white/5 rounded-xl p-4 border border-white/5 flex items-center justify-between">
+                                                    <label className="text-sm font-medium text-blue-300">Proteína (g)</label>
                                                     <input
                                                         type="number"
                                                         value={currentMeal.proteina}
                                                         onChange={(e) => setCurrentMeal({ ...currentMeal, proteina: e.target.value })}
                                                         placeholder="0"
-                                                        className="w-full bg-transparent text-white text-xl font-bold focus:outline-none placeholder:text-white/10"
+                                                        className="bg-transparent text-white text-xl font-bold focus:outline-none text-right placeholder:text-white/10 w-24"
                                                     />
                                                 </div>
-                                                <div className="bg-white/5 rounded-xl p-3 border border-white/5">
-                                                    <label className="block text-xs text-yellow-300 mb-1">Carboidratos (g)</label>
+                                                <div className="bg-white/5 rounded-xl p-4 border border-white/5 flex items-center justify-between">
+                                                    <label className="text-sm font-medium text-yellow-300">Carboidratos (g)</label>
                                                     <input
                                                         type="number"
                                                         value={currentMeal.carboidratos}
                                                         onChange={(e) => setCurrentMeal({ ...currentMeal, carboidratos: e.target.value })}
                                                         placeholder="0"
-                                                        className="w-full bg-transparent text-white text-xl font-bold focus:outline-none placeholder:text-white/10"
+                                                        className="bg-transparent text-white text-xl font-bold focus:outline-none text-right placeholder:text-white/10 w-24"
                                                     />
                                                 </div>
-                                                <div className="bg-white/5 rounded-xl p-3 border border-white/5">
-                                                    <label className="block text-xs text-orange-300 mb-1">Gorduras (g)</label>
+                                                <div className="bg-white/5 rounded-xl p-4 border border-white/5 flex items-center justify-between">
+                                                    <label className="text-sm font-medium text-orange-300">Gorduras (g)</label>
                                                     <input
                                                         type="number"
                                                         value={currentMeal.gorduras}
                                                         onChange={(e) => setCurrentMeal({ ...currentMeal, gorduras: e.target.value })}
                                                         placeholder="0"
-                                                        className="w-full bg-transparent text-white text-xl font-bold focus:outline-none placeholder:text-white/10"
+                                                        className="bg-transparent text-white text-xl font-bold focus:outline-none text-right placeholder:text-white/10 w-24"
                                                     />
                                                 </div>
                                             </div>
