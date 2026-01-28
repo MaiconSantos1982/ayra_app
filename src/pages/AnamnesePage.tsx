@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Save, User, Clock, UtensilsCrossed, Plus, Trash2, Calendar, Check } from 'lucide-react';
+import { ArrowLeft, Save, User, Clock, UtensilsCrossed, Plus, Trash2, Calendar, Check, Pencil } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import CustomSelect from '../components/CustomSelect';
 import Toast from '../components/Toast';
@@ -34,6 +34,7 @@ export default function AnamnesePage() {
     // Estados para Dieta Personalizada
     const [segueDieta, setSegueDieta] = useState(false);
     const [dietMeals, setDietMeals] = useState<DietMeal[]>([]);
+    const [editingMealId, setEditingMealId] = useState<string | null>(null);
 
     const [currentMeal, setCurrentMeal] = useState({
         tipo: '',
@@ -64,9 +65,9 @@ export default function AnamnesePage() {
         'Outros'
     ];
 
-    // Filtra tipos que já foram adicionados
+    // Filtra tipos que já foram adicionados (mas permite o tipo atual se estiver editando)
     const availableMealTypes = MEAL_TYPES.filter(
-        type => !dietMeals.some(meal => meal.tipo === type)
+        type => !dietMeals.some(meal => meal.tipo === type && meal.id !== editingMealId)
     );
 
     useEffect(() => {
@@ -215,15 +216,15 @@ export default function AnamnesePage() {
         }
     };
 
-    // Adiciona uma refeição à dieta
+    // Adiciona ou Atualiza uma refeição à dieta
     const handleAddMeal = async () => {
         if (!currentMeal.tipo || !currentMeal.horario || !currentMeal.descricao.trim()) {
             alert('Por favor, preencha o tipo, horário e descrição da refeição.');
             return;
         }
 
-        const newMeal: DietMeal = {
-            id: `meal_${Date.now()}`,
+        // Dados base da refeição (para criar ou atualizar)
+        const mealData = {
             tipo: currentMeal.tipo as DietMeal['tipo'],
             horario: currentMeal.horario,
             descricao: currentMeal.descricao.trim(),
@@ -234,9 +235,28 @@ export default function AnamnesePage() {
             gorduras: currentMeal.gorduras ? parseFloat(currentMeal.gorduras) : undefined
         };
 
-        const updatedMeals = [...dietMeals, newMeal];
+        let updatedMeals: DietMeal[];
+
+        if (editingMealId) {
+            // ATUALIZAÇÃO: Mantém o ID original e substitui os dados
+            updatedMeals = dietMeals.map(meal =>
+                meal.id === editingMealId
+                    ? { ...mealData, id: editingMealId }
+                    : meal
+            );
+            setToast({ message: 'Refeição atualizada e sincronizada!', type: 'success' });
+            setEditingMealId(null); // Sai do modo de edição
+        } else {
+            // CRIAÇÃO: Gera novo ID
+            const newMeal: DietMeal = {
+                id: `meal_${Date.now()}`,
+                ...mealData
+            };
+            updatedMeals = [...dietMeals, newMeal];
+            setToast({ message: 'Refeição salva e sincronizada!', type: 'success' });
+        }
+
         await syncDiet(updatedMeals); // Salva imediatamente
-        setToast({ message: 'Refeição salva e sincronizada!', type: 'success' });
 
         // Limpa o formulário atual
         setCurrentMeal({
@@ -248,6 +268,22 @@ export default function AnamnesePage() {
             carboidratos: '',
             gorduras: ''
         });
+    };
+
+    // Prepara formulário para edição
+    const handleEditMeal = (meal: DietMeal) => {
+        setEditingMealId(meal.id);
+        setCurrentMeal({
+            tipo: meal.tipo,
+            horario: meal.horario,
+            descricao: meal.descricao,
+            calorias: meal.calorias?.toString() || '',
+            proteina: meal.proteina?.toString() || '',
+            carboidratos: meal.carboidratos?.toString() || '',
+            gorduras: meal.gorduras?.toString() || ''
+        });
+
+        setToast({ message: 'Editando refeição...', type: 'info' });
     };
 
     // Abre modal de confirmação para remover refeição
@@ -635,13 +671,24 @@ export default function AnamnesePage() {
                                                             </div>
                                                         )}
                                                     </div>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleRemoveMealClick(meal.id)}
-                                                        className="p-2 hover:bg-red-500/20 rounded-lg transition-colors group"
-                                                    >
-                                                        <Trash2 size={16} className="text-red-400 group-hover:text-red-300" />
-                                                    </button>
+                                                    <div className="flex flex-col gap-2">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleEditMeal(meal)}
+                                                            className="p-2 hover:bg-yellow-500/20 rounded-lg transition-colors group"
+                                                            title="Editar refeição"
+                                                        >
+                                                            <Pencil size={16} className="text-yellow-400 group-hover:text-yellow-300" />
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleRemoveMealClick(meal.id)}
+                                                            className="p-2 hover:bg-red-500/20 rounded-lg transition-colors group"
+                                                            title="Excluir refeição"
+                                                        >
+                                                            <Trash2 size={16} className="text-red-400 group-hover:text-red-300" />
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         ))}
@@ -653,9 +700,15 @@ export default function AnamnesePage() {
                                     <div className="space-y-6 pt-2">
                                         <div className="flex items-center gap-2 mb-2">
                                             <div className="bg-primary/20 p-2 rounded-full">
-                                                <Plus size={20} className="text-primary" />
+                                                {editingMealId ? (
+                                                    <Pencil size={20} className="text-yellow-400" />
+                                                ) : (
+                                                    <Plus size={20} className="text-primary" />
+                                                )}
                                             </div>
-                                            <h3 className="text-xl font-bold text-white">Adicionar Refeição</h3>
+                                            <h3 className="text-xl font-bold text-white">
+                                                {editingMealId ? 'Editar Refeição' : 'Adicionar Refeição'}
+                                            </h3>
                                         </div>
 
                                         {/* Tipo de Refeição */}
@@ -761,14 +814,36 @@ export default function AnamnesePage() {
                                         </div>
 
                                         {/* Botão Salvar Refeição */}
+                                        {/* Botão Salvar/Atualizar Refeição */}
                                         <button
                                             type="button"
                                             onClick={handleAddMeal}
-                                            className="w-full bg-gradient-to-r from-primary to-green-400 text-black font-bold py-4 rounded-xl text-lg shadow-lg hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
+                                            className={`w-full bg-gradient-to-r ${editingMealId ? 'from-yellow-400 to-orange-500 text-black' : 'from-primary to-green-400 text-black'} font-bold py-4 rounded-xl text-lg shadow-lg hover:scale-[1.02] transition-all flex items-center justify-center gap-2`}
                                         >
-                                            <Plus size={24} />
-                                            Salvar Refeição
+                                            {editingMealId ? <Save size={24} /> : <Plus size={24} />}
+                                            {editingMealId ? 'Atualizar Refeição' : 'Salvar Refeição'}
                                         </button>
+
+                                        {editingMealId && (
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setEditingMealId(null);
+                                                    setCurrentMeal({
+                                                        tipo: '',
+                                                        horario: '',
+                                                        descricao: '',
+                                                        calorias: '',
+                                                        proteina: '',
+                                                        carboidratos: '',
+                                                        gorduras: ''
+                                                    });
+                                                }}
+                                                className="w-full mt-2 py-3 text-red-400 font-medium hover:bg-white/5 rounded-xl transition-colors"
+                                            >
+                                                Cancelar Edição
+                                            </button>
+                                        )}
                                     </div>
                                 ) : (
                                     <div className="bg-green-500/10 border border-green-500/20 rounded-xl p-6 text-center">
