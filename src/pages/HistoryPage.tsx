@@ -153,10 +153,10 @@ export default function HistoryPage() {
                     <div className="flex items-center gap-2">
                         <button
                             onClick={() => navigate('/historico-nutricional')}
-                            className="bg-white/10 p-2 rounded-full hover:bg-white/20 transition-colors"
-                            title="Ver Histórico Nutricional"
+                            className="bg-primary text-black px-3 py-1.5 rounded-full font-bold text-xs flex items-center gap-1.5 hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20"
                         >
-                            <Target className="text-primary w-5 h-5" />
+                            <Target size={14} />
+                            Histórico Nutricional
                         </button>
                         {!isPremium && (
                             <div className="bg-yellow-500/20 px-3 py-1 rounded-full border border-yellow-500/30">
@@ -374,21 +374,23 @@ export default function HistoryPage() {
             </div>
 
             {/* Peso do Dia (se registrado) */}
-            {dayData.weight && (
-                <div className="px-6 mb-6">
-                    <div className="bg-gradient-to-br from-purple-900/50 to-purple-800/50 rounded-2xl p-4 border border-purple-500/20">
-                        <div className="flex items-center gap-3">
-                            <div className="bg-primary/20 p-3 rounded-xl">
-                                <Calendar className="w-6 h-6 text-primary" />
-                            </div>
-                            <div>
-                                <p className="text-white/70 text-sm">Peso registrado</p>
-                                <p className="text-2xl font-bold text-white">{dayData.weight} kg</p>
+            {
+                dayData.weight && (
+                    <div className="px-6 mb-6">
+                        <div className="bg-gradient-to-br from-purple-900/50 to-purple-800/50 rounded-2xl p-4 border border-purple-500/20">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-primary/20 p-3 rounded-xl">
+                                    <Calendar className="w-6 h-6 text-primary" />
+                                </div>
+                                <div>
+                                    <p className="text-white/70 text-sm">Peso registrado</p>
+                                    <p className="text-2xl font-bold text-white">{dayData.weight} kg</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
             {/* Botão para voltar */}
             <div className="px-6">
@@ -399,6 +401,6 @@ export default function HistoryPage() {
                     Voltar ao Início
                 </button>
             </div>
-        </div>
+        </div >
     );
 }

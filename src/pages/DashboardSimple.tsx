@@ -186,10 +186,17 @@ export default function DashboardSimple() {
             <div className="px-6 -mt-6 mb-6">
                 <button
                     onClick={() => navigate('/registro')}
-                    className="w-full bg-gradient-to-r from-primary to-green-400 text-background font-bold py-4 px-6 rounded-2xl shadow-lg flex items-center justify-center gap-3 hover:scale-105 transition-transform"
+                    className="w-full bg-gradient-to-r from-primary to-green-400 text-background font-bold py-4 px-6 rounded-2xl shadow-lg flex items-center justify-center gap-3 hover:scale-105 transition-transform mb-3"
                 >
                     <Camera className="w-6 h-6" />
                     Registrar Refeição
+                </button>
+                <button
+                    onClick={() => navigate('/historico-nutricional')}
+                    className="w-full bg-[#202C33] border border-white/10 text-white font-bold py-3 px-6 rounded-2xl shadow-lg flex items-center justify-center gap-2 hover:scale-105 transition-transform hover:bg-[#2A3942]"
+                >
+                    <Target className="w-5 h-5 text-primary" />
+                    Histórico Nutricional
                 </button>
             </div>
 
