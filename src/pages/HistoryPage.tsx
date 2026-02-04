@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 import { Calendar, ChevronLeft, ChevronRight, Droplet, Dumbbell, Moon, Smile, Utensils, Crown, X, Target } from 'lucide-react';
 import { getUserData, getDailyData, getDailyNutrition } from '../lib/localStorage';
 import { useNavigate } from 'react-router-dom';
+import { getLocalDateKey } from '../lib/dateUtils';
 
 export default function HistoryPage() {
     const navigate = useNavigate();
     const [userData] = useState(getUserData());
-    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+    const [selectedDate, setSelectedDate] = useState(getLocalDateKey());
     const [dayData, setDayData] = useState(getDailyData(selectedDate));
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
@@ -33,9 +34,9 @@ export default function HistoryPage() {
 
     // Navega para o dia anterior
     const goToPreviousDay = () => {
-        const date = new Date(selectedDate);
+        const date = new Date(selectedDate + 'T00:00:00'); // Garante hora local zerada
         date.setDate(date.getDate() - 1);
-        const newDate = date.toISOString().split('T')[0];
+        const newDate = getLocalDateKey(date);
 
         if (!canViewDate(newDate)) {
             setShowUpgradeModal(true);
@@ -47,21 +48,23 @@ export default function HistoryPage() {
 
     // Navega para o próximo dia
     const goToNextDay = () => {
-        const date = new Date(selectedDate);
+        const date = new Date(selectedDate + 'T00:00:00');
         date.setDate(date.getDate() + 1);
-        const today = new Date().toISOString().split('T')[0];
-        if (date.toISOString().split('T')[0] <= today) {
-            setSelectedDate(date.toISOString().split('T')[0]);
+        const today = getLocalDateKey();
+        const nextDate = getLocalDateKey(date);
+
+        if (nextDate <= today) {
+            setSelectedDate(nextDate);
         }
     };
 
     // Vai para hoje
     const goToToday = () => {
-        setSelectedDate(new Date().toISOString().split('T')[0]);
+        setSelectedDate(getLocalDateKey());
     };
 
     // Verifica se é hoje
-    const isToday = selectedDate === new Date().toISOString().split('T')[0];
+    const isToday = selectedDate === getLocalDateKey();
 
     // Formata data
     const formatDate = (dateStr: string) => {
