@@ -1,8 +1,8 @@
-import { User, LogOut, /* Download, Upload, */ Settings, Crown, UtensilsCrossed, Target, RefreshCw, Smartphone, Bell } from 'lucide-react';
+import { User, LogOut, Download, Upload, Settings, Crown, UtensilsCrossed, Target, RefreshCw, Smartphone, Bell, AlertTriangle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { getUserData, getStats, /* exportData, importData */ } from '../lib/localStorage';
-import { useState /* , useRef */ } from 'react';
+import { getUserData, getStats, exportData, importData } from '../lib/localStorage';
+import { useState, useRef } from 'react';
 import Toast from '../components/Toast';
 import type { ToastType } from '../components/Toast';
 import PushNotificationSettings from '../components/PushNotificationSettings';
@@ -15,8 +15,9 @@ export default function ProfileSimple() {
     const [stats] = useState(getStats());
     const [refreshing, setRefreshing] = useState(false);
     const [showLogoutModal, setShowLogoutModal] = useState(false);
+    const [showImportModal, setShowImportModal] = useState(false); // Novo estado
     const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
-    // const fileInputRef = useRef<HTMLInputElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleLogout = () => {
         setShowLogoutModal(true);
@@ -37,20 +38,34 @@ export default function ProfileSimple() {
         setToast({ message: 'Status atualizado!', type: 'success' });
     };
 
-    /* Funções de Export/Import - OCULTAS (descomente para reativar)
+    // Função de Exportar
     const handleExport = () => {
-        const jsonData = exportData();
-        const blob = new Blob([jsonData], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `ayra-backup-${new Date().toISOString().split('T')[0]}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
+        try {
+            const jsonData = exportData();
+            const blob = new Blob([jsonData], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const dateStr = new Date().toISOString().split('T')[0];
+            a.download = `ayra-backup-${dateStr}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
 
-        alert('✅ Dados exportados com sucesso!');
+            setToast({ message: 'Backup gerado com sucesso! Arquivo baixado.', type: 'success' });
+        } catch (error) {
+            setToast({ message: 'Erro ao exportar dados.', type: 'error' });
+        }
     };
 
+    // Função para acionar o input file após confirmação
+    const triggerImport = () => {
+        setShowImportModal(false);
+        fileInputRef.current?.click();
+    };
+
+    // Função de Importar (Processa o arquivo)
     const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -62,18 +77,21 @@ export default function ProfileSimple() {
                 const success = importData(jsonString);
 
                 if (success) {
-                    alert('✅ Dados importados com sucesso!');
-                    window.location.reload();
+                    setToast({ message: 'Dados restaurados com sucesso! Recarregando...', type: 'success' });
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
                 } else {
-                    alert('❌ Erro ao importar dados. Verifique o arquivo.');
+                    setToast({ message: 'Arquivo de backup inválido ou corrompido.', type: 'error' });
                 }
             } catch (error) {
-                alert('❌ Erro ao ler arquivo.');
+                setToast({ message: 'Erro ao ler arquivo.', type: 'error' });
             }
         };
         reader.readAsText(file);
+        // Limpa o input para permitir selecionar o mesmo arquivo novamente se falhar
+        e.target.value = '';
     };
-    */
 
     return (
         <div className="min-h-screen bg-background pb-20">
@@ -250,42 +268,55 @@ export default function ProfileSimple() {
                 </div>
             </div>
 
-            {/* Dados e Backup - OCULTO (para reativar, descomente esta seção) */}
-            {/* <div className="px-6 mb-6">
-                <h2 className="text-lg font-bold text-white mb-3">Dados e Backup</h2>
+            {/* Dados e Backup */}
+            <div className="px-6 mb-6">
+                <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                    Backup e Segurança <span className="text-xs font-normal text-text-muted bg-white/5 px-2 py-0.5 rounded-full">Recomendado</span>
+                </h2>
 
-                <div className="space-y-3">
+                <div className="bg-card border border-white/10 rounded-2xl p-5 mb-4">
+                    <div className="flex gap-3 mb-3">
+                        <AlertTriangle className="text-yellow-500 min-w-[20px]" size={20} />
+                        <p className="text-sm text-gray-300 leading-relaxed">
+                            Para sua segurança, seus dados são armazenados no seu aparelho.
+                            Você pode exportar estes dados e importar em outro aparelho, caso venha a trocar de dispositivo, mantendo todo seu histórico.
+                        </p>
+                    </div>
+                    <p className="text-xs text-gray-400 pl-8">
+                        Recomendamos o backup periódico (semanal, quinzenal) dos seus dados.
+                    </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
                     <button
                         onClick={handleExport}
-                        className="w-full bg-card border border-white/10 rounded-2xl p-4 flex items-center justify-between hover:border-primary/30 transition-colors"
+                        className="bg-blue-500/10 border border-blue-500/30 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 hover:bg-blue-500/20 transition-colors"
                     >
-                        <div className="flex items-center gap-3">
+                        <div className="bg-blue-500/20 p-3 rounded-full">
                             <Download className="w-5 h-5 text-blue-400" />
-                            <span className="text-white font-semibold">Exportar Dados</span>
                         </div>
-                        <span className="text-gray-400">→</span>
+                        <span className="text-blue-400 font-semibold text-sm">Exportar (Backup)</span>
                     </button>
 
                     <button
-                        onClick={() => fileInputRef.current?.click()}
-                        className="w-full bg-card border border-white/10 rounded-2xl p-4 flex items-center justify-between hover:border-primary/30 transition-colors"
+                        onClick={() => setShowImportModal(true)}
+                        className="bg-green-500/10 border border-green-500/30 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 hover:bg-green-500/20 transition-colors"
                     >
-                        <div className="flex items-center gap-3">
+                        <div className="bg-green-500/20 p-3 rounded-full">
                             <Upload className="w-5 h-5 text-green-400" />
-                            <span className="text-white font-semibold">Importar Dados</span>
                         </div>
-                        <span className="text-gray-400">→</span>
+                        <span className="text-green-400 font-semibold text-sm">Restaurar Dados</span>
                     </button>
-
-                    <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept=".json"
-                        onChange={handleImport}
-                        className="hidden"
-                    />
                 </div>
-            </div> */}
+
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".json"
+                    onChange={handleImport}
+                    className="hidden"
+                />
+            </div>
 
             {/* Configurações do App */}
             <div className="px-6 mb-6">
@@ -392,6 +423,47 @@ export default function ProfileSimple() {
                                 className="flex-1 bg-red-500 text-white font-semibold py-3 rounded-xl hover:bg-red-600 transition-colors"
                             >
                                 Sair
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal de Confirmação de Importação */}
+            {showImportModal && (
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-6">
+                    <div className="bg-card border border-white/10 rounded-2xl p-6 max-w-sm w-full">
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="bg-green-500/20 p-3 rounded-xl">
+                                <Upload className="w-6 h-6 text-green-400" />
+                            </div>
+                            <h3 className="text-xl font-bold text-white">Restaurar Backup</h3>
+                        </div>
+
+                        <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 mb-4">
+                            <p className="text-yellow-200 text-sm font-medium">
+                                ⚠️ Atenção: Isso substituirá todos os dados atuais!
+                            </p>
+                        </div>
+
+                        <p className="text-gray-300 mb-6 text-sm">
+                            Ao restaurar um backup, todos os seus dados atuais (histórico, metas, perfil) serão substituídos pelos dados do arquivo.
+                            <br /><br />
+                            Deseja continuar e selecionar o arquivo?
+                        </p>
+
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setShowImportModal(false)}
+                                className="flex-1 bg-white/5 border border-white/10 text-white font-semibold py-3 rounded-xl hover:bg-white/10 transition-colors"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={triggerImport}
+                                className="flex-1 bg-green-500 text-black font-bold py-3 rounded-xl hover:bg-green-400 transition-colors"
+                            >
+                                Selecionar Arquivo
                             </button>
                         </div>
                     </div>
