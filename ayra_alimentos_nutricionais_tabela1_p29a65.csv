@@ -1,0 +1,578 @@
+descricao_alimento,kcal,carboidrato_g,proteina_g,lipideos_g,fibra_alimentar_g,base_por,fonte
+"Arroz, integral, cozido",124.0,25.8,2.6,1.0,2.7,100g,TACO
+"Arroz, integral, cru",360.0,77.5,7.3,1.9,4.8,100g,TACO
+"Arroz, tipo 1, cozido",128.0,28.1,2.5,0.2,1.6,100g,TACO
+"Arroz, tipo 1, cru",358.0,78.8,7.2,0.3,1.6,100g,TACO
+"Arroz, tipo 2, cozido",130.0,28.2,2.6,0.4,1.1,100g,TACO
+"Arroz, tipo 2, cru",358.0,78.9,7.2,0.3,1.7,100g,TACO
+"Aveia, flocos, crua",394.0,66.6,13.9,8.5,9.1,100g,TACO
+"Biscoito, doce, maisena",443.0,75.2,8.1,12.0,2.1,100g,TACO
+"Biscoito, doce, recheado com chocolate",472.0,70.5,6.4,19.6,3.0,100g,TACO
+"Biscoito, doce, recheado com morango",471.0,71.0,5.7,19.6,1.5,100g,TACO
+"Biscoito, doce, wafer, recheado de chocolate",502.0,67.5,5.6,24.7,1.8,100g,TACO
+"Biscoito, doce, wafer, recheado de morango",513.0,67.4,4.5,26.4,0.8,100g,TACO
+"Biscoito, salgado, cream cracker",432.0,68.7,10.1,14.4,2.5,100g,TACO
+"Bolo, mistura para",419.0,84.7,6.2,6.1,1.7,100g,TACO
+"Bolo, pronto, aipim",324.0,47.9,4.4,12.7,0.7,100g,TACO
+"Bolo, pronto, chocolate",410.0,54.7,6.2,18.5,1.4,100g,TACO
+"Bolo, pronto, coco",333.0,52.3,5.7,11.3,1.1,100g,TACO
+"Bolo, pronto, milho",311.0,45.1,4.8,12.4,0.7,100g,TACO
+"Canjica, branca, crua",358.0,78.1,7.2,1.0,5.5,100g,TACO
+"Canjica, com leite integral",112.0,23.6,2.4,1.2,1.2,100g,TACO
+"Cereais, milho, flocos, com sal",370.0,80.8,7.3,1.6,5.3,100g,TACO
+"Cereais, milho, flocos, sem sal",363.0,80.4,6.9,1.2,1.8,100g,TACO
+"Cereais, mingau, milho, infantil",394.0,87.3,6.4,1.1,3.2,100g,TACO
+"Cereais, mistura para vitamina, trigo, cevadae aveia",381.0,81.6,8.9,2.1,5.0,100g,TACO
+"Cereal matinal, milho",365.0,83.8,7.2,1.0,4.1,100g,TACO
+"Cereal matinal, milho, açúcar",377.0,88.8,4.7,0.7,2.1,100g,TACO
+"Creme de arroz, pó",386.0,83.9,7.0,1.2,1.1,100g,TACO
+"Creme de milho, pó",333.0,86.1,4.8,1.6,3.7,100g,TACO
+"Curau, milho verde",78.0,13.9,2.4,1.6,0.5,100g,TACO
+"Curau, milho verde, mistura para",402.0,79.8,2.2,13.4,2.5,100g,TACO
+"Farinha, de arroz, enriquecida",363.0,85.5,1.3,0.3,0.6,100g,TACO
+"Farinha, de centeio, integral",336.0,73.3,12.5,1.8,15.5,100g,TACO
+"Farinha, de milho, amarela",351.0,79.1,7.2,1.5,5.5,100g,TACO
+"Farinha, de rosca",371.0,75.8,11.4,1.5,4.8,100g,TACO
+"Farinha, de trigo",360.0,75.1,9.8,1.4,2.3,100g,TACO
+"Farinha, láctea, de cereais",415.0,77.8,11.9,5.8,1.9,100g,TACO
+"Lasanha, massa fresca, cozida",164.0,32.5,5.8,1.2,1.6,100g,TACO
+"Lasanha, massa fresca, crua",220.0,45.1,7.0,1.3,1.6,100g,TACO
+"Macarrão, instantâneo",436.0,62.4,8.8,17.2,5.6,100g,TACO
+"Macarrão, trigo, cru",371.0,77.9,10.0,1.3,2.9,100g,TACO
+"Macarrão, trigo, cru, com ovos",371.0,76.6,10.3,2.0,2.3,100g,TACO
+"Milho, amido, cru",361.0,87.1,0.6,,0.7,100g,TACO
+"Milho, fubá, cru",353.0,78.9,7.2,1.9,4.7,100g,TACO
+"Milho, verde, cru",138.0,28.6,6.6,0.6,3.9,100g,TACO
+"Milho, verde, enlatado, drenado",98.0,17.1,3.2,2.4,4.6,100g,TACO
+"Mingau tradicional, pó",373.0,89.3,0.6,0.4,0.9,100g,TACO
+"Pamonha, barra para cozimento, pré-cozida",171.0,30.7,2.6,4.8,2.4,100g,TACO
+"Pão, aveia, forma",343.0,59.6,12.4,5.7,6.0,100g,TACO
+"Pão, de soja",309.0,56.5,11.3,3.6,5.7,100g,TACO
+"Pão, glúten, forma",253.0,44.1,12.0,2.7,2.5,100g,TACO
+"Pão, milho, forma",292.0,56.4,8.3,3.1,4.3,100g,TACO
+"Pão, trigo, forma, integral",253.0,49.9,9.4,3.7,6.9,100g,TACO
+"Pão, trigo, francês",300.0,58.6,8.0,3.1,2.3,100g,TACO
+"Pão, trigo, sovado",311.0,61.5,8.4,2.8,2.4,100g,TACO
+"Pastel, de carne, cru",289.0,42.0,10.7,8.8,1.0,100g,TACO
+"Pastel, de carne, frito",388.0,43.8,10.1,20.1,1.0,100g,TACO
+"Pastel, de queijo, cru",308.0,45.9,9.9,9.6,1.1,100g,TACO
+"Pastel, de queijo, frito",422.0,48.1,8.7,22.7,0.9,100g,TACO
+"Pastel, massa, crua",310.0,57.4,6.9,5.5,1.4,100g,TACO
+"Pastel, massa, frita",570.0,49.3,6.0,40.9,1.3,100g,TACO
+"Pipoca, com óleo de soja, sem sal",448.0,70.3,9.9,15.9,14.3,100g,TACO
+"Polenta, pré-cozida",103.0,23.3,2.3,0.3,2.4,100g,TACO
+"Torrada, pão francês",377.0,74.6,10.5,3.3,3.4,100g,TACO
+"Abóbora, cabotian, cozida",48.0,10.8,1.4,0.7,2.5,100g,TACO
+"Abóbora, cabotian, crua",39.0,8.4,1.7,0.5,2.2,100g,TACO
+"Abóbora, menina brasileira, crua",14.0,3.3,0.6,,1.2,100g,TACO
+"Abóbora, moranga, crua",12.0,2.7,1.0,0.1,1.7,100g,TACO
+"Abóbora, moranga, refogada",29.0,6.0,0.4,0.8,1.5,100g,TACO
+"Abobora, pescoço, crua",24.0,6.1,0.7,0.1,2.3,100g,TACO
+"Abobrinha, italiana, cozida",15.0,3.0,1.1,0.2,1.6,100g,TACO
+"Abobrinha, italiana, crua",19.0,4.3,1.1,0.1,1.4,100g,TACO
+"Abobrinha, italiana, refogada",24.0,4.2,1.1,0.8,1.4,100g,TACO
+"Abobrinha, paulista, crua",31.0,7.9,0.6,0.1,2.6,100g,TACO
+"Acelga, crua",21.0,4.6,1.4,0.1,1.1,100g,TACO
+"Agrião, cru",17.0,2.3,2.7,0.2,2.1,100g,TACO
+"Aipo, cru",19.0,4.3,0.8,0.1,1.0,100g,TACO
+"Alface, americana, crua",9.0,1.7,0.6,0.1,1.0,100g,TACO
+"Alface, crespa, crua",11.0,1.7,1.3,0.2,1.8,100g,TACO
+"Alface, lisa, crua",14.0,2.4,1.7,0.1,2.3,100g,TACO
+"Alface, roxa, crua",13.0,2.5,0.9,0.2,2.0,100g,TACO
+"Alfavaca, crua",29.0,5.2,2.7,0.5,4.1,100g,TACO
+"Alho, cru",113.0,23.9,7.0,0.2,4.3,100g,TACO
+"Alho-poró, cru",32.0,6.9,1.4,0.1,2.5,100g,TACO
+"Almeirão, cru",18.0,3.3,1.8,0.2,2.6,100g,TACO
+"Almeirão, refogado",65.0,5.7,1.7,4.8,3.4,100g,TACO
+"Batata, baroa, cozida",80.0,18.9,0.9,0.2,1.8,100g,TACO
+"Batata, baroa, crua",101.0,24.0,1.0,0.2,2.1,100g,TACO
+"Batata, doce, cozida",77.0,18.4,0.6,0.1,2.2,100g,TACO
+"Batata, doce, crua",118.0,28.2,1.3,0.1,2.6,100g,TACO
+"Batata, frita, tipo chips, industrializada",543.0,51.2,5.6,36.6,2.5,100g,TACO
+"Batata, inglesa, cozida",52.0,11.9,1.2,,1.3,100g,TACO
+"Batata, inglesa, crua",64.0,14.7,1.8,,1.2,100g,TACO
+"Batata, inglesa, frita",267.0,35.6,5.0,13.1,8.1,100g,TACO
+"Batata, inglesa, sauté",68.0,14.1,1.3,0.9,1.4,100g,TACO
+"Berinjela, cozida",19.0,4.5,0.7,0.1,2.5,100g,TACO
+"Berinjela, crua",20.0,4.4,1.2,0.1,2.9,100g,TACO
+"Beterraba, cozida",32.0,7.2,1.3,0.1,1.9,100g,TACO
+"Beterraba, crua",49.0,11.1,1.9,0.1,3.4,100g,TACO
+"Biscoito, polvilho doce",438.0,80.5,1.3,12.2,1.2,100g,TACO
+"Brócolis, cozido",25.0,4.4,2.1,0.5,3.4,100g,TACO
+"Brócolis, cru",25.0,4.0,3.6,0.3,2.9,100g,TACO
+"Cará, cozido",78.0,18.9,1.5,0.1,2.6,100g,TACO
+"Cará, cru",96.0,23.0,2.3,0.1,7.3,100g,TACO
+"Caruru, cru",34.0,6.0,3.2,0.6,4.5,100g,TACO
+"Catalonha, crua",24.0,4.8,1.9,0.3,2.0,100g,TACO
+"Catalonha, refogada",63.0,4.8,2.0,4.8,3.7,100g,TACO
+"Cebola, crua",39.0,8.9,1.7,0.1,2.2,100g,TACO
+"Cebolinha, crua",20.0,3.4,1.9,0.4,3.6,100g,TACO
+"Cenoura, cozida",30.0,6.7,0.8,0.2,2.6,100g,TACO
+"Cenoura, crua",34.0,7.7,1.3,0.2,3.2,100g,TACO
+"Chicória, crua",14.0,2.9,1.1,0.1,2.2,100g,TACO
+"Chuchu, cozido",19.0,4.8,0.4,,1.0,100g,TACO
+"Chuchu, cru",17.0,4.1,0.7,0.1,1.3,100g,TACO
+"Coentro, folhas desidratadas",309.0,48.0,20.9,10.4,37.3,100g,TACO
+"Couve, manteiga, crua",27.0,4.3,2.9,0.5,3.1,100g,TACO
+"Couve, manteiga, refogada",90.0,8.7,1.7,6.6,5.7,100g,TACO
+"Couve-flor, crua",23.0,4.5,1.9,0.2,2.4,100g,TACO
+"Couve-flor, cozida",19.0,3.9,1.2,0.3,2.1,100g,TACO
+"Espinafre, Nova Zelândia, cru",16.0,2.6,2.0,0.2,2.1,100g,TACO
+"Espinafre, Nova Zelândia, refogado",67.0,4.2,2.7,5.4,2.5,100g,TACO
+"Farinha, de mandioca, crua",361.0,87.9,1.6,0.3,6.4,100g,TACO
+"Farinha, de mandioca, torrada",365.0,89.2,1.2,0.3,6.5,100g,TACO
+"Farinha, de puba",360.0,87.3,1.6,0.5,4.2,100g,TACO
+"Fécula, de mandioca",331.0,81.1,0.5,0.3,0.6,100g,TACO
+"Feijão, broto, cru",39.0,7.8,4.2,0.1,2.0,100g,TACO
+"Inhame, cru",97.0,23.2,2.1,0.2,1.7,100g,TACO
+"Jiló, cru",27.0,6.2,1.4,0.2,4.8,100g,TACO
+"Jurubeba, crua",126.0,23.1,4.4,3.9,23.9,100g,TACO
+"Mandioca, cozida",125.0,30.1,0.6,0.3,1.6,100g,TACO
+"Mandioca, crua",151.0,36.2,1.1,0.3,1.9,100g,TACO
+"Mandioca, farofa, temperada",406.0,80.3,2.1,9.1,7.8,100g,TACO
+"Mandioca, frita",300.0,50.3,1.4,11.2,1.9,100g,TACO
+"Manjericão, cru",21.0,3.6,2.0,0.4,3.3,100g,TACO
+"Maxixe, cru",14.0,2.7,1.4,0.1,2.2,100g,TACO
+"Mostarda, folha, crua",18.0,3.2,2.1,0.2,1.9,100g,TACO
+"Nhoque, batata, cozido",181.0,36.8,5.9,1.9,1.8,100g,TACO
+"Nabo, cru",18.0,4.1,1.2,0.1,2.6,100g,TACO
+"Palmito, juçara, em conserva",23.0,4.3,1.8,0.4,3.2,100g,TACO
+"Palmito, pupunha, em conserva",29.0,5.5,2.5,0.5,2.6,100g,TACO
+"Pão, de queijo, assado",363.0,34.2,5.1,24.6,0.6,100g,TACO
+"Pão, de queijo, cru",295.0,38.5,3.6,14.0,1.0,100g,TACO
+"Pepino, cru",10.0,2.0,0.9,,1.1,100g,TACO
+"Pimentão, amarelo, cru",28.0,6.0,1.2,0.4,1.9,100g,TACO
+"Pimentão, verde, cru",21.0,4.9,1.1,0.2,2.6,100g,TACO
+"Pimentão, vermelho, cru",23.0,5.5,1.0,0.1,1.6,100g,TACO
+"Polvilho, doce",351.0,86.8,0.4,,0.2,100g,TACO
+"Quiabo, cru",30.0,6.4,1.9,0.3,4.6,100g,TACO
+"Rabanete, cru",14.0,2.7,1.4,0.1,2.2,100g,TACO
+"Repolho, branco, cru",17.0,3.9,0.9,0.1,1.9,100g,TACO
+"Repolho, roxo, cru",31.0,7.2,1.9,0.1,2.0,100g,TACO
+"Repolho, roxo, refogado",42.0,7.6,1.8,1.2,1.8,100g,TACO
+"Rúcula, crua",13.0,2.2,1.8,0.1,1.7,100g,TACO
+"Salsa, crua",33.0,5.7,3.3,0.6,1.9,100g,TACO
+"Seleta de legumes, enlatada",57.0,12.7,3.4,0.4,3.1,100g,TACO
+"Serralha, crua",30.0,4.9,2.7,0.7,3.5,100g,TACO
+"Taioba, crua",34.0,5.4,2.9,0.9,4.5,100g,TACO
+"Tomate, com semente, cru",15.0,3.1,1.1,0.2,1.2,100g,TACO
+"Tomate, extrato",61.0,15.0,2.4,0.2,2.8,100g,TACO
+"Tomate, molho industrializado",38.0,7.7,1.4,0.9,3.1,100g,TACO
+"Tomate, purê",28.0,6.9,1.4,,1.0,100g,TACO
+"Tomate, salada",21.0,5.1,0.8,,2.3,100g,TACO
+"Vagem, crua 92, 2 25",25.0,5.3,1.8,0.2,2.4,100g,TACO
+"Abacate, cru",96.0,6.0,1.2,8.4,6.3,100g,TACO
+"Abacaxi, cru",48.0,12.3,0.9,0.1,1.0,100g,TACO
+"Abacaxi, polpa, congelada",31.0,7.8,0.5,0.1,0.3,100g,TACO
+"Abiu, cru",62.0,14.9,0.8,0.7,1.7,100g,TACO
+"Açaí, polpa, com xarope de guaranáe glucose",110.0,21.5,0.7,3.7,1.7,100g,TACO
+"Açaí, polpa, congelada",58.0,6.2,0.8,3.9,2.6,100g,TACO
+"Acerola, crua",33.0,8.0,0.9,0.2,1.5,100g,TACO
+"Acerola, polpa, congelada",22.0,5.5,0.6,,0.7,100g,TACO
+"Ameixa, calda, enlatada",183.0,46.9,0.4,,0.5,100g,TACO
+"Ameixa, crua",53.0,13.9,0.8,,2.4,100g,TACO
+"Ameixa, em calda, enlatada, drenada",177.0,47.7,1.0,0.3,4.5,100g,TACO
+"Atemóia, crua",97.0,25.3,1.0,0.3,2.1,100g,TACO
+"Banana, da terra, crua",128.0,33.7,1.4,0.2,1.5,100g,TACO
+"Banana, doce em barra",280.0,75.7,2.2,0.1,3.8,100g,TACO
+"Banana, figo, crua",105.0,27.8,1.1,0.1,2.8,100g,TACO
+"Banana, maçã, crua",87.0,22.3,1.8,0.1,2.6,100g,TACO
+"Banana, nanica, crua",92.0,23.8,1.4,0.1,1.9,100g,TACO
+"Banana, ouro, crua",112.0,29.3,1.5,0.2,2.0,100g,TACO
+"Banana, pacova, crua",78.0,20.3,1.2,0.1,2.0,100g,TACO
+"Banana, prata, crua",98.0,26.0,1.3,0.1,2.0,100g,TACO
+"Cacau, cru",74.0,19.4,1.0,0.1,2.2,100g,TACO
+"Cajá-Manga, cru",46.0,11.4,1.3,,2.6,100g,TACO
+"Cajá, polpa, congelada",26.0,6.4,0.6,0.2,1.4,100g,TACO
+"Caju, cru",43.0,10.3,1.0,0.3,1.7,100g,TACO
+"Caju, polpa, congelada",37.0,9.4,0.5,0.2,0.8,100g,TACO
+"Caju, suco concentrado, envasado",45.0,10.7,0.4,0.2,0.6,100g,TACO
+"Caqui, chocolate, cru",71.0,19.3,0.4,0.1,6.5,100g,TACO
+"Carambola, crua",46.0,11.5,0.9,0.2,2.0,100g,TACO
+"Ciriguela, crua",76.0,18.9,1.4,0.4,3.9,100g,TACO
+"Cupuaçu, cru",49.0,10.4,1.2,1.0,3.1,100g,TACO
+"Cupuaçu, polpa, congelada",49.0,11.4,0.8,0.6,1.6,100g,TACO
+"Figo, cru",41.0,10.2,1.0,0.2,1.8,100g,TACO
+"Figo, enlatado, em calda",184.0,50.3,0.6,0.2,2.0,100g,TACO
+"Fruta-pão, crua",67.0,17.2,1.1,0.2,5.5,100g,TACO
+"Goiaba, branca, com casca, crua",52.0,12.4,0.9,0.5,6.3,100g,TACO
+"Goiaba, doce em pasta",269.0,74.1,0.6,0.0,3.7,100g,TACO
+"Goiaba, doce, cascão",286.0,78.7,0.4,0.1,4.4,100g,TACO
+"Goiaba, vermelha, com casca, crua",54.0,13.0,1.1,0.4,6.2,100g,TACO
+"Graviola, crua",62.0,15.8,0.8,0.2,1.9,100g,TACO
+"Graviola, polpa, congelada",38.0,9.8,0.6,0.1,1.2,100g,TACO
+"Jabuticaba, crua",58.0,15.3,0.6,0.1,2.3,100g,TACO
+"Jaca, crua",88.0,22.5,1.4,0.3,2.4,100g,TACO
+"Jambo, cru",27.0,6.5,0.9,0.1,5.1,100g,TACO
+"Jamelão, cru",41.0,10.6,0.5,0.1,1.8,100g,TACO
+"Kiwi, cru",51.0,11.5,1.3,0.6,2.7,100g,TACO
+"Laranja, baía, crua",45.0,11.5,1.0,0.1,1.1,100g,TACO
+"Laranja, baía, suco",37.0,8.7,0.7,,,100g,TACO
+"Laranja, da terra, crua",51.0,12.9,1.1,0.2,4.0,100g,TACO
+"Laranja, da terra, suco",41.0,9.6,0.7,0.1,1.0,100g,TACO
+"Laranja, lima, crua",46.0,11.5,1.1,0.1,1.8,100g,TACO
+"Laranja, lima, suco",39.0,9.2,0.7,0.1,0.4,100g,TACO
+"Laranja, pêra, crua",37.0,8.9,1.0,0.1,0.8,100g,TACO
+"Laranja, pêra, suco",33.0,7.6,0.7,0.1,,100g,TACO
+"Laranja, valência, crua",46.0,11.7,0.8,0.2,1.7,100g,TACO
+"Laranja, valência, suco",36.0,8.6,0.5,0.1,0.4,100g,TACO
+"Limão, cravo, suco",14.0,5.2,0.3,,,100g,TACO
+"Limão, galego, suco",22.0,7.3,0.6,0.1,,100g,TACO
+"Limão, tahiti, cru",32.0,11.1,0.9,0.1,1.2,100g,TACO
+"Maçã, Argentina, com casca, crua",63.0,16.6,0.2,0.2,2.0,100g,TACO
+"Maçã, Fuji, com casca, crua",56.0,15.2,0.3,,1.3,100g,TACO
+"Macaúba, crua",404.0,13.9,2.1,40.7,13.4,100g,TACO
+"Mamão, doce em calda, drenado",196.0,54.0,0.2,0.1,1.3,100g,TACO
+"Mamão, Formosa, cru",45.0,11.6,0.8,0.1,1.8,100g,TACO
+"Mamão, Papaia, cru",40.0,10.4,0.5,0.1,1.0,100g,TACO
+"Mamão verde, doce em calda, drenado",209.0,57.6,0.3,0.1,1.2,100g,TACO
+"Manga, Haden, crua",64.0,16.7,0.4,0.3,1.6,100g,TACO
+"Manga, Palmer, crua",72.0,19.4,0.4,0.2,1.6,100g,TACO
+"Manga, polpa, congelada",48.0,12.5,0.4,0.2,1.1,100g,TACO
+"Manga, Tommy Atkins, crua",51.0,12.8,0.9,0.2,2.1,100g,TACO
+"Maracujá, cru",68.0,12.3,2.0,2.1,1.1,100g,TACO
+"Maracujá, polpa, congelada",39.0,9.6,0.8,0.2,0.5,100g,TACO
+"Maracujá, suco concentrado, envasado",42.0,9.6,0.8,0.2,0.4,100g,TACO
+"Melancia, crua",33.0,8.1,0.9,,0.1,100g,TACO
+"Melão, cru",29.0,7.5,0.7,,0.3,100g,TACO
+"Mexerica, Murcote, crua",58.0,14.9,0.9,0.1,3.1,100g,TACO
+"Mexerica, Rio, crua",37.0,9.3,0.7,0.1,2.7,100g,TACO
+"Morango, cru",30.0,6.8,0.9,0.3,1.7,100g,TACO
+"Nêspera, crua",43.0,11.5,0.3,,3.0,100g,TACO
+"Pequi, cru",205.0,13.0,2.3,18.0,19.0,100g,TACO
+"Pêra, Park, crua",61.0,16.1,0.2,0.2,3.0,100g,TACO
+"Pêra, Williams, crua",53.0,14.0,0.6,0.1,3.0,100g,TACO
+"Pêssego, Aurora, cru",36.0,9.3,0.8,,1.4,100g,TACO
+"Pêssego, enlatado, em calda",63.0,16.9,0.7,,1.0,100g,TACO
+"Pinha, crua",88.0,22.4,1.5,0.3,3.4,100g,TACO
+"Pitanga, crua",41.0,10.2,0.9,0.2,3.2,100g,TACO
+"Pitanga, polpa, congelada",19.0,4.8,0.3,0.1,0.7,100g,TACO
+"Romã, crua",56.0,15.1,0.4,,0.4,100g,TACO
+"Tamarindo, cru",276.0,72.5,3.2,0.5,6.4,100g,TACO
+"Tangerina, Poncã, crua",38.0,9.6,0.8,0.1,0.9,100g,TACO
+"Tangerina, Poncã, suco",36.0,8.8,0.5,,,100g,TACO
+"Tucumã, cru",262.0,26.5,2.1,19.1,12.7,100g,TACO
+"Umbu, cru",37.0,9.4,0.8,,2.0,100g,TACO
+"Umbu, polpa, congelada",34.0,8.8,0.5,0.1,1.3,100g,TACO
+"Uva, Itália, crua",53.0,13.6,0.7,0.2,0.9,100g,TACO
+"Uva, Rubi, crua",49.0,12.7,0.6,0.2,0.9,100g,TACO
+"Uva, suco concentrado, envasado 85, 1 58",58.0,14.7,,,0.2,100g,TACO
+"Azeite, de dendê",884.0,,,100.0,,100g,TACO
+"Azeite, de",884.0,,,100.0,,100g,TACO
+"Manteiga, com sal",726.0,0.1,0.4,82.4,,100g,TACO
+"Manteiga, sem sal",758.0,0.0,0.4,86.0,,100g,TACO
+"Margarina, com óleo hidrogenado, com sal (65% de lipídeos)",596.0,0.0,,67.4,,100g,TACO
+"Margarina, com óleo hidrogenado, sem sal (80% de lipídeos)",723.0,0.0,,81.7,,100g,TACO
+"Margarina, com óleo interesterificado, com sal (65%de lipídeos)",594.0,0.0,,67.2,,100g,TACO
+"Margarina, com óleo interesterificado, sem sal (65% de lipídeos)",593.0,0.0,,67.1,,100g,TACO
+"Óleo, de ba baçu",884.0,,,100.0,,100g,TACO
+"Óleo, de ca nola",884.0,,,100.0,,100g,TACO
+"Óleo, de gi rassol",884.0,,,100.0,,100g,TACO
+"Óleo, de m ilho",884.0,,,100.0,,100g,TACO
+"Óleo, de pe qui",884.0,,,100.0,,100g,TACO
+"Óleo, de soja NA",884.0,,,100.0,,100g,TACO
+"Abadejo, filé, congelado, assado",112.0,0.0,23.5,1.2,,100g,TACO
+"Abadejo, filé, congelado, cozido",91.0,0.0,19.3,0.9,,100g,TACO
+"Abadejo, filé, congelado, cru",59.0,0.0,13.1,0.4,,100g,TACO
+"Abadejo, filé, congelado, grelhado",130.0,0.0,27.6,1.3,,100g,TACO
+"Atum, conserva em óleo",166.0,0.0,26.2,6.0,,100g,TACO
+"Atum, fresco, cru",118.0,0.0,25.7,0.9,,100g,TACO
+"Bacalhau, salgado, cru",136.0,0.0,29.0,1.3,,100g,TACO
+"Bacalhau, salgado, refogado",140.0,1.2,24.0,3.6,,100g,TACO
+"Cação, posta, com farinha de trigo, frita",208.0,3.1,25.0,10.0,0.5,100g,TACO
+"Cação, posta, cozida",116.0,0.0,25.6,0.7,,100g,TACO
+"Cação, posta, crua",83.0,0.0,17.9,0.8,,100g,TACO
+"Camarão, Rio Grande, grande, cozido",90.0,0.0,19.0,1.0,,100g,TACO
+"Camarão, Rio Grande, grande, cru",47.0,0.0,10.0,0.5,,100g,TACO
+"Camarão, Sete Barbas, sem cabeça, com casca, frito",231.0,2.9,18.4,15.6,,100g,TACO
+"Caranguejo, cozido",83.0,0.0,18.5,0.4,,100g,TACO
+"Corimba, cru",128.0,0.0,17.4,6.0,,100g,TACO
+"Corimbatá, assado",261.0,0.0,19.9,19.6,,100g,TACO
+"Corimbatá, cozido",239.0,0.0,20.1,16.9,,100g,TACO
+"Corvina de água doce, crua",101.0,0.0,18.9,2.2,,100g,TACO
+"Corvina do mar, crua",94.0,0.0,18.6,1.6,,100g,TACO
+"Corvina grande, assada",147.0,0.0,26.8,3.6,,100g,TACO
+"Corvina grande, cozida",100.0,0.0,23.4,2.6,,100g,TACO
+"Dourada de água doce, fresca",131.0,0.0,18.8,5.6,,100g,TACO
+"Lambari, congelado, cru",131.0,0.0,16.8,6.5,,100g,TACO
+"Lambari, congelado, frito",327.0,0.0,28.4,22.8,,100g,TACO
+"Lambari, fresco, cru",152.0,0.0,15.7,9.4,,100g,TACO
+"Manjuba, com farinha de trigo, frita",344.0,10.2,23.5,22.6,0.4,100g,TACO
+"Manjuba, frita",349.0,0.0,30.1,24.5,,100g,TACO
+"Merluza, filé, assado",122.0,0.0,26.6,0.9,,100g,TACO
+"Merluza, filé, cru",89.0,0.0,16.6,2.0,,100g,TACO
+"Merluza, filé, frito",192.0,0.0,26.9,8.5,,100g,TACO
+"Pescada, branca, crua",111.0,0.0,16.3,4.6,,100g,TACO
+"Pescada, branca, frita",223.0,0.0,27.4,11.8,,100g,TACO
+"Pescada, filé, com farinha de trigo, frito",283.0,5.0,21.4,19.1,,100g,TACO
+"Pescada, filé, cru",107.0,0.0,16.7,4.0,,100g,TACO
+"Pescada, filé, frito",154.0,0.0,28.6,3.6,,100g,TACO
+"Pescada, filé, molho escabeche",142.0,5.0,11.8,8.0,0.8,100g,TACO
+"Pescadinha, crua",76.0,0.0,15.5,1.1,,100g,TACO
+"Pintado, assado",192.0,0.0,36.5,4.0,,100g,TACO
+"Pintado, cru",91.0,0.0,18.6,1.3,,100g,TACO
+"Pintado, grelhado",152.0,0.0,30.8,2.3,,100g,TACO
+"Porquinho, cru",93.0,0.0,20.5,0.6,,100g,TACO
+"Salmão, filé, com pele, fresco, grelhado",229.0,0.0,23.9,14.0,,100g,TACO
+"Salmão, sem pele, fresco, cru",170.0,0.0,19.3,9.7,,100g,TACO
+"Salmão, sem pele, fresco, grelhado",243.0,0.0,26.1,14.5,,100g,TACO
+"Sardinha, assada",164.0,0.0,32.2,3.0,,100g,TACO
+"Sardinha, conserva em óleo",285.0,0.0,15.9,24.0,,100g,TACO
+"Sardinha, frita",257.0,0.0,33.4,12.7,,100g,TACO
+"Sardinha, inteira, crua",114.0,0.0,21.1,2.7,,100g,TACO
+"Tucunaré, filé, congelado, cru 79, 9 88",88.0,0.0,18.0,1.2,,100g,TACO
+Apresuntado,129.0,2.9,13.5,6.7,,100g,TACO
+"Caldo de carne, tablete",241.0,15.1,7.8,16.6,0.6,100g,TACO
+"Caldo de galinha, tablete",251.0,10.6,6.3,20.4,11.8,100g,TACO
+"Carne, bovina, acém, moído, cozido",212.0,0.0,26.7,10.9,,100g,TACO
+"Carne, bovina, acém, moído, cru",137.0,0.0,19.4,5.9,,100g,TACO
+"Carne, bovina, acém, sem gordura, cozido",215.0,0.0,27.3,10.9,,100g,TACO
+"Carne, bovina, acém, sem gordura, cru",144.0,0.0,20.8,6.1,,100g,TACO
+"Carne, bovina, almôndegas, cruas",189.0,9.8,12.3,11.2,,100g,TACO
+"Carne, bovina, almôndegas, fritas",272.0,14.3,18.2,15.8,,100g,TACO
+"Carne, bovina, bucho, cozido",133.0,0.0,21.6,4.5,,100g,TACO
+"Carne, bovina, bucho, cru",137.0,0.0,20.5,5.5,,100g,TACO
+"Carne, bovina, capa de contra-filé, com gordura, crua",217.0,0.0,19.2,15.0,,100g,TACO
+"Carne, bovina, capa de contra-filé, com gordura, grelhada",312.0,0.0,30.7,20.0,,100g,TACO
+"Carne, bovina, capa de contra-filé, sem gordura, crua",131.0,0.0,21.5,4.3,,100g,TACO
+"Carne, bovina, capa de contra-filé, sem gordura, grelhada",239.0,0.0,35.1,10.0,,100g,TACO
+"Carne, bovina, charque, cozido",263.0,0.0,36.4,11.9,,100g,TACO
+"Carne, bovina, charque, cru",249.0,0.0,22.7,16.8,,100g,TACO
+"Carne, bovina, contra-filé, à milanesa",352.0,12.2,20.6,24.0,0.4,100g,TACO
+"Carne, bovina, contra-filé de costela, cru",202.0,0.0,19.8,13.1,,100g,TACO
+"Carne, bovina, contra-filé de costela, grelhado",275.0,0.0,29.9,16.3,,100g,TACO
+"Carne, bovina, contra-filé, com gordura, cru",206.0,0.0,21.2,12.8,,100g,TACO
+"Carne, bovina, contra-filé, com gordura, grelhado",278.0,0.0,32.4,15.5,,100g,TACO
+"Carne, bovina, contra-filé, sem gordura, cru",157.0,0.0,24.0,6.0,,100g,TACO
+"Carne, bovina, contra-filé, sem gordura, grelhado",194.0,0.0,35.9,4.5,,100g,TACO
+"Carne, bovina, costela, assada",373.0,0.0,28.8,27.7,,100g,TACO
+"Carne, bovina, costela, crua",358.0,0.0,16.7,31.8,,100g,TACO
+"Carne, bovina, coxão duro, sem gordura, cozido",217.0,0.0,31.9,8.9,,100g,TACO
+"Carne, bovina, coxão duro, sem gordura, cru",148.0,0.0,21.5,6.2,,100g,TACO
+"Carne, bovina, coxão mole, sem gordura, cozido",219.0,0.0,32.4,8.9,,100g,TACO
+"Carne, bovina, coxão mole, sem gordura, cru",169.0,0.0,21.2,8.7,,100g,TACO
+"Carne, bovina, cupim, assado",330.0,0.0,28.6,23.0,,100g,TACO
+"Carne, bovina, cupim, cru",221.0,0.0,19.5,15.3,,100g,TACO
+"Carne, bovina, fígado, cru",141.0,1.1,20.7,5.4,,100g,TACO
+"Carne, bovina, fígado, grelhado",225.0,4.2,29.9,9.0,,100g,TACO
+"Carne, bovina, filé mingnon, sem gordura, cru",143.0,0.0,21.6,5.6,,100g,TACO
+"Carne, bovina, filé mingnon, sem gordura, grelhado",220.0,0.0,32.8,8.8,,100g,TACO
+"Carne, bovina, flanco, sem gordura, cozido",196.0,0.0,29.4,7.8,,100g,TACO
+"Carne, bovina, flanco, sem gordura, cru",141.0,0.0,20.0,6.2,,100g,TACO
+"Carne, bovina, fraldinha, com gordura, cozida",338.0,0.0,24.2,26.0,,100g,TACO
+"Carne, bovina, fraldinha, com gordura, crua",221.0,0.0,17.6,16.1,,100g,TACO
+"Carne, bovina, lagarto, cozido",222.0,0.0,32.9,9.1,,100g,TACO
+"Carne, bovina, lagarto, cru",135.0,0.0,20.5,5.2,,100g,TACO
+"Carne, bovina, língua, cozida",315.0,0.0,21.4,24.8,,100g,TACO
+"Carne, bovina, língua, crua",215.0,0.0,17.1,15.8,,100g,TACO
+"Carne, bovina, maminha, crua",153.0,0.0,20.9,7.0,,100g,TACO
+"Carne, bovina, maminha, grelhada",153.0,0.0,30.7,2.4,,100g,TACO
+"Carne, bovina, miolo de alcatra, sem gordura, cru",163.0,0.0,21.6,7.8,,100g,TACO
+"Carne, bovina, miolo de alcatra, sem gordura, grelhado",241.0,0.0,31.9,11.6,,100g,TACO
+"Carne, bovina, músculo, sem gordura, cozido",194.0,0.0,31.2,6.7,,100g,TACO
+"Carne, bovina, músculo, sem gordura, cru",142.0,0.0,21.6,5.5,,100g,TACO
+"Carne, bovina, paleta, com gordura, crua",159.0,0.0,21.4,7.5,,100g,TACO
+"Carne, bovina, paleta, sem gordura, cozida",194.0,0.0,29.7,7.4,,100g,TACO
+"Carne, bovina, paleta, sem gordura, crua",141.0,0.0,21.0,5.7,,100g,TACO
+"Carne, bovina, patinho, sem gordura, cru",133.0,0.0,21.7,4.5,,100g,TACO
+"Carne, bovina, patinho, sem gordura, grelhado",219.0,0.0,35.9,7.3,,100g,TACO
+"Carne, bovina, peito, sem gordura, cozido",338.0,0.0,22.2,27.0,,100g,TACO
+"Carne, bovina, peito, sem gordura, cru",259.0,0.0,17.6,20.4,,100g,TACO
+"Carne, bovina, picanha, com gordura, crua",213.0,0.0,18.8,14.7,,100g,TACO
+"Carne, bovina, picanha, com gordura, grelhada",289.0,0.0,26.4,19.5,,100g,TACO
+"Carne, bovina, picanha, sem gordura, crua",134.0,0.0,21.3,4.7,,100g,TACO
+"Carne, bovina, picanha, sem gordura, grelhada",238.0,0.0,31.9,11.3,,100g,TACO
+"Carne, bovina, seca, cozida",313.0,0.0,26.9,21.9,,100g,TACO
+"Carne, bovina, seca, crua",313.0,0.0,19.7,25.4,,100g,TACO
+"Coxinha de frango, frita",283.0,34.5,9.6,11.8,5.0,100g,TACO
+"Croquete, de carne,",246.0,13.9,12.0,15.6,,100g,TACO
+"Croquete, de carne,",347.0,18.1,16.9,22.7,,100g,TACO
+"Empada de frango, pré-cozida, assada",358.0,47.5,6.9,15.6,2.2,100g,TACO
+"Empada, de frango, pré-cozida",377.0,35.5,7.3,22.9,2.2,100g,TACO
+"Frango, asa, com pele, crua",213.0,0.0,18.1,15.1,,100g,TACO
+"Frango, caipira, inteiro, com pele, cozido",243.0,0.0,23.9,15.6,,100g,TACO
+"Frango, caipira, inteiro, sem pele, cozido",196.0,0.0,29.6,7.7,,100g,TACO
+"Frango, coração, cru",222.0,0.0,12.6,18.6,,100g,TACO
+"Frango, coração, grelhado",207.0,0.6,22.4,12.1,,100g,TACO
+"Frango, coxa, com pele, assada",215.0,0.1,28.5,10.4,,100g,TACO
+"Frango, coxa, com pele, crua",161.0,0.0,17.1,9.8,,100g,TACO
+"Frango, coxa, sem pele, cozida",167.0,0.0,26.9,5.8,,100g,TACO
+"Frango, coxa, sem pele, crua",120.0,0.0,17.8,4.9,,100g,TACO
+"Frango, fígado, cru",106.0,0.0,17.6,3.5,,100g,TACO
+"Frango, filé, à milanesa",221.0,7.5,28.5,7.8,1.1,100g,TACO
+"Frango, inteiro, com pele, cru",226.0,0.0,16.4,17.3,,100g,TACO
+"Frango, inteiro, sem pele, assado",187.0,0.0,28.0,7.5,,100g,TACO
+"Frango, inteiro, sem pele, cozido",170.0,0.0,25.0,7.1,,100g,TACO
+"Frango, inteiro, sem pele, cru",129.0,0.0,20.6,4.6,,100g,TACO
+"Frango, peito, com pele, assado",212.0,0.0,33.4,7.6,,100g,TACO
+"Frango, peito, com pele, cru",149.0,0.0,20.8,6.7,,100g,TACO
+"Frango, peito, sem pele, cozido",163.0,0.0,31.5,3.2,,100g,TACO
+"Frango, peito, sem pele, cru",119.0,0.0,21.5,3.0,,100g,TACO
+"Frango, peito, sem pele, grelhado",159.0,0.0,32.0,2.5,,100g,TACO
+"Frango, sobrecoxa, com pele, assada",260.0,0.0,28.7,15.2,,100g,TACO
+"Frango, sobrecoxa, com pele, crua",255.0,0.0,15.5,20.9,,100g,TACO
+"Frango, sobrecoxa, sem pele, assada",233.0,0.0,29.2,12.0,,100g,TACO
+"Frango, sobrecoxa, sem pele, crua",162.0,0.0,17.6,9.6,,100g,TACO
+"Hambúrguer, bovino, cru",215.0,4.2,13.2,16.2,,100g,TACO
+"Hambúrguer, bovino, frito",258.0,6.3,20.0,17.0,,100g,TACO
+"Hambúrguer, bovino, grelhado",210.0,11.3,13.2,12.4,,100g,TACO
+"Lingüiça, frango, crua",218.0,0.0,14.2,17.4,,100g,TACO
+"Lingüiça, frango, frita",245.0,0.0,18.3,18.5,,100g,TACO
+"Lingüiça, frango, grelhada",244.0,0.0,18.2,18.4,,100g,TACO
+"Lingüiça, porco, crua",227.0,0.0,16.1,17.6,,100g,TACO
+"Lingüiça, porco, frita",280.0,0.0,20.5,21.3,,100g,TACO
+"Lingüiça, porco, grelhada",296.0,0.0,23.2,21.9,,100g,TACO
+Mortadela,269.0,5.8,12.0,21.6,,100g,TACO
+"Peru, congelado, assado",163.0,0.0,26.2,5.7,,100g,TACO
+"Peru, congelado, cru",94.0,0.0,18.1,1.8,,100g,TACO
+"Porco, bisteca, crua",164.0,0.0,21.5,8.0,,100g,TACO
+"Porco, bisteca, frita",311.0,0.0,33.7,18.5,,100g,TACO
+"Porco, bisteca, grelhada",280.0,0.0,28.9,17.4,,100g,TACO
+"Porco, costela, assada",402.0,0.0,30.2,30.3,,100g,TACO
+"Porco, costela, crua",256.0,0.0,18.0,19.8,,100g,TACO
+"Porco, lombo, assado",210.0,0.0,35.7,6.4,,100g,TACO
+"Porco, lombo, cru",176.0,0.0,22.6,8.8,,100g,TACO
+"Porco, orelha, salgada, crua",258.0,0.0,18.5,19.9,,100g,TACO
+"Porco, pernil, assado",262.0,0.0,32.1,13.9,,100g,TACO
+"Porco, pernil, cru",186.0,0.0,20.1,11.1,,100g,TACO
+"Porco, rabo, salgado, cru",377.0,0.0,15.6,34.5,,100g,TACO
+"Presunto, com capa de gordura",128.0,1.4,14.4,6.8,,100g,TACO
+"Presunto, sem capa de gordura",94.0,2.1,14.3,2.7,,100g,TACO
+"Quibe, assado",136.0,12.9,14.6,2.7,1.9,100g,TACO
+"Quibe, cru",109.0,10.8,12.4,1.7,1.6,100g,TACO
+"Quibe,",254.0,12.3,14.9,15.8,,100g,TACO
+Salame,398.0,2.9,25.8,30.6,,100g,TACO
+"Toucinho, cru",593.0,0.0,11.5,60.3,,100g,TACO
+"Toucinho, frito 6, 3 697",697.0,0.0,27.3,64.3,,100g,TACO
+"Bebida láctea, pêssego",55.0,7.6,2.1,1.9,0.3,100g,TACO
+Creme de Leite,221.0,4.5,1.5,22.5,,100g,TACO
+"Iogurte, natural",51.0,1.9,4.1,3.0,,100g,TACO
+"Iogurte, natural, desnatado",41.0,5.8,3.8,0.3,,100g,TACO
+"Iogurte, sabor abacaxi",,,,,,100g,TACO
+"Iogurte, sabor morango",70.0,9.7,2.7,2.3,0.2,100g,TACO
+"Iogurte, sabor pêssego",68.0,9.4,2.5,2.3,0.7,100g,TACO
+"Leite, condensado",313.0,57.0,7.7,6.7,,100g,TACO
+"Leite, de cabra",66.0,5.2,3.1,3.8,,100g,TACO
+"Leite, de vaca, achocolatado",83.0,14.2,2.1,2.2,0.6,100g,TACO
+"Leite, de vaca, desnatado, pó",362.0,53.0,34.7,0.9,,100g,TACO
+"Leite, de vaca, desnatado, UHT",,,,,,100g,TACO
+"Leite, de vaca, integral",,,,,,100g,TACO
+"Leite, de vaca, integral, pó",497.0,39.2,25.4,26.9,,100g,TACO
+"Leite, fermentado",70.0,15.7,1.9,0.1,,100g,TACO
+"Queijo, minas, frescal",264.0,3.2,17.4,20.2,,100g,TACO
+"Queijo, minas, meia cura",321.0,3.6,21.2,24.6,,100g,TACO
+"Queijo, mozarela",330.0,3.0,22.6,25.2,,100g,TACO
+"Queijo, parmesão",453.0,1.7,35.6,33.5,,100g,TACO
+"Queijo, pasteurizado",303.0,5.7,9.4,27.4,,100g,TACO
+"Queijo, petit suisse, morango",121.0,18.5,5.8,2.8,,100g,TACO
+"Queijo, prato",360.0,1.9,22.7,29.1,,100g,TACO
+"Queijo, requeijão, cremoso",257.0,2.4,9.6,23.4,,100g,TACO
+"Queijo, ricota 73, 6 140 585 12, 6",140.0,3.8,12.6,8.1,,100g,TACO
+"Bebida isotônica, sabores variados",26.0,6.4,0.0,0.0,,100g,TACO
+"Café, infusão 10%",9.0,1.5,0.7,0.1,,100g,TACO
+"Cana, aguarde nte",216.0,,,,,100g,TACO
+"Cana, caldo de",65.0,18.2,,,0.1,100g,TACO
+"Cerveja, pilsen",41.0,3.3,0.6,,,100g,TACO
+"Chá, erva-doce, infusão 5%",1.0,0.4,0.0,0.0,,100g,TACO
+"Chá, mate, infusão 5%",3.0,0.6,0.0,0.1,,100g,TACO
+"Chá, preto, infusão 5%",2.0,0.6,0.0,0.0,,100g,TACO
+"Coco, água de",22.0,5.3,0.0,0.0,0.1,100g,TACO
+"Refrigerante, tipo água tônica",31.0,8.0,0.0,0.0,,100g,TACO
+"Refrigerante, tipo cola",34.0,8.7,0.0,0.0,,100g,TACO
+"Refrigerante, tipo guaraná",39.0,10.0,0.0,0.0,,100g,TACO
+"Refrigerante, tipo laranja",46.0,11.8,0.0,0.0,,100g,TACO
+"Refrigerante, tipo limão 89, 7 40",40.0,10.3,0.0,0.0,,100g,TACO
+"Omelete, de queijo",268.0,0.4,15.6,22.0,,100g,TACO
+"Ovo, de codorna, inteiro, cru",177.0,0.8,13.7,12.7,,100g,TACO
+"Ovo, de galinha, clara, cozida/10minutos",59.0,0.0,13.4,0.1,,100g,TACO
+"Ovo, de galinha, gema, cozida/10minutos",353.0,1.6,15.9,30.8,,100g,TACO
+"Ovo, de galinha, inteiro, cozido/10minutos",146.0,0.6,13.3,9.5,,100g,TACO
+"Ovo, de galinha, inteiro, cru",143.0,1.6,13.0,8.9,,100g,TACO
+"Ovo, de galinha, inteiro, frito 63, 5",240.0,1.2,15.6,18.6,,100g,TACO
+"Achocolatado, pó",401.0,91.2,4.2,2.2,3.9,100g,TACO
+"Açúcar, cristal",387.0,99.6,0.3,,,100g,TACO
+"Açúcar, mascavo",369.0,94.5,0.8,0.1,,100g,TACO
+"Açúcar, refinado",387.0,99.5,0.3,,,100g,TACO
+"Chocolate, ao leite",540.0,59.6,7.2,30.3,2.2,100g,TACO
+"Chocolate, ao leite, com castanha do Pará",559.0,55.4,7.4,34.2,2.5,100g,TACO
+"Chocolate, ao leite, dietético",557.0,56.3,6.9,33.8,2.8,100g,TACO
+"Chocolate, meio amargo",475.0,62.4,4.9,29.9,4.9,100g,TACO
+Cocada branca,449.0,81.4,1.1,13.6,3.6,100g,TACO
+"Doce, de abóbora, cremoso",199.0,54.6,0.9,0.2,2.3,100g,TACO
+"Doce, de leite, cremoso",306.0,59.5,5.5,6.0,,100g,TACO
+"Geléia, mocotó, natural",106.0,24.2,2.1,0.1,,100g,TACO
+Glicose de milho,292.0,79.4,0.0,0.0,,100g,TACO
+Maria mole,301.0,73.6,3.8,0.2,0.7,100g,TACO
+"Maria mole, coco queimado",307.0,75.1,3.9,0.1,0.6,100g,TACO
+Marmelada,257.0,70.8,0.4,0.1,4.1,100g,TACO
+"Mel, de abelha",309.0,84.0,0.0,0.0,,100g,TACO
+Melado,297.0,76.6,0.0,0.0,,100g,TACO
+Quindim,411.0,46.3,4.7,24.4,3.2,100g,TACO
+Rapadura,352.0,90.8,1.0,0.1,,100g,TACO
+"Café, pó, torrado",419.0,65.8,14.7,11.9,51.2,100g,TACO
+"Capuccino, pó",417.0,73.6,11.3,8.6,2.4,100g,TACO
+Fermento em,90.0,43.9,0.5,0.1,,100g,TACO
+"Fermento, biológico, levedura, tablete",90.0,7.7,17.0,1.5,4.2,100g,TACO
+"Gelatina, sabores variados, pó",380.0,89.2,8.9,,,100g,TACO
+"Sal, dietético",,,,,,100g,TACO
+"Sal, grosso",,,,,,100g,TACO
+Shoyu,61.0,11.6,3.3,0.3,,100g,TACO
+Temperoa base de sal,21.0,2.1,2.7,0.3,0.6,100g,TACO
+"Azeitona, preta, conserva",194.0,5.5,1.2,20.3,4.6,100g,TACO
+"Azeitona, verde, conserva",137.0,4.1,0.9,14.2,3.8,100g,TACO
+"Chantilly, spray, com gordura vegetal",315.0,16.9,0.5,27.3,,100g,TACO
+"Leite, de coco",166.0,2.2,1.0,18.4,0.7,100g,TACO
+"Maionese, tradicional com ovos 58, 4",302.0,7.9,0.6,30.5,,100g,TACO
+Acarajé,289.0,19.1,8.3,19.9,9.4,100g,TACO
+Arroz carreteiro,154.0,11.6,10.8,7.1,1.5,100g,TACO
+"Baião de dois, arroze feijão-de-corda",136.0,20.4,6.2,3.2,5.1,100g,TACO
+Barreado,165.0,0.2,18.3,9.5,0.1,100g,TACO
+"Bifeà cavalo, com contra filé",291.0,0.0,23.7,21.1,,100g,TACO
+Bolinho de arroz,274.0,41.7,8.0,8.3,2.7,100g,TACO
+Camarãoà baiana,101.0,3.2,7.9,6.0,0.4,100g,TACO
+"Charuto, de repolho",78.0,10.1,6.8,1.1,1.5,100g,TACO
+"Cuscuz, de milho, cozido com sal",113.0,25.3,2.2,0.7,2.1,100g,TACO
+"Cuscuz, paulista",142.0,22.5,2.6,4.6,2.4,100g,TACO
+"Cuxá, molho",80.0,5.7,5.6,3.6,3.0,100g,TACO
+Dobradinha,125.0,0.0,19.8,4.4,,100g,TACO
+Estrogonofe de,173.0,3.0,15.0,10.8,,100g,TACO
+Estrogonofe de,157.0,2.6,17.6,8.0,,100g,TACO
+Feijão tropeiro mineiro,152.0,19.6,10.2,6.8,3.6,100g,TACO
+Feijoada,117.0,11.6,8.7,6.5,5.1,100g,TACO
+"Frango, com açafrão",113.0,4.1,9.7,6.2,0.2,100g,TACO
+"Macarrão, molho bolognesa",120.0,22.5,4.9,0.9,0.8,100g,TACO
+Maniçoba,134.0,3.4,10.0,8.7,2.2,100g,TACO
+Quibebe,86.0,6.6,8.6,2.7,1.7,100g,TACO
+"Salada, de legumes, com maionese",96.0,8.9,1.1,7.0,2.2,100g,TACO
+"Salada, de legumes, cozida no vapor",35.0,7.1,2.0,0.3,2.5,100g,TACO
+"Salpicão, de frango",148.0,4.6,13.9,7.8,0.4,100g,TACO
+Sarapatel,123.0,1.1,18.5,4.4,,100g,TACO
+Tabule,57.0,10.6,2.0,1.2,2.1,100g,TACO
+Tacacá,47.0,3.4,7.0,0.4,0.2,100g,TACO
+"Tapioca, com manteiga",348.0,63.6,0.1,10.9,,100g,TACO
+"Tucupi, com pimenta-de-cheiro",27.0,4.7,2.1,0.3,0.2,100g,TACO
+Vaca atolada,145.0,10.1,5.1,9.3,2.3,100g,TACO
+Vatapá,255.0,9.7,6.0,23.2,1.7,100g,TACO
+Viradoà paulista,307.0,14.1,10.2,25.6,2.2,100g,TACO
+"Yakisoba 69, 4 113",113.0,18.3,7.5,2.6,1.1,100g,TACO
+"Amendoim, grão, cru",544.0,20.3,27.2,43.9,8.0,100g,TACO
+"Amendoim, torrado, salgado",606.0,18.7,22.5,54.0,7.8,100g,TACO
+"Ervilha, em vagem",88.0,14.2,7.5,0.5,9.7,100g,TACO
+"Ervilha, enlatada, drenada",74.0,13.4,4.6,0.4,5.1,100g,TACO
+"Feijão, carioca, cozido",76.0,13.6,4.8,0.5,8.5,100g,TACO
+"Feijão, carioca, cru",329.0,61.2,20.0,1.3,18.4,100g,TACO
+"Feijão, fradinho, cozido",78.0,13.5,5.1,0.6,7.5,100g,TACO
+"Feijão, fradinho, cru",339.0,61.2,20.2,2.4,23.6,100g,TACO
+"Feijão, jalo, cozido",93.0,16.5,6.1,0.5,13.9,100g,TACO
+"Feijão, jalo, cru",328.0,61.5,20.1,0.9,30.3,100g,TACO
+"Feijão, preto, cozido",77.0,14.0,4.5,0.5,8.4,100g,TACO
+"Feijão, preto, cru",324.0,58.8,21.3,1.2,21.8,100g,TACO
+"Feijão, rajado, cozido",85.0,15.3,5.5,0.4,9.3,100g,TACO
+"Feijão, rajado, cru",326.0,62.9,17.3,1.2,24.0,100g,TACO
+"Feijão, rosinha, cozido",68.0,11.8,4.5,0.5,4.8,100g,TACO
+"Feijão, rosinha, cru",337.0,62.2,20.9,1.3,20.6,100g,TACO
+"Feijão, roxo, cozido",77.0,12.9,5.7,0.5,11.5,100g,TACO
+"Feijão, roxo, cru",331.0,60.0,22.2,1.2,33.8,100g,TACO
+"Grão-de-bico, cru",355.0,57.9,21.2,5.4,12.4,100g,TACO
+"Guandu, cru",344.0,64.0,19.0,2.1,21.3,100g,TACO
+"Lentilha, cozida",93.0,16.3,6.3,0.5,7.9,100g,TACO

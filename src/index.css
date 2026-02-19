@@ -287,3 +287,52 @@ body {
 .light-theme .confirm-primary-btn {
   color: #ffffff !important;
 }
+
+/* Reusable elevated button style to distinguish action buttons from content cards */
+.btn-elevated {
+  box-shadow: 0 8px 16px rgba(16, 24, 40, 0.12), 0 2px 4px rgba(16, 24, 40, 0.08);
+  transform: translateY(0);
+  transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
+}
+
+.btn-elevated:hover {
+  box-shadow: 0 10px 20px rgba(16, 24, 40, 0.15), 0 3px 8px rgba(16, 24, 40, 0.1);
+  transform: translateY(-1px);
+}
+
+.btn-elevated:active {
+  box-shadow: 0 4px 10px rgba(16, 24, 40, 0.12), 0 1px 3px rgba(16, 24, 40, 0.08);
+  transform: translateY(1px);
+}
+
+/* Global elevation for primary/content buttons across the app */
+button:not([class*="rounded-full"]):not([class*="h-6 w-11"]):not(.no-elevate) {
+  box-shadow: 0 8px 16px rgba(16, 24, 40, 0.12), 0 2px 4px rgba(16, 24, 40, 0.08);
+  transform: translateY(0);
+  transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
+}
+
+button:not([class*="rounded-full"]):not([class*="h-6 w-11"]):not(.no-elevate):hover {
+  box-shadow: 0 10px 20px rgba(16, 24, 40, 0.15), 0 3px 8px rgba(16, 24, 40, 0.1);
+  transform: translateY(-1px);
+}
+
+button:not([class*="rounded-full"]):not([class*="h-6 w-11"]):not(.no-elevate):active {
+  box-shadow: 0 4px 10px rgba(16, 24, 40, 0.12), 0 1px 3px rgba(16, 24, 40, 0.08);
+  transform: translateY(1px);
+}
+
+/* Dark theme: visible white highlight + depth */
+:root:not(.light-theme) button:not([class*="rounded-full"]):not([class*="h-6 w-11"]):not(.no-elevate) {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 10px 20px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+:root:not(.light-theme) button:not([class*="rounded-full"]):not([class*="h-6 w-11"]):not(.no-elevate):hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 12px 24px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+}

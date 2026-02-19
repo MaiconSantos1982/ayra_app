@@ -176,14 +176,14 @@ export default function DashboardSimple() {
             <div className="px-6 mt-4 mb-6 space-y-3">
                 <button
                     onClick={() => navigate('/registro')}
-                    className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-semibold py-3.5 rounded-xl transition-colors flex items-center justify-center gap-2"
+                    className="btn-elevated w-full bg-emerald-500 hover:bg-emerald-400 text-black font-semibold py-3.5 rounded-xl transition-colors flex items-center justify-center gap-2"
                 >
                     <Camera className="w-5 h-5" />
                     Registrar Refeição
                 </button>
                 <button
                     onClick={() => navigate('/historico-nutricional')}
-                    className="w-full bg-slate-900/40 border border-white/10 text-white font-medium py-3 rounded-xl transition-colors hover:bg-white/10 flex items-center justify-center gap-2"
+                    className="btn-elevated w-full bg-slate-900/40 border border-white/10 text-white font-medium py-3 rounded-xl transition-colors hover:bg-white/10 flex items-center justify-center gap-2"
                 >
                     <Target className="w-4 h-4 text-primary" />
                     Histórico Nutricional
