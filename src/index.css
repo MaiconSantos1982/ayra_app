@@ -155,9 +155,20 @@ body {
 .light-theme .bg-slate-800\/70,
 .light-theme .bg-slate-800\/60,
 .light-theme .bg-slate-700\/70,
+.light-theme .bg-slate-700\/60,
+.light-theme .bg-slate-700\/50,
 .light-theme .bg-slate-700\/30,
 .light-theme .bg-slate-600\/20 {
   background-color: var(--ay-surface) !important;
+}
+
+.light-theme .bg-slate-700\/60,
+.light-theme .bg-slate-700\/50 {
+  background-color: #aeb6c3 !important;
+}
+
+.light-theme .bg-slate-600\/60 {
+  background-color: #bbc2ce !important;
 }
 
 .light-theme .bg-gradient-to-b.from-slate-900\/70.to-background,
@@ -196,6 +207,7 @@ body {
 .light-theme .text-slate-300,
 .light-theme .text-slate-400,
 .light-theme .text-slate-500,
+.light-theme .text-slate-200,
 .light-theme .text-gray-300,
 .light-theme .text-gray-400,
 .light-theme .text-gray-500 {

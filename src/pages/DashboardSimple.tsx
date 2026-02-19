@@ -10,6 +10,7 @@ export default function DashboardSimple() {
     const [todayData, setTodayData] = useState(getDailyData());
     const [stats, setStats] = useState(getStats());
     const [showSleepInput, setShowSleepInput] = useState(false);
+    const [sleepDraft, setSleepDraft] = useState(getDailyData().sleep || 0);
     const [expandedSections, setExpandedSections] = useState({
         nutrition: false,
         habits: false,
@@ -49,6 +50,23 @@ export default function DashboardSimple() {
         updateSleep(hours);
         setTodayData(getDailyData());
         setShowSleepInput(false);
+    };
+
+    const openSleepEditor = () => {
+        setSleepDraft(todayData.sleep || 0);
+        setShowSleepInput(true);
+    };
+
+    const adjustSleepDraft = (delta: number) => {
+        setSleepDraft((prev) => Math.max(0, Math.min(24, prev + delta)));
+    };
+
+    const setSleepPreset = (hours: number) => {
+        setSleepDraft(hours);
+    };
+
+    const confirmSleepDraft = () => {
+        handleUpdateSleep(sleepDraft);
     };
 
     const handleUpdateMood = (mood: 'great' | 'good' | 'ok' | 'bad') => {
@@ -291,7 +309,10 @@ export default function DashboardSimple() {
 
             <div className="px-6 mb-4">
                 <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-5">
-                    <button onClick={() => toggleSection('habits')} className="w-full flex items-center justify-between">
+                    <button
+                        onClick={() => toggleSection('habits')}
+                        className="w-full flex items-center justify-between bg-white/5 rounded-xl px-4 py-3"
+                    >
                         <h2 className="text-lg font-semibold text-white">Hábitos de Hoje</h2>
                         <ChevronDown
                             size={18}
@@ -321,7 +342,7 @@ export default function DashboardSimple() {
                             <div className="bg-white/5 rounded-xl p-4">
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-2 text-white">
-                                        <Droplet className="w-4 h-4 text-blue-300" />
+                                        <Droplet className="w-4 h-4 text-primary" />
                                         Água
                                     </div>
                                     <p className="text-white font-semibold">{(todayData.water / 1000).toFixed(1)}L</p>
@@ -335,7 +356,7 @@ export default function DashboardSimple() {
                                     </button>
                                     <button
                                         onClick={() => handleAddWater(250)}
-                                        className="flex-[2] bg-blue-500/20 hover:bg-blue-500/30 text-blue-200 p-2 rounded-lg transition-colors font-medium"
+                                        className="flex-[2] bg-primary/15 hover:bg-primary/25 text-primary p-2 rounded-lg transition-colors font-medium"
                                     >
                                         Adicionar 250ml
                                     </button>
@@ -344,13 +365,13 @@ export default function DashboardSimple() {
 
                             <div className="bg-white/5 rounded-xl p-4 flex items-center justify-between">
                                 <div className="flex items-center gap-2 text-white">
-                                    <Dumbbell className="w-4 h-4 text-orange-300" />
+                                    <Dumbbell className="w-4 h-4 text-primary" />
                                     Exercício
                                 </div>
                                 <button
                                     onClick={handleToggleExercise}
                                     className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${todayData.exercise
-                                        ? 'bg-orange-500/20 text-orange-200'
+                                        ? 'bg-primary/20 text-primary'
                                         : 'bg-slate-700/60 text-slate-200'
                                         }`}
                                 >
@@ -361,32 +382,43 @@ export default function DashboardSimple() {
                             <div className="bg-white/5 rounded-xl p-4">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2 text-white">
-                                        <Moon className="w-4 h-4 text-violet-300" />
+                                        <Moon className="w-4 h-4 text-primary" />
                                         Sono
                                     </div>
                                     {!showSleepInput ? (
                                         <button
-                                            onClick={() => setShowSleepInput(true)}
+                                            onClick={openSleepEditor}
                                             className="bg-slate-700/60 px-3 py-1.5 rounded-lg text-white text-sm"
                                         >
                                             {todayData.sleep}h
                                         </button>
                                     ) : (
                                         <div className="flex items-center gap-2">
+                                            <div className="flex items-center gap-1">
+                                                {[4, 6, 8].map((preset) => (
+                                                    <button
+                                                        key={preset}
+                                                        onClick={() => setSleepPreset(preset)}
+                                                        className={`px-2 py-1 rounded-md text-xs transition-colors ${sleepDraft === preset ? 'bg-primary/20 text-primary' : 'bg-slate-700/50 text-slate-300'}`}
+                                                    >
+                                                        {preset}h
+                                                    </button>
+                                                ))}
+                                            </div>
                                             <button
-                                                onClick={() => handleUpdateSleep(Math.max(0, todayData.sleep - 1))}
+                                                onClick={() => adjustSleepDraft(-1)}
                                                 className="p-1.5 bg-slate-700/60 rounded-lg text-white"
                                             >
                                                 <Minus size={14} />
                                             </button>
-                                            <span className="text-white w-8 text-center">{todayData.sleep}</span>
+                                            <span className="text-white w-8 text-center">{sleepDraft}</span>
                                             <button
-                                                onClick={() => handleUpdateSleep(todayData.sleep + 1)}
+                                                onClick={() => adjustSleepDraft(1)}
                                                 className="p-1.5 bg-slate-700/60 rounded-lg text-white"
                                             >
                                                 <Plus size={14} />
                                             </button>
-                                            <button onClick={() => setShowSleepInput(false)} className="text-primary">
+                                            <button onClick={confirmSleepDraft} className="text-primary">
                                                 <Check size={18} />
                                             </button>
                                         </div>
@@ -397,7 +429,7 @@ export default function DashboardSimple() {
                             <div className="bg-white/5 rounded-xl p-4">
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-2 text-white">
-                                        <Smile className="w-4 h-4 text-yellow-300" />
+                                        <Smile className="w-4 h-4 text-primary" />
                                         Humor
                                     </div>
                                     {todayData.mood && <span className="text-2xl">{moodEmojis[todayData.mood]}</span>}
@@ -408,7 +440,7 @@ export default function DashboardSimple() {
                                             key={mood}
                                             onClick={() => handleUpdateMood(mood)}
                                             className={`rounded-lg py-2 text-xs ${todayData.mood === mood
-                                                ? 'bg-yellow-500/20 text-yellow-200'
+                                                ? 'bg-primary/20 text-primary'
                                                 : 'bg-slate-700/50 text-slate-300'
                                                 }`}
                                         >
@@ -425,7 +457,10 @@ export default function DashboardSimple() {
             {(monthlyOverview.daysWithinGoal > 0 || monthlyOverview.daysExceeded > 0) && (
                 <div className="px-6 mb-6">
                     <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-5">
-                        <button onClick={() => toggleSection('monthly')} className="w-full flex items-center justify-between">
+                        <button
+                            onClick={() => toggleSection('monthly')}
+                            className="w-full flex items-center justify-between bg-white/5 rounded-xl px-4 py-3"
+                        >
                             <h2 className="text-lg font-semibold text-white">Resumo do Mês</h2>
                             <ChevronDown
                                 size={18}

@@ -130,7 +130,39 @@ export default function RegisterSimple() {
 
         setEstimatingMacros(true);
         try {
-            const estimation = await estimateMacrosFromDescription(description);
+            const estimation = await estimateMacrosFromDescription(description, { debug: true });
+
+            if (estimation.debugItems) {
+                console.group('[MacroEstimator Debug] Registro de refeição');
+                console.log('Descrição original:', description);
+                console.log('Resumo:', {
+                    calorias: estimation.calorias,
+                    proteina: estimation.proteina,
+                    carboidratos: estimation.carboidratos,
+                    gorduras: estimation.gorduras,
+                    matchedItems: estimation.matchedItems,
+                    totalItems: estimation.totalItems,
+                });
+                console.table(
+                    estimation.debugItems.map((item, index) => ({
+                        item: index + 1,
+                        rawItem: item.rawItem,
+                        sanitizedItem: item.sanitizedItem,
+                        matched: item.matched ? 'sim' : 'não',
+                        matchedFood: item.matchedFood || '-',
+                        grams: item.grams,
+                        score: item.score ?? '-',
+                        overlapCount: item.overlapCount ?? '-',
+                        kcal: item.kcal ?? '-',
+                        carboidratos: item.carboidratos ?? '-',
+                        proteina: item.proteina ?? '-',
+                        gorduras: item.gorduras ?? '-',
+                        adjustment: item.adjustment || '-',
+                        reason: item.reason || '-',
+                    }))
+                );
+                console.groupEnd();
+            }
 
             if (estimation.matchedItems === 0) {
                 setToast({ message: 'Não encontrei alimentos da sua descrição na base nutricional.', type: 'warning' });
@@ -395,7 +427,7 @@ export default function RegisterSimple() {
                     </button>
 
                     {showMacros && (
-                        <div className="p-4 pt-0 grid grid-cols-2 gap-4">
+                        <div className="p-4 pt-4 grid grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-xs text-text-muted mb-1">Calorias (kcal)</label>
                                 <input
