@@ -99,15 +99,15 @@ export default function AuthPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-background via-background to-purple-900/20 flex flex-col">
+        <div className="min-h-screen bg-background flex flex-col">
             {/* Header com Logo */}
             <div className="text-center pt-16 pb-8">
                 <div className="flex items-center justify-center gap-3 mb-4">
-                    <div className="bg-gradient-to-br from-primary to-secondary p-3 rounded-2xl">
+                    <div className="bg-primary/15 p-3 rounded-2xl border border-primary/30">
                         <Sparkles className="w-8 h-8 text-background" />
                     </div>
                 </div>
-                <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-2">
+                <h1 className="text-5xl font-bold text-primary mb-2">
                     Ayra
                 </h1>
                 <p className="text-text-muted text-lg">Nutrição Inteligente com IA</p>
@@ -119,7 +119,7 @@ export default function AuthPage() {
                     <button
                         onClick={() => setTab('login')}
                         className={`flex-1 py-3 rounded-xl font-semibold transition-all ${tab === 'login'
-                            ? 'bg-primary text-background'
+                            ? 'bg-primary text-black'
                             : 'text-text-muted hover:text-white'
                             }`}
                     >
@@ -129,7 +129,7 @@ export default function AuthPage() {
                     <button
                         onClick={() => setTab('register')}
                         className={`flex-1 py-3 rounded-xl font-semibold transition-all ${tab === 'register'
-                            ? 'bg-primary text-background'
+                            ? 'bg-primary text-black'
                             : 'text-text-muted hover:text-white'
                             }`}
                     >
@@ -170,7 +170,7 @@ export default function AuthPage() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full mt-6 bg-gradient-to-r from-primary to-secondary text-background font-bold py-4 rounded-xl shadow-neon hover:shadow-neon-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                className="w-full mt-6 bg-primary text-black font-bold py-4 rounded-xl hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
                                 {loading ? (
                                     <div className="w-6 h-6 border-3 border-background/20 border-t-background rounded-full animate-spin" />
@@ -246,7 +246,7 @@ export default function AuthPage() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full mt-6 bg-gradient-to-r from-primary to-secondary text-background font-bold py-4 rounded-xl shadow-neon hover:shadow-neon-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                className="w-full mt-6 bg-primary text-black font-bold py-4 rounded-xl hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
                                 {loading ? (
                                     <div className="w-6 h-6 border-3 border-background/20 border-t-background rounded-full animate-spin" />

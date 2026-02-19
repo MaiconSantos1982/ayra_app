@@ -13,7 +13,7 @@ import {
     Legend
 } from 'recharts';
 
-import { getLocalDateKey } from '../lib/dateUtils';
+import { getLocalDateKey, getLocalMonthKey } from '../lib/dateUtils';
 
 type Period = 'this_week' | 'this_month' | 'specific_month' | '7_days' | '15_days' | '30_days' | 'custom';
 
@@ -21,7 +21,7 @@ export default function NutritionHistoryPage() {
     const navigate = useNavigate();
     const [viewMode, setViewMode] = useState<'avg' | 'total'>('avg');
     const [period, setPeriod] = useState<Period>('this_week');
-    const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7)); // YYYY-MM
+    const [selectedMonth, setSelectedMonth] = useState(getLocalMonthKey()); // YYYY-MM
     const [customStartDate, setCustomStartDate] = useState('');
     const [customEndDate, setCustomEndDate] = useState('');
     const [showFilters, setShowFilters] = useState(false);
@@ -218,7 +218,7 @@ export default function NutritionHistoryPage() {
             <div className="p-6 space-y-6">
 
                 {/* Controles de Período */}
-                <div className="bg-card rounded-2xl p-4 border border-white/10">
+                <div className="bg-slate-900/40 rounded-2xl p-4 border border-white/10">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-white font-bold flex items-center gap-2">
                             <CalendarIcon size={18} className="text-primary" />
@@ -335,7 +335,7 @@ export default function NutritionHistoryPage() {
 
                 {/* Resumo do Período */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <div className="bg-card p-4 rounded-xl border border-white/5 relative overflow-hidden group">
+                    <div className="bg-slate-900/40 p-4 rounded-xl border border-white/5 relative overflow-hidden group">
                         <p className="text-xs text-text-muted mb-1 uppercase tracking-wider">{viewMode === 'avg' ? 'Média Calorias' : 'Total Calorias'}</p>
                         <div className="flex items-baseline gap-1">
                             <p className={`text-2xl font-black ${activeGoals ? getProgressColor(activeStats.calorias, activeGoals.calories) : 'text-white'}`}>
@@ -359,7 +359,7 @@ export default function NutritionHistoryPage() {
                         )}
                     </div>
 
-                    <div className="bg-card p-4 rounded-xl border border-white/5 relative overflow-hidden">
+                    <div className="bg-slate-900/40 p-4 rounded-xl border border-white/5 relative overflow-hidden">
                         <p className="text-xs text-text-muted mb-1 uppercase tracking-wider">{viewMode === 'avg' ? 'Média Proteína' : 'Total Proteína'}</p>
                         <div className="flex items-baseline gap-1">
                             <p className="text-2xl font-black text-blue-400">
@@ -383,7 +383,7 @@ export default function NutritionHistoryPage() {
                         )}
                     </div>
 
-                    <div className="bg-card p-4 rounded-xl border border-white/5 relative overflow-hidden">
+                    <div className="bg-slate-900/40 p-4 rounded-xl border border-white/5 relative overflow-hidden">
                         <p className="text-xs text-text-muted mb-1 uppercase tracking-wider">{viewMode === 'avg' ? 'Média Carbo' : 'Total Carbo'}</p>
                         <div className="flex items-baseline gap-1">
                             <p className="text-2xl font-black text-yellow-400">
@@ -407,7 +407,7 @@ export default function NutritionHistoryPage() {
                         )}
                     </div>
 
-                    <div className="bg-card p-4 rounded-xl border border-white/5 relative overflow-hidden">
+                    <div className="bg-slate-900/40 p-4 rounded-xl border border-white/5 relative overflow-hidden">
                         <p className="text-xs text-text-muted mb-1 uppercase tracking-wider">{viewMode === 'avg' ? 'Média Gorduras' : 'Total Gorduras'}</p>
                         <div className="flex items-baseline gap-1">
                             <p className="text-2xl font-black text-orange-400">
@@ -433,7 +433,7 @@ export default function NutritionHistoryPage() {
                 </div>
 
                 {/* Gráfico de Calorias */}
-                <div className="bg-card rounded-2xl p-4 border border-white/10 h-80">
+                <div className="bg-slate-900/40 rounded-2xl p-4 border border-white/10 h-80">
                     <h3 className="text-white font-bold mb-4">Evolução de Calorias</h3>
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={chartData}>
@@ -456,13 +456,13 @@ export default function NutritionHistoryPage() {
                                 itemStyle={{ color: '#fff' }}
                                 labelStyle={{ color: '#888' }}
                             />
-                            <Bar dataKey="calorias" fill="#a855f7" radius={[4, 4, 0, 0]} name="Calorias" />
+                            <Bar dataKey="calorias" fill="#7CC98D" radius={[4, 4, 0, 0]} name="Calorias" />
                         </BarChart>
                     </ResponsiveContainer>
                 </div>
 
                 {/* Gráfico de Macronutrientes */}
-                <div className="bg-card rounded-2xl p-4 border border-white/10 h-80">
+                <div className="bg-slate-900/40 rounded-2xl p-4 border border-white/10 h-80">
                     <h3 className="text-white font-bold mb-4">Divisão de Macros</h3>
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={chartData}>

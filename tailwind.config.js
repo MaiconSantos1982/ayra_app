@@ -8,10 +8,10 @@ export default {
         extend: {
             colors: {
                 background: '#120d1d',
-                'background-light': '#1e162e',
-                primary: '#39ff14', // Neon Green
-                'primary-dim': 'rgba(57, 255, 20, 0.1)',
-                secondary: '#6a0dad', // Deep Purple
+                'background-light': '#1a1625',
+                primary: '#7CC98D',
+                'primary-dim': 'rgba(124, 201, 141, 0.14)',
+                secondary: '#4E5E78',
                 text: '#ffffff',
                 'text-muted': '#a0a0a0',
                 danger: '#ff4444',

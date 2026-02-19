@@ -368,17 +368,19 @@ export default function Chat() {
         return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
     };
 
+    const isLightTheme = document.documentElement.classList.contains('light-theme');
+
     return (
-        <div className="flex flex-col h-screen bg-[#0B141A] relative">
+        <div className={`flex flex-col h-screen relative ${isLightTheme ? 'bg-[#F4F6F8]' : 'bg-[#0B141A]'}`}>
             {/* WhatsApp Header - TOTALMENTE FIXO E FORA DO FLUXO */}
             <header
-                className="fixed top-0 left-0 right-0 h-[60px] bg-[#202C33] px-4 flex items-center gap-3 shadow-md z-[9999]"
+                className={`fixed top-0 left-0 right-0 h-[60px] px-4 flex items-center gap-3 shadow-md z-[9999] ${isLightTheme ? 'bg-white border-b border-[#dbe1e8]' : 'bg-[#202C33]'}`}
             >
                 <button
                     onClick={() => navigate('/inicio')}
-                    className="p-2 hover:bg-white/10 rounded-full transition-colors -ml-2"
+                    className={`p-2 rounded-full transition-colors -ml-2 ${isLightTheme ? 'hover:bg-black/5' : 'hover:bg-white/10'}`}
                 >
-                    <ChevronLeft size={24} className="text-[#8696A0]" />
+                    <ChevronLeft size={24} className={isLightTheme ? 'text-[#5f6877]' : 'text-[#8696A0]'} />
                 </button>
 
                 <div className="relative">
@@ -387,24 +389,24 @@ export default function Chat() {
                         alt="Ayra"
                         className="w-10 h-10 rounded-full object-cover"
                     />
-                    <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-[#202C33]"></div>
+                    <div className={`absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 ${isLightTheme ? 'border-white' : 'border-[#202C33]'}`}></div>
                 </div>
 
                 <div className="flex-1 min-w-0">
-                    <h1 className="text-white font-medium text-[16px] truncate">Ayra</h1>
-                    <p className="text-[#8696A0] text-[13px] truncate">online</p>
+                    <h1 className={`font-medium text-[16px] truncate ${isLightTheme ? 'text-[#101828]' : 'text-white'}`}>Ayra</h1>
+                    <p className={`text-[13px] truncate ${isLightTheme ? 'text-[#5f6877]' : 'text-[#8696A0]'}`}>online</p>
                 </div>
 
                 {!isPremium && (
-                    <div className="bg-[#25D366]/10 border border-[#25D366]/30 px-3 py-1 rounded-full flex items-center justify-center min-w-[50px]">
-                        <span className="text-[#25D366] text-xs font-medium">
+                    <div className={`px-3 py-1 rounded-full flex items-center justify-center min-w-[50px] ${isLightTheme ? 'bg-[#2F7F4F]/10 border border-[#2F7F4F]/30' : 'bg-[#25D366]/10 border border-[#25D366]/30'}`}>
+                        <span className={`text-xs font-medium ${isLightTheme ? 'text-[#2F7F4F]' : 'text-[#25D366]'}`}>
                             {limits.dailyCount}/5
                         </span>
                     </div>
                 )}
 
-                <button className="p-2 hover:bg-white/10 rounded-full transition-colors">
-                    <MoreVertical size={20} className="text-[#8696A0]" />
+                <button className={`p-2 rounded-full transition-colors ${isLightTheme ? 'hover:bg-black/5' : 'hover:bg-white/10'}`}>
+                    <MoreVertical size={20} className={isLightTheme ? 'text-[#5f6877]' : 'text-[#8696A0]'} />
                 </button>
             </header>
 
@@ -412,8 +414,10 @@ export default function Chat() {
             <div
                 className="flex-1 overflow-y-auto px-3 py-2" // Removed pt-[90px]
                 style={{
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='400' height='400' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='whatsapp-pattern' x='0' y='0' width='400' height='400' patternUnits='userSpaceOnUse'%3E%3Cpath d='M0 200 Q 100 150, 200 200 T 400 200' stroke='%23182229' stroke-width='1' fill='none' opacity='0.15'/%3E%3Cpath d='M0 250 Q 100 200, 200 250 T 400 250' stroke='%23182229' stroke-width='1' fill='none' opacity='0.15'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='400' height='400' fill='%230B141A'/%3E%3Crect width='400' height='400' fill='url(%23whatsapp-pattern)'/%3E%3C/svg%3E")`,
-                    backgroundColor: '#0B141A'
+                    backgroundImage: isLightTheme
+                        ? `url("data:image/svg+xml,%3Csvg width='320' height='320' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='wa-light' x='0' y='0' width='320' height='320' patternUnits='userSpaceOnUse'%3E%3Cg fill='none' stroke='%23d7dcca' stroke-opacity='0.5' stroke-width='1.1'%3E%3Cpath d='M20 38c10 0 10 16 20 16s10-16 20-16 10 16 20 16'/%3E%3Cpath d='M210 70c0 8 8 8 8 16 0 8-8 8-8 16'/%3E%3Cpath d='M140 188c8 0 8 8 16 8 8 0 8-8 16-8'/%3E%3Ccircle cx='88' cy='132' r='8'/%3E%3Ccircle cx='250' cy='228' r='7'/%3E%3Crect x='30' y='220' width='20' height='16' rx='3'/%3E%3Cpath d='M268 120h22m-11-11v22'/%3E%3Cpath d='M142 34l10 10m-10 0l10-10'/%3E%3C/g%3E%3C/pattern%3E%3C/defs%3E%3Crect width='320' height='320' fill='%23efeae2'/%3E%3Crect width='320' height='320' fill='url(%23wa-light)'/%3E%3C/svg%3E")`
+                        : `url("data:image/svg+xml,%3Csvg width='400' height='400' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='whatsapp-pattern' x='0' y='0' width='400' height='400' patternUnits='userSpaceOnUse'%3E%3Cpath d='M0 200 Q 100 150, 200 200 T 400 200' stroke='%23182229' stroke-width='1' fill='none' opacity='0.15'/%3E%3Cpath d='M0 250 Q 100 200, 200 250 T 400 250' stroke='%23182229' stroke-width='1' fill='none' opacity='0.15'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='400' height='400' fill='%230B141A'/%3E%3Crect width='400' height='400' fill='url(%23whatsapp-pattern)'/%3E%3C/svg%3E")`,
+                    backgroundColor: isLightTheme ? '#efeae2' : '#0B141A'
                 }}
             >
                 <div className="space-y-2 py-2">
@@ -440,8 +444,12 @@ export default function Chat() {
                                 className={clsx(
                                     "max-w-[75%] rounded-lg px-3 py-2 relative",
                                     msg.sender === 'ayra'
-                                        ? "bg-[#202C33] text-white rounded-bl-none shadow-md"
-                                        : "bg-[#005C4B] text-white rounded-br-none shadow-md"
+                                        ? (isLightTheme
+                                            ? "bg-white text-[#101828] rounded-bl-none shadow-sm border border-[#dbe1e8]"
+                                            : "bg-[#202C33] text-white rounded-bl-none shadow-md")
+                                        : (isLightTheme
+                                            ? "bg-[#DCF8C6] text-[#111B21] rounded-br-none shadow-sm border border-[#c7e8ad]"
+                                            : "bg-[#005C4B] text-white rounded-br-none shadow-md")
                                 )}
                                 style={{
                                     boxShadow: msg.sender === 'user'
@@ -454,8 +462,12 @@ export default function Chat() {
                                     className={clsx(
                                         "absolute bottom-0 w-0 h-0",
                                         msg.sender === 'ayra'
-                                            ? "-left-2 border-l-[8px] border-l-transparent border-r-[8px] border-r-[#202C33] border-b-[8px] border-b-transparent"
-                                            : "-right-2 border-r-[8px] border-r-transparent border-l-[8px] border-l-[#005C4B] border-b-[8px] border-b-transparent"
+                                            ? (isLightTheme
+                                                ? "-left-2 border-l-[8px] border-l-transparent border-r-[8px] border-r-white border-b-[8px] border-b-transparent"
+                                                : "-left-2 border-l-[8px] border-l-transparent border-r-[8px] border-r-[#202C33] border-b-[8px] border-b-transparent")
+                                            : (isLightTheme
+                                                ? "-right-2 border-r-[8px] border-r-transparent border-l-[8px] border-l-[#DCF8C6] border-b-[8px] border-b-transparent"
+                                                : "-right-2 border-r-[8px] border-r-transparent border-l-[8px] border-l-[#005C4B] border-b-[8px] border-b-transparent")
                                     )}
                                 />
 
@@ -469,25 +481,25 @@ export default function Chat() {
                                     <div className="flex items-center gap-2 min-w-[200px]">
                                         <button
                                             onClick={() => toggleAudioPlayback(msg.id)}
-                                            className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                                            className={`p-2 rounded-full transition-colors ${isLightTheme ? 'bg-black/10 hover:bg-black/20' : 'bg-white/10 hover:bg-white/20'}`}
                                         >
                                             {playingId === msg.id ? <Pause size={16} /> : <Play size={16} />}
                                         </button>
                                         <div className="flex-1 flex items-center gap-2">
-                                            <div className="flex-1 h-1 bg-white/20 rounded-full overflow-hidden">
+                                            <div className={`flex-1 h-1 rounded-full overflow-hidden ${isLightTheme ? 'bg-black/20' : 'bg-white/20'}`}>
                                                 <div
-                                                    className="h-full bg-white rounded-full transition-all"
+                                                    className={`h-full rounded-full transition-all ${isLightTheme ? 'bg-[#101828]' : 'bg-white'}`}
                                                     style={{ width: playingId === msg.id ? '100%' : '0%' }}
                                                 />
                                             </div>
-                                            <span className="text-xs font-mono text-white/70">
+                                            <span className={`text-xs font-mono ${isLightTheme ? 'text-[#5f6877]' : 'text-white/70'}`}>
                                                 {formatTime(msg.audioDuration || 0)}
                                             </span>
                                         </div>
                                     </div>
                                 )}
 
-                                <div className="text-[11px] text-right mt-1 text-[#8696A0] flex items-center justify-end gap-1">
+                                <div className={`text-[11px] text-right mt-1 flex items-center justify-end gap-1 ${isLightTheme ? (msg.sender === 'user' ? 'text-[#667085]' : 'text-[#667085]') : 'text-[#8696A0]'}`}>
                                     <span>{formatMessageTime(msg.timestamp)}</span>
                                     {msg.sender === 'user' && (
                                         <svg width="16" height="11" viewBox="0 0 16 11" fill="none">
@@ -504,20 +516,20 @@ export default function Chat() {
             </div>
 
             {/* WhatsApp Input Area */}
-            <div className="bg-[#202C33] px-2 py-2">
+            <div className={`px-2 py-2 ${isLightTheme ? 'bg-white border-t border-[#dbe1e8]' : 'bg-[#202C33]'}`}>
                 {isRecording ? (
                     // Recording UI
-                    <div className="flex items-center gap-2 bg-[#0B141A] rounded-full px-4 py-2">
+                    <div className={`flex items-center gap-2 rounded-full px-4 py-2 ${isLightTheme ? 'bg-[#f1f3f6]' : 'bg-[#0B141A]'}`}>
                         <button
                             onClick={cancelRecording}
-                            className="p-2 text-white hover:bg-white/10 rounded-full transition-colors"
+                            className={`p-2 rounded-full transition-colors ${isLightTheme ? 'text-[#101828] hover:bg-black/5' : 'text-white hover:bg-white/10'}`}
                         >
                             <X size={24} />
                         </button>
 
                         <div className="flex-1 flex items-center gap-3">
                             <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                            <span className="text-white font-mono text-sm">
+                            <span className={`font-mono text-sm ${isLightTheme ? 'text-[#101828]' : 'text-white'}`}>
                                 {formatTime(recordingTime)}
                             </span>
                             <div className="flex gap-1 ml-2">
@@ -537,7 +549,7 @@ export default function Chat() {
 
                         <button
                             onClick={stopRecording}
-                            className="p-3 rounded-full bg-[#25D366] hover:bg-[#20BD5F] text-white transition-colors"
+                            className={`p-3 rounded-full text-white transition-colors ${isLightTheme ? 'bg-[#25D366] hover:bg-[#20BD5F]' : 'bg-[#25D366] hover:bg-[#20BD5F]'}`}
                         >
                             <Send size={20} />
                         </button>
@@ -545,7 +557,7 @@ export default function Chat() {
                 ) : (
                     // Normal input UI
                     <div className="flex gap-2 items-center">
-                        <div className="flex-1 flex items-center gap-2 bg-[#2A3942] rounded-full px-4 py-2">
+                        <div className={`flex-1 flex items-center gap-2 rounded-full px-4 py-2 ${isLightTheme ? 'bg-[#f1f3f6] border border-[#dbe1e8]' : 'bg-[#2A3942]'}`}>
                             {/* Debug log seguro */}
                             {(() => { console.log('DEBUG INPUT:', { isPremium, canSend, isLoading }); return null; })()}
 
@@ -555,7 +567,7 @@ export default function Chat() {
                                 onChange={(e) => setInput(e.target.value)}
                                 onKeyPress={(e) => e.key === 'Enter' && canSend && !isLoading && handleSend()}
                                 placeholder={!canSend ? "Limite diário atingido" : "Mensagem"}
-                                className="flex-1 bg-transparent text-white placeholder:text-[#8696A0] focus:outline-none text-[15px]"
+                                className={`flex-1 bg-transparent focus:outline-none text-[15px] ${isLightTheme ? 'text-[#101828] placeholder:text-[#667085]' : 'text-white placeholder:text-[#8696A0]'}`}
                                 disabled={!canSend || isLoading}
                             />
                             {isLoading && (
@@ -571,7 +583,7 @@ export default function Chat() {
                             <button
                                 onClick={handleSend}
                                 disabled={!canSend || isLoading}
-                                className="p-3 rounded-full bg-[#25D366] hover:bg-[#20BD5F] text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                className={`p-3 rounded-full text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${isLightTheme ? 'bg-[#25D366] hover:bg-[#20BD5F]' : 'bg-[#25D366] hover:bg-[#20BD5F]'}`}
                             >
                                 <Send size={20} />
                             </button>
@@ -579,7 +591,7 @@ export default function Chat() {
                             <button
                                 onClick={startRecording}
                                 disabled={!canSend}
-                                className="p-3 rounded-full bg-[#25D366] hover:bg-[#20BD5F] text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                className={`p-3 rounded-full text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${isLightTheme ? 'bg-[#25D366] hover:bg-[#20BD5F]' : 'bg-[#25D366] hover:bg-[#20BD5F]'}`}
                             >
                                 <Mic size={20} />
                             </button>

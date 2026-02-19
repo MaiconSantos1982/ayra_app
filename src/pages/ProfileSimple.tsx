@@ -1,12 +1,14 @@
-import { User, LogOut, Download, Upload, Settings, Crown, UtensilsCrossed, Target, RefreshCw, Smartphone, Bell, AlertTriangle } from 'lucide-react';
+import { User, LogOut, Download, Upload, Settings, Crown, UtensilsCrossed, Target, RefreshCw, Smartphone, Bell, AlertTriangle, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { getUserData, getStats, exportData, importData } from '../lib/localStorage';
 import { useState, useRef } from 'react';
+import { getLocalDateKey } from '../lib/dateUtils';
 import Toast from '../components/Toast';
 import type { ToastType } from '../components/Toast';
 import PushNotificationSettings from '../components/PushNotificationSettings';
 import ReminderSettings from '../components/ReminderSettings';
+import { updateTheme } from '../lib/theme';
 
 export default function ProfileSimple() {
     const { user, signOut, refreshPremium } = useAuth();
@@ -17,6 +19,9 @@ export default function ProfileSimple() {
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [showImportModal, setShowImportModal] = useState(false); // Novo estado
     const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
+    const [themeMode, setThemeMode] = useState<'light' | 'dark'>(() => (
+        document.documentElement.classList.contains('light-theme') ? 'light' : 'dark'
+    ));
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleLogout = () => {
@@ -46,7 +51,7 @@ export default function ProfileSimple() {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            const dateStr = new Date().toISOString().split('T')[0];
+            const dateStr = getLocalDateKey();
             a.download = `ayra-backup-${dateStr}.json`;
             document.body.appendChild(a);
             a.click();
@@ -96,7 +101,7 @@ export default function ProfileSimple() {
     return (
         <div className="min-h-screen bg-background pb-20">
             {/* Header */}
-            <div className="bg-gradient-to-br from-purple-900 to-purple-800 p-6 rounded-b-3xl shadow-lg mb-6">
+            <div className="bg-gradient-to-b from-slate-900/70 to-background p-6 rounded-b-3xl border-b border-white/5 mb-6">
                 <div className="flex items-center gap-4">
                     <div className="bg-primary/20 p-4 rounded-full">
                         <User className="w-12 h-12 text-primary" />
@@ -105,7 +110,7 @@ export default function ProfileSimple() {
                         <h1 className="text-2xl font-bold text-white">
                             {userData?.profile.nome || 'Usuário'}
                         </h1>
-                        <p className="text-purple-200 text-sm">
+                        <p className="text-slate-300 text-sm">
                             {user?.email || 'Sem email'}
                         </p>
                     </div>
@@ -115,15 +120,15 @@ export default function ProfileSimple() {
             {/* Stats Cards */}
             <div className="px-6 mb-6">
                 <div className="grid grid-cols-3 gap-3">
-                    <div className="bg-card rounded-2xl p-4 border border-white/5 text-center">
+                    <div className="bg-slate-900/40 rounded-2xl p-4 border border-white/5 text-center">
                         <p className="text-3xl font-bold text-primary">{stats?.streak || 0}</p>
                         <p className="text-xs text-gray-400 mt-1">Dias seguidos</p>
                     </div>
-                    <div className="bg-card rounded-2xl p-4 border border-white/5 text-center">
+                    <div className="bg-slate-900/40 rounded-2xl p-4 border border-white/5 text-center">
                         <p className="text-3xl font-bold text-primary">{stats?.totalMeals || 0}</p>
                         <p className="text-xs text-gray-400 mt-1">Refeições</p>
                     </div>
-                    <div className="bg-card rounded-2xl p-4 border border-white/5 text-center">
+                    <div className="bg-slate-900/40 rounded-2xl p-4 border border-white/5 text-center">
                         <p className="text-3xl font-bold text-primary">{stats?.totalDays || 0}</p>
                         <p className="text-xs text-gray-400 mt-1">Dias ativos</p>
                     </div>
@@ -134,7 +139,7 @@ export default function ProfileSimple() {
             <div className="px-6 mb-6">
                 <h2 className="text-lg font-bold text-white mb-3">Informações</h2>
 
-                <div className="bg-card rounded-2xl border border-white/5 divide-y divide-white/5">
+                <div className="bg-slate-900/40 rounded-2xl border border-white/5 divide-y divide-white/5">
                     {userData?.profile.objetivo && (
                         <div className="p-4">
                             <p className="text-gray-400 text-sm">Objetivo</p>
@@ -170,8 +175,8 @@ export default function ProfileSimple() {
             {/* Plano Premium/Free */}
             <div className="px-6 mb-6">
                 <div className={`rounded-2xl p-4 border ${user?.premium
-                    ? 'bg-gradient-to-br from-yellow-500/30 to-orange-500/30 border-yellow-500/50'
-                    : 'bg-gradient-to-br from-yellow-500/20 to-orange-500/20 border-yellow-500/30'
+                    ? 'bg-amber-500/20 border-amber-400/50'
+                    : 'bg-amber-500/10 border-amber-500/30'
                     }`}>
                     <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-3">
@@ -194,7 +199,7 @@ export default function ProfileSimple() {
                         {!user?.premium && (
                             <button
                                 onClick={() => window.open('https://www.ayrislife.com/ayra?utm_source=app&utm_medium=gratuito', '_blank')}
-                                className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-semibold px-4 py-2 rounded-xl text-sm hover:scale-105 transition-transform"
+                                className="bg-amber-500 text-black font-semibold px-4 py-2 rounded-xl text-sm hover:brightness-110 transition-all"
                             >
                                 Upgrade
                             </button>
@@ -221,7 +226,7 @@ export default function ProfileSimple() {
                     {/* Dados Pessoais e Dieta - DESTAQUE */}
                     <button
                         onClick={() => navigate('/anamnese')}
-                        className="w-full bg-gradient-to-r from-primary/20 to-green-400/20 border-2 border-primary/50 rounded-2xl p-4 flex items-center justify-between hover:border-primary hover:scale-[1.02] transition-all"
+                        className="w-full bg-slate-900/40 border-2 border-primary/40 rounded-2xl p-4 flex items-center justify-between hover:border-primary/70 hover:scale-[1.02] transition-all"
                     >
                         <div className="flex items-center gap-3">
                             <div className="bg-primary/30 p-2 rounded-xl">
@@ -240,24 +245,24 @@ export default function ProfileSimple() {
                     {/* Minhas Metas - DESTAQUE */}
                     <button
                         onClick={() => navigate('/metas')}
-                        className="w-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-2 border-blue-500/50 rounded-2xl p-4 flex items-center justify-between hover:border-blue-500 hover:scale-[1.02] transition-all"
+                        className="w-full bg-slate-900/40 border-2 border-white/10 rounded-2xl p-4 flex items-center justify-between hover:border-primary/30 hover:scale-[1.02] transition-all"
                     >
                         <div className="flex items-center gap-3">
-                            <div className="bg-blue-500/30 p-2 rounded-xl">
-                                <Target className="w-5 h-5 text-blue-400" />
+                            <div className="bg-primary/15 p-2 rounded-xl">
+                                <Target className="w-5 h-5 text-primary" />
                             </div>
                             <div className="text-left">
                                 <span className="text-white font-bold block">Minhas Metas</span>
                                 <span className="text-sm text-gray-300">Calorias, macros e objetivos</span>
                             </div>
                         </div>
-                        <span className="text-blue-400 text-xl">→</span>
+                        <span className="text-primary text-xl">→</span>
                     </button>
 
                     {/* Editar Perfil Básico */}
                     <button
                         onClick={() => navigate('/onboarding?edit=true')}
-                        className="w-full bg-card border border-white/10 rounded-2xl p-4 flex items-center justify-between hover:border-primary/30 transition-colors"
+                        className="w-full bg-slate-900/40 border border-white/10 rounded-2xl p-4 flex items-center justify-between hover:border-primary/30 transition-colors"
                     >
                         <div className="flex items-center gap-3">
                             <Settings className="w-5 h-5 text-gray-400" />
@@ -268,13 +273,40 @@ export default function ProfileSimple() {
                 </div>
             </div>
 
+            {/* Tema */}
+            <div className="px-6 mb-6">
+                <h2 className="text-lg font-bold text-white mb-3">Aparência</h2>
+                <div className="bg-slate-900/40 border border-white/10 rounded-2xl p-3 grid grid-cols-2 gap-2">
+                    <button
+                        onClick={() => {
+                            updateTheme('dark');
+                            setThemeMode('dark');
+                        }}
+                        className={`rounded-xl px-4 py-3 text-sm font-semibold flex items-center justify-center gap-2 transition-colors ${themeMode === 'dark' ? 'bg-primary text-black' : 'bg-white/5 text-white'}`}
+                    >
+                        <Moon size={16} />
+                        Escuro
+                    </button>
+                    <button
+                        onClick={() => {
+                            updateTheme('light');
+                            setThemeMode('light');
+                        }}
+                        className={`rounded-xl px-4 py-3 text-sm font-semibold flex items-center justify-center gap-2 transition-colors ${themeMode === 'light' ? 'bg-primary text-black' : 'bg-white/5 text-white'}`}
+                    >
+                        <Sun size={16} />
+                        Claro
+                    </button>
+                </div>
+            </div>
+
             {/* Dados e Backup */}
             <div className="px-6 mb-6">
                 <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
                     Backup e Segurança <span className="text-xs font-normal text-text-muted bg-white/5 px-2 py-0.5 rounded-full">Recomendado</span>
                 </h2>
 
-                <div className="bg-card border border-white/10 rounded-2xl p-5 mb-4">
+                <div className="bg-slate-900/40 border border-white/10 rounded-2xl p-5 mb-4">
                     <div className="flex gap-3 mb-3">
                         <AlertTriangle className="text-yellow-500 min-w-[20px]" size={20} />
                         <p className="text-sm text-gray-300 leading-relaxed">
@@ -290,22 +322,22 @@ export default function ProfileSimple() {
                 <div className="grid grid-cols-2 gap-3">
                     <button
                         onClick={handleExport}
-                        className="bg-blue-500/10 border border-blue-500/30 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 hover:bg-blue-500/20 transition-colors"
+                        className="bg-slate-900/40 border border-white/10 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 hover:border-primary/30 transition-colors"
                     >
-                        <div className="bg-blue-500/20 p-3 rounded-full">
-                            <Download className="w-5 h-5 text-blue-400" />
+                        <div className="bg-primary/15 p-3 rounded-full">
+                            <Download className="w-5 h-5 text-primary" />
                         </div>
-                        <span className="text-blue-400 font-semibold text-sm">Exportar (Backup)</span>
+                        <span className="text-white font-semibold text-sm">Exportar (Backup)</span>
                     </button>
 
                     <button
                         onClick={() => setShowImportModal(true)}
-                        className="bg-green-500/10 border border-green-500/30 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 hover:bg-green-500/20 transition-colors"
+                        className="bg-slate-900/40 border border-white/10 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 hover:border-primary/30 transition-colors"
                     >
-                        <div className="bg-green-500/20 p-3 rounded-full">
-                            <Upload className="w-5 h-5 text-green-400" />
+                        <div className="bg-primary/15 p-3 rounded-full">
+                            <Upload className="w-5 h-5 text-primary" />
                         </div>
-                        <span className="text-green-400 font-semibold text-sm">Restaurar Dados</span>
+                        <span className="text-white font-semibold text-sm">Restaurar Dados</span>
                     </button>
                 </div>
 
@@ -327,10 +359,10 @@ export default function ProfileSimple() {
                             localStorage.removeItem('ayra_pwa_prompt_date');
                             window.location.reload();
                         }}
-                        className="w-full bg-card border border-white/10 rounded-2xl p-4 flex items-center justify-between hover:border-primary/30 transition-colors"
+                        className="w-full bg-slate-900/40 border border-white/10 rounded-2xl p-4 flex items-center justify-between hover:border-primary/30 transition-colors"
                     >
                         <div className="flex items-center gap-3">
-                            <Smartphone className="w-5 h-5 text-purple-400" />
+                            <Smartphone className="w-5 h-5 text-slate-300" />
                             <div className="text-left">
                                 <span className="text-white font-semibold block">Instalar Aplicativo</span>
                                 <span className="text-xs text-gray-400">Adicionar à tela inicial</span>
@@ -350,16 +382,16 @@ export default function ProfileSimple() {
                 {user?.premium && (
                     <button
                         onClick={() => navigate('/broadcast')}
-                        className="w-full mt-3 bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/50 rounded-xl p-3 flex items-center justify-between hover:border-blue-500 transition-colors"
+                        className="w-full mt-3 bg-slate-900/40 border border-white/10 rounded-xl p-3 flex items-center justify-between hover:border-primary/30 transition-colors"
                     >
                         <div className="flex items-center gap-3">
-                            <Bell className="w-5 h-5 text-blue-400" />
+                            <Bell className="w-5 h-5 text-primary" />
                             <div className="text-left">
                                 <span className="text-white font-semibold block text-sm">Enviar Notificação para Todos</span>
                                 <span className="text-xs text-gray-400">Broadcast para dispositivos ativos</span>
                             </div>
                         </div>
-                        <span className="text-blue-400">→</span>
+                        <span className="text-primary">→</span>
                     </button>
                 )}
             </div>
@@ -386,7 +418,7 @@ export default function ProfileSimple() {
 
             {/* Info */}
             <div className="px-6 mb-6">
-                <div className="bg-card/50 rounded-2xl p-4 border border-white/5">
+                <div className="bg-slate-900/40 rounded-2xl p-4 border border-white/5">
                     <p className="text-gray-400 text-xs text-center">
                         Ayra v1.0 - MVP Simplificado
                     </p>
@@ -399,7 +431,7 @@ export default function ProfileSimple() {
             {/* Modal de Confirmação de Logout */}
             {showLogoutModal && (
                 <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-6">
-                    <div className="bg-card border border-white/10 rounded-2xl p-6 max-w-sm w-full">
+                    <div className="bg-slate-900 border border-white/10 rounded-2xl p-6 max-w-sm w-full">
                         <div className="flex items-center gap-3 mb-4">
                             <div className="bg-red-500/20 p-3 rounded-xl">
                                 <LogOut className="w-6 h-6 text-red-400" />
@@ -432,7 +464,7 @@ export default function ProfileSimple() {
             {/* Modal de Confirmação de Importação */}
             {showImportModal && (
                 <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-6">
-                    <div className="bg-card border border-white/10 rounded-2xl p-6 max-w-sm w-full">
+                    <div className="bg-slate-900 border border-white/10 rounded-2xl p-6 max-w-sm w-full">
                         <div className="flex items-center gap-3 mb-4">
                             <div className="bg-green-500/20 p-3 rounded-xl">
                                 <Upload className="w-6 h-6 text-green-400" />

@@ -1,3 +1,5 @@
+import { getLocalDateKey, getLocalMonthKey } from './dateUtils';
+
 /**
  * Sistema de armazenamento local para dados do usuário
  * Mantém dados sensíveis no dispositivo do usuário
@@ -157,7 +159,7 @@ export function updateGoals(goals: Partial<Goals>): void {
  * Obtém os dados do dia (hoje ou data específica)
  */
 export function getDailyData(date?: string): DailyData {
-    const targetDate = date || new Date().toISOString().split('T')[0];
+    const targetDate = date || getLocalDateKey();
     const data = getUserData();
 
     if (!data || !data.dailyRecords[targetDate]) {
@@ -195,7 +197,7 @@ export function saveDailyData(dailyData: DailyData): void {
  * Aceita timestamp completo ou combina date (YYYY-MM-DD) com time (HH:MM)
  */
 export function addMeal(meal: Omit<MealRecord, 'id' | 'timestamp'>, date?: string, time?: string): void {
-    const targetDate = date || new Date().toISOString().split('T')[0];
+    const targetDate = date || getLocalDateKey();
     const dailyData = getDailyData(targetDate);
 
     // Constrói o timestamp correto
@@ -212,7 +214,7 @@ export function addMeal(meal: Omit<MealRecord, 'id' | 'timestamp'>, date?: strin
         }
     } else if (date) {
         // Se só forneceu data (legado), tenta manter a hora atual se for hoje, ou meio dia se for outro dia
-        if (date === new Date().toISOString().split('T')[0]) {
+        if (date === getLocalDateKey()) {
             timestamp = new Date().toISOString();
         } else {
             timestamp = new Date(`${date}T12:00:00`).toISOString();
@@ -233,7 +235,7 @@ export function addMeal(meal: Omit<MealRecord, 'id' | 'timestamp'>, date?: strin
  * Atualiza água consumida
  */
 export function updateWater(amount: number): void {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalDateKey();
     const dailyData = getDailyData(today);
     dailyData.water = Math.max(0, amount);
     saveDailyData(dailyData);
@@ -243,7 +245,7 @@ export function updateWater(amount: number): void {
  * Atualiza exercício
  */
 export function updateExercise(done: boolean): void {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalDateKey();
     const dailyData = getDailyData(today);
     dailyData.exercise = done;
     saveDailyData(dailyData);
@@ -253,7 +255,7 @@ export function updateExercise(done: boolean): void {
  * Atualiza sono
  */
 export function updateSleep(hours: number): void {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalDateKey();
     const dailyData = getDailyData(today);
     dailyData.sleep = hours;
     saveDailyData(dailyData);
@@ -263,7 +265,7 @@ export function updateSleep(hours: number): void {
  * Atualiza humor
  */
 export function updateMood(mood: 'great' | 'good' | 'ok' | 'bad'): void {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalDateKey();
     const dailyData = getDailyData(today);
     dailyData.mood = mood;
     saveDailyData(dailyData);
@@ -273,7 +275,7 @@ export function updateMood(mood: 'great' | 'good' | 'ok' | 'bad'): void {
  * Atualiza peso
  */
 export function updateWeight(weight: number): void {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalDateKey();
     const dailyData = getDailyData(today);
     dailyData.weight = weight;
     saveDailyData(dailyData);
@@ -293,14 +295,15 @@ function calculateStreak(records: Record<string, DailyData>): number {
     const today = new Date();
 
     for (let i = 0; i < dates.length; i++) {
-        const date = new Date(dates[i]);
+        const dateKey = dates[i];
         const expectedDate = new Date(today);
         expectedDate.setDate(today.getDate() - i);
+        const expectedDateKey = getLocalDateKey(expectedDate);
 
         // Verifica se é o dia esperado (consecutivo)
-        if (date.toISOString().split('T')[0] === expectedDate.toISOString().split('T')[0]) {
+        if (dateKey === expectedDateKey) {
             // Verifica se teve pelo menos uma refeição registrada
-            if (records[dates[i]].meals.length > 0) {
+            if (records[dateKey].meals.length > 0) {
                 streak++;
             } else {
                 break;
@@ -460,8 +463,8 @@ export function getChatLimits(): ChatLimits {
             return {
                 dailyCount: 0,
                 monthlyCount: 0,
-                lastResetDate: new Date().toISOString().split('T')[0],
-                lastResetMonth: new Date().toISOString().substring(0, 7), // YYYY-MM
+                lastResetDate: getLocalDateKey(),
+                lastResetMonth: getLocalMonthKey(), // YYYY-MM
             };
         }
         return JSON.parse(data);
@@ -470,8 +473,8 @@ export function getChatLimits(): ChatLimits {
         return {
             dailyCount: 0,
             monthlyCount: 0,
-            lastResetDate: new Date().toISOString().split('T')[0],
-            lastResetMonth: new Date().toISOString().substring(0, 7),
+            lastResetDate: getLocalDateKey(),
+            lastResetMonth: getLocalMonthKey(),
         };
     }
 }
@@ -492,8 +495,8 @@ export function saveChatLimits(limits: ChatLimits): void {
  */
 export function incrementChatCount(): void {
     const limits = getChatLimits();
-    const today = new Date().toISOString().split('T')[0];
-    const currentMonth = new Date().toISOString().substring(0, 7);
+    const today = getLocalDateKey();
+    const currentMonth = getLocalMonthKey();
 
     // Reset diário
     if (limits.lastResetDate !== today) {
@@ -539,8 +542,8 @@ export function canSendChatMessage(isPremium: boolean, userCreatedAt?: string): 
     }
 
     const limits = getChatLimits();
-    const today = new Date().toISOString().split('T')[0];
-    const currentMonth = new Date().toISOString().substring(0, 7);
+    const today = getLocalDateKey();
+    const currentMonth = getLocalMonthKey();
 
     // Reset diário se necessário
     if (limits.lastResetDate !== today) {

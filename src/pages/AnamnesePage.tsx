@@ -9,11 +9,13 @@ import ConfirmModal from '../components/ConfirmModal';
 import { updateProfile, getUserData } from '../lib/localStorage';
 import type { DietMeal } from '../lib/localStorage';
 import { saveDietMealsToSupabase } from '../lib/supabaseAuth';
+import { estimateMacrosFromDescription } from '../lib/macroEstimator';
 
 export default function AnamnesePage() {
     const navigate = useNavigate();
     const { user } = useAuth();
     const [loading, setLoading] = useState(false);
+    const [estimatingMealMacros, setEstimatingMealMacros] = useState(false);
 
     // Estados do Formulário
     const [formData, setFormData] = useState({
@@ -223,16 +225,39 @@ export default function AnamnesePage() {
             return;
         }
 
+        const hasManualMacros = !!(
+            currentMeal.calorias ||
+            currentMeal.proteina ||
+            currentMeal.carboidratos ||
+            currentMeal.gorduras
+        );
+
+        let resolvedMeal = { ...currentMeal };
+
+        // Se não houver macros preenchidos, estima automaticamente pela descrição
+        if (!hasManualMacros) {
+            const estimation = await estimateMacrosFromDescription(currentMeal.descricao.trim());
+            if (estimation.matchedItems > 0) {
+                resolvedMeal = {
+                    ...resolvedMeal,
+                    calorias: estimation.calorias.toString(),
+                    proteina: estimation.proteina.toString(),
+                    carboidratos: estimation.carboidratos.toString(),
+                    gorduras: estimation.gorduras.toString(),
+                };
+            }
+        }
+
         // Dados base da refeição (para criar ou atualizar)
         const mealData = {
-            tipo: currentMeal.tipo as DietMeal['tipo'],
-            horario: currentMeal.horario,
-            descricao: currentMeal.descricao.trim(),
+            tipo: resolvedMeal.tipo as DietMeal['tipo'],
+            horario: resolvedMeal.horario,
+            descricao: resolvedMeal.descricao.trim(),
             // Salva macros se preenchidos
-            calorias: currentMeal.calorias ? parseFloat(currentMeal.calorias) : undefined,
-            proteina: currentMeal.proteina ? parseFloat(currentMeal.proteina) : undefined,
-            carboidratos: currentMeal.carboidratos ? parseFloat(currentMeal.carboidratos) : undefined,
-            gorduras: currentMeal.gorduras ? parseFloat(currentMeal.gorduras) : undefined
+            calorias: resolvedMeal.calorias ? parseFloat(resolvedMeal.calorias) : undefined,
+            proteina: resolvedMeal.proteina ? parseFloat(resolvedMeal.proteina) : undefined,
+            carboidratos: resolvedMeal.carboidratos ? parseFloat(resolvedMeal.carboidratos) : undefined,
+            gorduras: resolvedMeal.gorduras ? parseFloat(resolvedMeal.gorduras) : undefined
         };
 
         let updatedMeals: DietMeal[];
@@ -268,6 +293,45 @@ export default function AnamnesePage() {
             carboidratos: '',
             gorduras: ''
         });
+    };
+
+    const handleEstimateDietMealMacros = async () => {
+        if (!currentMeal.descricao.trim()) {
+            setToast({ message: 'Descreva a refeição para calcular os macros.', type: 'warning' });
+            return;
+        }
+
+        setEstimatingMealMacros(true);
+        try {
+            const estimation = await estimateMacrosFromDescription(currentMeal.descricao.trim());
+
+            if (estimation.matchedItems === 0) {
+                setToast({ message: 'Não encontrei alimentos dessa descrição na base nutricional.', type: 'warning' });
+                return;
+            }
+
+            setCurrentMeal((prev) => ({
+                ...prev,
+                calorias: estimation.calorias.toString(),
+                proteina: estimation.proteina.toString(),
+                carboidratos: estimation.carboidratos.toString(),
+                gorduras: estimation.gorduras.toString(),
+            }));
+
+            if (estimation.matchedItems < estimation.totalItems) {
+                setToast({
+                    message: `Macros estimados para ${estimation.matchedItems}/${estimation.totalItems} itens. Revise se necessário.`,
+                    type: 'info',
+                });
+            } else {
+                setToast({ message: 'Macros calculados automaticamente!', type: 'success' });
+            }
+        } catch (error) {
+            console.error('Erro ao estimar macros da dieta:', error);
+            setToast({ message: 'Erro ao calcular macros. Tente novamente.', type: 'error' });
+        } finally {
+            setEstimatingMealMacros(false);
+        }
     };
 
     // Prepara formulário para edição
@@ -753,6 +817,14 @@ export default function AnamnesePage() {
                                                 className="w-full px-5 py-4 rounded-xl bg-white/5 border border-white/10 text-white text-lg placeholder:text-gray-600 focus:border-primary focus:outline-none transition-all resize-none"
                                                 placeholder="Ex: 2 fatias de pão, café com leite..."
                                             />
+                                            <button
+                                                type="button"
+                                                onClick={handleEstimateDietMealMacros}
+                                                disabled={estimatingMealMacros || !currentMeal.descricao.trim()}
+                                                className="mt-3 w-full bg-blue-500/10 border border-blue-500/30 text-blue-300 font-semibold py-3 rounded-xl hover:bg-blue-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                            >
+                                                {estimatingMealMacros ? 'Calculando macros...' : 'Calcular macros automaticamente'}
+                                            </button>
                                         </div>
 
                                         {/* MACRONUTRIENTES (Opcional) - Visual Limpo */}
@@ -818,7 +890,7 @@ export default function AnamnesePage() {
                                         <button
                                             type="button"
                                             onClick={handleAddMeal}
-                                            className={`w-full bg-gradient-to-r ${editingMealId ? 'from-yellow-400 to-orange-500 text-black' : 'from-primary to-green-400 text-black'} font-bold py-4 rounded-xl text-lg shadow-lg hover:scale-[1.02] transition-all flex items-center justify-center gap-2`}
+                                            className={`w-full ${editingMealId ? 'bg-amber-500 text-black' : 'bg-primary text-black'} font-bold py-4 rounded-xl text-lg hover:brightness-110 transition-all flex items-center justify-center gap-2`}
                                         >
                                             {editingMealId ? <Save size={24} /> : <Plus size={24} />}
                                             {editingMealId ? 'Atualizar Refeição' : 'Salvar Refeição'}
@@ -883,7 +955,7 @@ export default function AnamnesePage() {
                 <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-gradient-to-r from-primary to-secondary text-black font-bold py-4 rounded-xl shadow-neon hover:shadow-neon-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="w-full bg-primary text-black font-bold py-4 rounded-xl hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                     {loading ? (
                         <div className="w-6 h-6 border-3 border-black/20 border-t-black rounded-full animate-spin"></div>

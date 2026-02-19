@@ -2,6 +2,7 @@ import { ChevronRight, Moon, Sun, Globe, Bell, Lock, Palette, Layout } from 'luc
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import PushNotificationSettings from '../components/PushNotificationSettings';
+import { applyTheme as applyThemeSetting } from '../lib/theme';
 
 interface Settings {
     theme: 'light' | 'dark' | 'auto';
@@ -58,23 +59,8 @@ export default function SettingsPage() {
 
     // Apply theme immediately when changed
     useEffect(() => {
-        applyTheme(settings.theme);
+        applyThemeSetting(settings.theme);
     }, [settings.theme]);
-
-    const applyTheme = (theme: 'light' | 'dark' | 'auto') => {
-        if (theme === 'auto') {
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            if (prefersDark) {
-                document.documentElement.classList.remove('light-theme');
-            } else {
-                document.documentElement.classList.add('light-theme');
-            }
-        } else if (theme === 'light') {
-            document.documentElement.classList.add('light-theme');
-        } else {
-            document.documentElement.classList.remove('light-theme');
-        }
-    };
 
     const updateSetting = (category: keyof Settings, key: string, value: any) => {
         const newSettings = {

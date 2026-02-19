@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Layout from './components/Layout';
 import AuthPage from './pages/AuthPage';
@@ -16,6 +17,7 @@ import MetasPage from './pages/MetasPage';
 import BroadcastNotifications from './pages/BroadcastNotifications';
 import NutritionHistoryPage from './pages/NutritionHistoryPage';
 import { useReminders } from './hooks/useReminders';
+import { initTheme } from './lib/theme';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -47,6 +49,27 @@ function GlobalReminders() {
 }
 
 export default function App() {
+  useEffect(() => {
+    initTheme();
+
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === 'ayra_settings') {
+        initTheme();
+      }
+    };
+
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    const onPreferenceChange = () => initTheme();
+
+    window.addEventListener('storage', onStorage);
+    media.addEventListener('change', onPreferenceChange);
+
+    return () => {
+      window.removeEventListener('storage', onStorage);
+      media.removeEventListener('change', onPreferenceChange);
+    };
+  }, []);
+
   return (
     <BrowserRouter>
       <AuthProvider>

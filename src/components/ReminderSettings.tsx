@@ -7,15 +7,15 @@ export default function ReminderSettings() {
     return (
         <div className="space-y-6">
             {/* Lembrete de Água */}
-            <div className="card p-6">
+            <div className="bg-slate-900/40 border border-white/10 rounded-2xl p-6">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center">
-                            <Droplet className="w-5 h-5 text-blue-400" />
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                            <Droplet className="w-5 h-5 text-primary" />
                         </div>
                         <div>
-                            <h3 className="text-lg font-semibold">Lembrete de Água</h3>
-                            <p className="text-sm text-muted-foreground">
+                            <h3 className="text-lg font-semibold text-white">Lembrete de Água</h3>
+                            <p className="text-sm text-text-muted">
                                 Notificação a cada {settings.waterInterval}h
                             </p>
                         </div>
@@ -34,7 +34,7 @@ export default function ReminderSettings() {
 
                 {settings.waterEnabled && (
                     <div className="mt-4">
-                        <label className="text-sm text-muted-foreground">
+                        <label className="text-sm text-text-muted">
                             Intervalo (horas)
                         </label>
                         <input
@@ -46,9 +46,9 @@ export default function ReminderSettings() {
                             onChange={(e) => updateSettings({ waterInterval: parseFloat(e.target.value) })}
                             className="w-full mt-2"
                         />
-                        <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                        <div className="flex justify-between text-xs text-text-muted mt-1">
                             <span>1h</span>
-                            <span className="font-semibold text-blue-400">{settings.waterInterval}h</span>
+                            <span className="font-semibold text-primary">{settings.waterInterval}h</span>
                             <span>4h</span>
                         </div>
                     </div>
@@ -56,15 +56,15 @@ export default function ReminderSettings() {
             </div>
 
             {/* Lembrete de Refeições */}
-            <div className="card p-6">
+            <div className="bg-slate-900/40 border border-white/10 rounded-2xl p-6">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center">
-                            <Utensils className="w-5 h-5 text-orange-400" />
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                            <Utensils className="w-5 h-5 text-primary" />
                         </div>
                         <div>
-                            <h3 className="text-lg font-semibold">Lembrete de Refeições</h3>
-                            <p className="text-sm text-muted-foreground">
+                            <h3 className="text-lg font-semibold text-white">Lembrete de Refeições</h3>
+                            <p className="text-sm text-text-muted">
                                 Aviso 30min antes
                             </p>
                         </div>
@@ -83,14 +83,14 @@ export default function ReminderSettings() {
 
                 {settings.mealEnabled && (
                     <div className="mt-4 space-y-2">
-                        <p className="text-sm text-muted-foreground mb-2">
+                        <p className="text-sm text-text-muted mb-2">
                             Horários das refeições:
                         </p>
                         {settings.mealTimes.map((time, index) => (
-                            <div key={index} className="flex items-center gap-2 text-sm">
-                                <Bell className="w-4 h-4 text-orange-400" />
-                                <span className="font-semibold">{time}</span>
-                                <span className="text-muted-foreground">
+                            <div key={index} className="flex items-center gap-2 text-sm text-white">
+                                <Bell className="w-4 h-4 text-primary" />
+                                <span className="font-semibold text-white">{time}</span>
+                                <span className="text-text-muted">
                                     (lembrete às{' '}
                                     {new Date(`2000-01-01T${time}`).getTime() - 30 * 60 * 1000 > 0
                                         ? new Date(new Date(`2000-01-01T${time}`).getTime() - 30 * 60 * 1000)
@@ -101,7 +101,7 @@ export default function ReminderSettings() {
                                 </span>
                             </div>
                         ))}
-                        <p className="text-xs text-muted-foreground mt-3">
+                        <p className="text-xs text-text-muted mt-3">
                             💡 Horários baseados no seu plano alimentar
                         </p>
                     </div>
@@ -110,9 +110,9 @@ export default function ReminderSettings() {
 
             {/* Info */}
             {(settings.waterEnabled || settings.mealEnabled) && (
-                <div className="card p-4 bg-blue-500/5 border-blue-500/20">
-                    <p className="text-sm text-muted-foreground">
-                        <Bell className="w-4 h-4 inline mr-2" />
+                <div className="bg-slate-900/40 border border-white/10 rounded-xl p-4">
+                    <p className="text-sm text-text-muted">
+                        <Bell className="w-4 h-4 inline mr-2 text-primary" />
                         Os lembretes funcionam enquanto o app estiver aberto ou em segundo plano.
                     </p>
                 </div>

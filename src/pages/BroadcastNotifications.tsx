@@ -174,7 +174,7 @@ export default function BroadcastNotifications() {
     return (
         <div className="min-h-screen bg-background pb-24">
             {/* Header */}
-            <div className="bg-gradient-to-br from-blue-900 to-blue-800 p-6 rounded-b-3xl shadow-lg mb-6">
+            <div className="bg-gradient-to-b from-slate-900/70 to-background p-6 rounded-b-3xl border-b border-white/5 mb-6">
                 <div className="flex items-center gap-4 mb-4">
                     <button
                         onClick={() => navigate('/perfil')}
@@ -187,17 +187,17 @@ export default function BroadcastNotifications() {
                             <Bell className="w-6 h-6" />
                             Enviar Notificações
                         </h1>
-                        <p className="text-blue-200 text-sm">Broadcast para todos os dispositivos</p>
+                        <p className="text-slate-300 text-sm">Broadcast para todos os dispositivos</p>
                     </div>
                 </div>
 
                 {/* Stats */}
                 {totalSubscriptions !== null && (
                     <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 flex items-center gap-3">
-                        <Users className="w-5 h-5 text-blue-200" />
+                        <Users className="w-5 h-5 text-slate-300" />
                         <div>
                             <p className="text-white font-semibold">{totalSubscriptions} dispositivos ativos</p>
-                            <p className="text-blue-200 text-xs">Receberão a notificação</p>
+                            <p className="text-slate-300 text-xs">Receberão a notificação</p>
                         </div>
                     </div>
                 )}
@@ -216,7 +216,7 @@ export default function BroadcastNotifications() {
                         onChange={(e) => setTitle(e.target.value)}
                         placeholder="Ex: Nova atualização disponível!"
                         maxLength={50}
-                        className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:border-blue-500 focus:outline-none"
+                        className="w-full bg-slate-900/40 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:border-primary focus:outline-none"
                     />
                     <p className="text-xs text-zinc-400 mt-1">{title.length}/50 caracteres</p>
                 </div>
@@ -232,7 +232,7 @@ export default function BroadcastNotifications() {
                         placeholder="Ex: Confira as novidades e melhorias que preparamos para você!"
                         maxLength={150}
                         rows={4}
-                        className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:border-blue-500 focus:outline-none resize-none"
+                        className="w-full bg-slate-900/40 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:border-primary focus:outline-none resize-none"
                     />
                     <p className="text-xs text-zinc-400 mt-1">{body.length}/150 caracteres</p>
                 </div>
@@ -247,16 +247,16 @@ export default function BroadcastNotifications() {
                         value={url}
                         onChange={(e) => setUrl(e.target.value)}
                         placeholder="/dashboard"
-                        className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:border-blue-500 focus:outline-none"
+                        className="w-full bg-slate-900/40 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-zinc-500 focus:border-primary focus:outline-none"
                     />
                     <p className="text-xs text-zinc-400 mt-1">Página que abrirá ao clicar na notificação</p>
                 </div>
 
                 {/* Preview */}
                 {(title || body) && (
-                    <div className="bg-zinc-900 border border-zinc-700 rounded-xl p-4">
+                    <div className="bg-slate-900/40 border border-white/10 rounded-xl p-4">
                         <p className="text-xs text-zinc-400 mb-3">Preview:</p>
-                        <div className="bg-zinc-800 rounded-lg p-4 flex items-start gap-3">
+                        <div className="bg-white/5 rounded-lg p-4 flex items-start gap-3">
                             <Bell className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
                             <div className="flex-1">
                                 <p className="text-white font-semibold">{title || 'Título'}</p>
@@ -270,7 +270,7 @@ export default function BroadcastNotifications() {
                 <button
                     onClick={handleSendBroadcast}
                     disabled={isLoading || !title.trim() || !body.trim()}
-                    className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold py-4 rounded-xl flex items-center justify-center gap-2 hover:from-blue-600 hover:to-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-blue-500 disabled:hover:to-blue-600"
+                    className="w-full bg-primary text-black font-semibold py-4 rounded-xl flex items-center justify-center gap-2 hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {isLoading ? (
                         <>

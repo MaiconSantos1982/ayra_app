@@ -130,7 +130,7 @@ export default function OnboardingSimple() {
                                         p-4 rounded-xl border-2 transition-all
                                         ${isSelected
                                             ? 'border-primary bg-primary/10 scale-105'
-                                            : 'border-white/10 bg-card hover:border-white/20'
+                                            : 'border-white/10 bg-slate-900/40 hover:border-white/20'
                                         }
                                     `}
                                 >
@@ -170,7 +170,7 @@ export default function OnboardingSimple() {
                 {/* Submit Button */}
                 <button
                     type="submit"
-                    className="w-full bg-gradient-to-r from-primary to-secondary text-black font-bold py-4 rounded-xl shadow-neon hover:shadow-neon-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2"
+                    className="w-full bg-primary text-black font-bold py-4 rounded-xl hover:brightness-110 transition-all flex items-center justify-center gap-2"
                 >
                     <Save size={20} />
                     Salvar Alterações
@@ -180,7 +180,7 @@ export default function OnboardingSimple() {
                 <button
                     type="button"
                     onClick={() => navigate('/perfil')}
-                    className="w-full bg-card border border-white/10 text-white font-semibold py-3 rounded-xl hover:border-white/20 transition-colors"
+                    className="w-full bg-slate-900/40 border border-white/10 text-white font-semibold py-3 rounded-xl hover:border-white/20 transition-colors"
                 >
                     Cancelar
                 </button>

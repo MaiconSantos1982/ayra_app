@@ -89,21 +89,21 @@ export default function PushNotificationSettings() {
     // Aviso especial para iOS Safari
     if (isIOSSafari) {
         return (
-            <div className="bg-blue-500/10 backdrop-blur-sm border border-blue-500/30 rounded-lg p-6">
+            <div className="bg-slate-900/40 backdrop-blur-sm border border-white/10 rounded-lg p-6">
                 <div className="flex items-start gap-3">
-                    <Smartphone className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                    <Smartphone className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                     <div>
                         <h3 className="text-white font-medium mb-2">📱 Instale o App</h3>
-                        <p className="text-sm text-zinc-300 mb-3">
+                        <p className="text-sm text-text-muted mb-3">
                             Para receber notificações no iPhone, instale o Ayra como aplicativo:
                         </p>
-                        <ol className="text-sm text-zinc-300 space-y-2 list-decimal list-inside">
+                        <ol className="text-sm text-text-muted space-y-2 list-decimal list-inside">
                             <li>Toque no botão <strong>Compartilhar</strong> (ícone de compartilhar)</li>
                             <li>Role e selecione <strong>"Adicionar à Tela Inicial"</strong></li>
                             <li>Toque em <strong>"Adicionar"</strong></li>
                             <li>Abra o app pela tela inicial e habilite notificações</li>
                         </ol>
-                        <p className="text-xs text-blue-300 mt-3">
+                        <p className="text-xs text-primary mt-3">
                             💡 Requer iOS 16.4 ou superior
                         </p>
                     </div>
@@ -114,12 +114,12 @@ export default function PushNotificationSettings() {
 
     if (!isSupported) {
         return (
-            <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-lg p-6">
+            <div className="bg-slate-900/40 backdrop-blur-sm border border-white/10 rounded-lg p-6">
                 <div className="flex items-start gap-3">
                     <XCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
                     <div>
                         <h3 className="text-white font-medium mb-1">Notificações não suportadas</h3>
-                        <p className="text-sm text-zinc-400">
+                        <p className="text-sm text-text-muted">
                             Seu navegador não suporta notificações push.
                             Use um navegador moderno como Chrome, Firefox ou Edge.
                         </p>
@@ -130,20 +130,20 @@ export default function PushNotificationSettings() {
     }
 
     return (
-        <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-lg p-6 space-y-4">
+        <div className="bg-slate-900/40 backdrop-blur-sm border border-white/10 rounded-lg p-6 space-y-4">
             {/* Header */}
             <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-3 flex-1">
                     {isEnabled ? (
-                        <Bell className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+                        <Bell className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                     ) : (
-                        <BellOff className="w-5 h-5 text-zinc-400 flex-shrink-0 mt-0.5" />
+                        <BellOff className="w-5 h-5 text-text-muted flex-shrink-0 mt-0.5" />
                     )}
                     <div className="flex-1">
                         <h3 className="text-white font-medium mb-1">
                             Notificações Push
                         </h3>
-                        <p className="text-sm text-zinc-400">
+                        <p className="text-sm text-text-muted">
                             {isEnabled
                                 ? 'Receba atualizações importantes sobre sua jornada de saúde'
                                 : 'Habilite para receber notificações importantes'
@@ -159,7 +159,7 @@ export default function PushNotificationSettings() {
                     className={`
             relative inline-flex items-center h-6 w-11 rounded-full transition-colors
             focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 
-            focus:ring-offset-zinc-900 disabled:opacity-50 disabled:cursor-not-allowed
+            focus:ring-offset-background disabled:opacity-50 disabled:cursor-not-allowed
             ${isEnabled ? 'bg-blue-500' : 'bg-zinc-700'}
           `}
                     aria-label={isEnabled ? 'Desabilitar notificações' : 'Habilitar notificações'}
@@ -184,7 +184,7 @@ export default function PushNotificationSettings() {
                         Ativado
                     </span>
                 ) : (
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-zinc-800 text-zinc-400 border border-zinc-700">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-white/5 text-text-muted border border-white/10">
                         <XCircle className="w-3.5 h-3.5" />
                         Desativado
                     </span>
@@ -193,7 +193,7 @@ export default function PushNotificationSettings() {
 
             {/* Test Button */}
             {isEnabled && (
-                <div className="pt-2 border-t border-zinc-800">
+                <div className="pt-2 border-t border-white/10">
                     <button
                         onClick={(e) => {
                             e.preventDefault();
@@ -204,7 +204,7 @@ export default function PushNotificationSettings() {
                         type="button"
                         className="
               inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium
-              bg-zinc-800 hover:bg-zinc-700 text-white
+              bg-white/5 hover:bg-white/10 text-white
               transition-colors disabled:opacity-50 disabled:cursor-not-allowed
             "
                     >

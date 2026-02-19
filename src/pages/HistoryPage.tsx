@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Calendar, ChevronLeft, ChevronRight, Droplet, Dumbbell, Moon, Smile, Utensils, Crown, X, Target } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, Droplet, Dumbbell, Moon, Smile, Utensils, Crown, X, Target, ChevronDown } from 'lucide-react';
 import { getUserData, getDailyData, getDailyNutrition } from '../lib/localStorage';
 import { useNavigate } from 'react-router-dom';
 import { getLocalDateKey } from '../lib/dateUtils';
@@ -10,6 +10,10 @@ export default function HistoryPage() {
     const [selectedDate, setSelectedDate] = useState(getLocalDateKey());
     const [dayData, setDayData] = useState(getDailyData(selectedDate));
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+    const [expanded, setExpanded] = useState({
+        nutrition: true,
+        summary: false
+    });
 
     // Verifica se usuário é premium (por enquanto sempre false)
     const isPremium = userData?.premium || false;
@@ -96,7 +100,7 @@ export default function HistoryPage() {
             {/* Modal de Upgrade */}
             {showUpgradeModal && (
                 <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-                    <div className="bg-gradient-to-br from-purple-900 to-purple-800 rounded-3xl p-6 max-w-md w-full border border-yellow-500/30 relative">
+                    <div className="bg-slate-900 rounded-3xl p-6 max-w-md w-full border border-yellow-500/30 relative">
                         <button
                             onClick={() => setShowUpgradeModal(false)}
                             className="absolute top-4 right-4 text-white/70 hover:text-white"
@@ -111,7 +115,7 @@ export default function HistoryPage() {
                             <h2 className="text-2xl font-bold text-white mb-2">
                                 Upgrade para Premium
                             </h2>
-                            <p className="text-purple-200">
+                            <p className="text-slate-300">
                                 Acesse histórico ilimitado e muito mais!
                             </p>
                         </div>
@@ -137,12 +141,12 @@ export default function HistoryPage() {
 
                         <button
                             onClick={() => window.open('https://www.ayrislife.com/ayra?utm_source=app&utm_medium=gratuito', '_blank')}
-                            className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold py-4 rounded-2xl hover:scale-105 transition-transform"
+                            className="w-full bg-amber-500 text-black font-bold py-4 rounded-2xl hover:brightness-110 transition-all"
                         >
                             Fazer Upgrade Agora
                         </button>
 
-                        <p className="text-center text-purple-200 text-xs mt-4">
+                        <p className="text-center text-slate-300 text-xs mt-4">
                             Plano Free: Histórico de {FREE_HISTORY_DAYS} dias
                         </p>
                     </div>
@@ -150,13 +154,13 @@ export default function HistoryPage() {
             )}
 
             {/* Header */}
-            <div className="bg-gradient-to-br from-purple-900 to-purple-800 p-6 rounded-b-3xl shadow-lg mb-6">
+            <div className="bg-gradient-to-b from-slate-900/70 to-background p-6 rounded-b-3xl border-b border-white/5 mb-6">
                 <div className="flex items-center justify-between mb-4">
                     <h1 className="text-2xl font-bold text-white">Histórico 📅</h1>
                     <div className="flex items-center gap-2">
                         <button
                             onClick={() => navigate('/historico-nutricional')}
-                            className="bg-primary text-black px-3 py-1.5 rounded-full font-bold text-xs flex items-center gap-1.5 hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20"
+                            className="bg-primary text-black px-3 py-1.5 rounded-full font-bold text-xs flex items-center gap-1.5 hover:brightness-110 transition-colors"
                         >
                             <Target size={14} />
                             Histórico Nutricional
@@ -208,25 +212,35 @@ export default function HistoryPage() {
             {/* Nutritional Summary */}
             <div className="px-6 mb-6">
                 <div className="glass rounded-2xl p-6">
-                    <div className="flex items-center gap-2 mb-4">
-                        <Target className="text-primary" size={20} />
-                        <h2 className="text-lg font-bold text-white">Nutrição do Dia</h2>
-                    </div>
+                    <button
+                        onClick={() => setExpanded((prev) => ({ ...prev, nutrition: !prev.nutrition }))}
+                        className="w-full flex items-center justify-between"
+                    >
+                        <div className="flex items-center gap-2">
+                            <Target className="text-primary" size={20} />
+                            <h2 className="text-lg font-bold text-white">Nutrição do Dia</h2>
+                        </div>
+                        <ChevronDown className={`text-slate-300 transition-transform ${expanded.nutrition ? 'rotate-180' : ''}`} size={18} />
+                    </button>
 
-                    {(() => {
+                    {expanded.nutrition && (() => {
                         const nutrition = getDailyNutrition(selectedDate);
-                        const hasNutrition = nutrition.calorias > 0 || nutrition.proteina > 0 || nutrition.carboidratos > 0 || nutrition.gorduras > 0;
+                        const hasNutrition = dayData.meals.length > 0 ||
+                            nutrition.calorias > 0 ||
+                            nutrition.proteina > 0 ||
+                            nutrition.carboidratos > 0 ||
+                            nutrition.gorduras > 0;
 
                         if (!hasNutrition) {
                             return (
-                                <p className="text-center text-text-muted text-sm py-2">
+                                <p className="text-center text-text-muted text-sm py-4">
                                     Nenhum valor nutricional registrado neste dia
                                 </p>
                             );
                         }
 
                         return (
-                            <div className="space-y-3">
+                            <div className="space-y-3 mt-4">
                                 <div className="flex items-center justify-between p-2 border-b border-white/5 last:border-0">
                                     <span className="text-sm text-gray-400">Calorias</span>
                                     <div className="flex items-baseline gap-1">
@@ -258,15 +272,20 @@ export default function HistoryPage() {
                             </div>
                         );
                     })()}
-
                 </div>
             </div>
 
             {/* Resumo do Dia */}
             <div className="px-6 mb-6">
-                {/* Resumo do Dia */}
-                <div className="px-6 mb-6">
-                    <div className="bg-card rounded-2xl p-4 border border-white/5 space-y-4">
+                <div className="bg-slate-900/40 rounded-2xl p-4 border border-white/5">
+                    <button
+                        onClick={() => setExpanded((prev) => ({ ...prev, summary: !prev.summary }))}
+                        className="w-full flex items-center justify-between"
+                    >
+                        <h3 className="text-base font-semibold text-white">Resumo do Dia</h3>
+                        <ChevronDown className={`text-slate-300 transition-transform ${expanded.summary ? 'rotate-180' : ''}`} size={18} />
+                    </button>
+                    {expanded.summary && <div className="space-y-4 mt-4">
                         {/* Água */}
                         <div className="flex items-center justify-between border-b border-white/5 pb-2 last:border-0 last:pb-0">
                             <div className="flex items-center gap-3">
@@ -299,7 +318,7 @@ export default function HistoryPage() {
                         <div className="flex items-center justify-between border-b border-white/5 pb-2 last:border-0 last:pb-0">
                             <div className="flex items-center gap-3">
                                 <div className="bg-purple-500/10 p-2 rounded-full">
-                                    <Moon className="w-5 h-5 text-purple-400" />
+                                    <Moon className="w-5 h-5 text-indigo-300" />
                                 </div>
                                 <span className="text-base font-medium text-white">Sono</span>
                             </div>
@@ -322,7 +341,7 @@ export default function HistoryPage() {
                                 <span className="text-sm text-gray-400">{dayData.mood ? moodLabels[dayData.mood] : '-'}</span>
                             </div>
                         </div>
-                    </div>
+                    </div>}
                 </div>
             </div>
 
@@ -336,7 +355,7 @@ export default function HistoryPage() {
                 </div>
 
                 {dayData.meals.length === 0 ? (
-                    <div className="bg-card rounded-2xl p-6 text-center border border-white/5">
+                    <div className="bg-slate-900/40 rounded-2xl p-6 text-center border border-white/5">
                         <p className="text-gray-400">Nenhuma refeição registrada neste dia</p>
                     </div>
                 ) : (
@@ -344,7 +363,7 @@ export default function HistoryPage() {
                         {dayData.meals.map((meal) => (
                             <div
                                 key={meal.id}
-                                className="bg-card rounded-2xl p-4 border border-white/5"
+                                className="bg-slate-900/40 rounded-2xl p-4 border border-white/5"
                             >
                                 <div className="flex items-start justify-between">
                                     <div className="flex-1">
@@ -380,7 +399,7 @@ export default function HistoryPage() {
             {
                 dayData.weight && (
                     <div className="px-6 mb-6">
-                        <div className="bg-gradient-to-br from-purple-900/50 to-purple-800/50 rounded-2xl p-4 border border-purple-500/20">
+                        <div className="bg-slate-900/40 rounded-2xl p-4 border border-white/10">
                             <div className="flex items-center gap-3">
                                 <div className="bg-primary/20 p-3 rounded-xl">
                                     <Calendar className="w-6 h-6 text-primary" />
@@ -399,7 +418,7 @@ export default function HistoryPage() {
             <div className="px-6">
                 <button
                     onClick={() => navigate('/inicio')}
-                    className="w-full bg-card border border-white/10 text-white font-semibold py-3 px-6 rounded-2xl hover:border-white/20 transition-colors"
+                    className="w-full bg-slate-900/40 border border-white/10 text-white font-semibold py-3 px-6 rounded-2xl hover:border-white/20 transition-colors"
                 >
                     Voltar ao Início
                 </button>

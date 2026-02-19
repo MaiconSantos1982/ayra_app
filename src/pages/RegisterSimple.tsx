@@ -5,18 +5,20 @@ import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { addMeal, getUserData } from '../lib/localStorage';
 import type { DietMeal } from '../lib/localStorage';
+import { getLocalDateKey } from '../lib/dateUtils';
+import { estimateMacrosFromDescription } from '../lib/macroEstimator';
 import Toast from '../components/Toast';
 import type { ToastType } from '../components/Toast';
 import ConfirmModal from '../components/ConfirmModal';
 
 const MEAL_TYPES = [
-    { id: 'Café da manhã', label: 'Café da manhã', icon: Coffee, color: 'from-yellow-500 to-orange-500' },
-    { id: 'Lanche da manhã', label: 'Lanche da manhã', icon: Cookie, color: 'from-orange-400 to-yellow-400' },
-    { id: 'Almoço', label: 'Almoço', icon: Sun, color: 'from-orange-500 to-red-500' },
-    { id: 'Lanche da tarde', label: 'Lanche da tarde', icon: IceCream, color: 'from-pink-500 to-purple-500' },
-    { id: 'Jantar', label: 'Jantar', icon: Moon, color: 'from-purple-500 to-indigo-500' },
-    { id: 'Ceia', label: 'Ceia', icon: Sandwich, color: 'from-indigo-500 to-blue-500' },
-    { id: 'Outros', label: 'Outros', icon: Pizza, color: 'from-green-500 to-teal-500' },
+    { id: 'Café da manhã', label: 'Café da manhã', icon: Coffee, color: 'from-slate-600 to-slate-700' },
+    { id: 'Lanche da manhã', label: 'Lanche da manhã', icon: Cookie, color: 'from-slate-600 to-slate-700' },
+    { id: 'Almoço', label: 'Almoço', icon: Sun, color: 'from-slate-600 to-slate-700' },
+    { id: 'Lanche da tarde', label: 'Lanche da tarde', icon: IceCream, color: 'from-slate-600 to-slate-700' },
+    { id: 'Jantar', label: 'Jantar', icon: Moon, color: 'from-slate-600 to-slate-700' },
+    { id: 'Ceia', label: 'Ceia', icon: Sandwich, color: 'from-slate-600 to-slate-700' },
+    { id: 'Outros', label: 'Outros', icon: Pizza, color: 'from-slate-600 to-slate-700' },
 ];
 
 export default function RegisterSimple() {
@@ -26,9 +28,10 @@ export default function RegisterSimple() {
     const [description, setDescription] = useState('');
     const [photo, setPhoto] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+    const [estimatingMacros, setEstimatingMacros] = useState(false);
 
     // Controles de Data e Hora (Retroativo)
-    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+    const [selectedDate, setSelectedDate] = useState(getLocalDateKey());
     const [selectedTime, setSelectedTime] = useState(new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }));
 
     // Controles de Macros (Opcional)
@@ -119,6 +122,45 @@ export default function RegisterSimple() {
         setShowDietModal(false);
     };
 
+    const handleEstimateMacros = async () => {
+        if (!description.trim()) {
+            setToast({ message: 'Descreva a refeição para calcular os macros.', type: 'warning' });
+            return;
+        }
+
+        setEstimatingMacros(true);
+        try {
+            const estimation = await estimateMacrosFromDescription(description);
+
+            if (estimation.matchedItems === 0) {
+                setToast({ message: 'Não encontrei alimentos da sua descrição na base nutricional.', type: 'warning' });
+                return;
+            }
+
+            setMacros({
+                calorias: estimation.calorias.toString(),
+                proteina: estimation.proteina.toString(),
+                carboidratos: estimation.carboidratos.toString(),
+                gorduras: estimation.gorduras.toString(),
+            });
+            setShowMacros(true);
+
+            if (estimation.matchedItems < estimation.totalItems) {
+                setToast({
+                    message: `Macros estimados para ${estimation.matchedItems}/${estimation.totalItems} itens. Ajuste manual se necessário.`,
+                    type: 'info',
+                });
+            } else {
+                setToast({ message: 'Macros calculados automaticamente com sucesso!', type: 'success' });
+            }
+        } catch (error) {
+            console.error('Erro ao estimar macros:', error);
+            setToast({ message: 'Erro ao calcular macros. Tente novamente.', type: 'error' });
+        } finally {
+            setEstimatingMacros(false);
+        }
+    };
+
     // Handler para enviar refeição
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -131,12 +173,31 @@ export default function RegisterSimple() {
         setLoading(true);
 
         try {
+            const hasManualMacros = !!(macros.calorias || macros.proteina || macros.carboidratos || macros.gorduras);
+
+            let resolvedMacros = { ...macros };
+
+            // Se usuário não preencheu macros manualmente, tenta estimar automaticamente
+            if (!hasManualMacros) {
+                const estimation = await estimateMacrosFromDescription(description.trim());
+                if (estimation.matchedItems > 0) {
+                    resolvedMacros = {
+                        calorias: estimation.calorias.toString(),
+                        proteina: estimation.proteina.toString(),
+                        carboidratos: estimation.carboidratos.toString(),
+                        gorduras: estimation.gorduras.toString(),
+                    };
+                    setMacros(resolvedMacros);
+                    setShowMacros(true);
+                }
+            }
+
             // Prepara objetos de macros (converte para number ou undefined)
             const nutritionValues = {
-                calorias: macros.calorias ? parseFloat(macros.calorias) : undefined,
-                proteina: macros.proteina ? parseFloat(macros.proteina) : undefined,
-                carboidratos: macros.carboidratos ? parseFloat(macros.carboidratos) : undefined,
-                gorduras: macros.gorduras ? parseFloat(macros.gorduras) : undefined
+                calorias: resolvedMacros.calorias ? parseFloat(resolvedMacros.calorias) : undefined,
+                proteina: resolvedMacros.proteina ? parseFloat(resolvedMacros.proteina) : undefined,
+                carboidratos: resolvedMacros.carboidratos ? parseFloat(resolvedMacros.carboidratos) : undefined,
+                gorduras: resolvedMacros.gorduras ? parseFloat(resolvedMacros.gorduras) : undefined
             };
 
             // Salva refeição no localStorage (Modo Offline / Backup)
@@ -210,9 +271,9 @@ export default function RegisterSimple() {
     return (
         <div className="min-h-screen bg-background pb-20">
             {/* Header */}
-            <div className="bg-gradient-to-br from-purple-900 to-purple-800 p-6 rounded-b-3xl shadow-lg mb-6 sticky top-0 z-10">
+            <div className="bg-gradient-to-b from-slate-900/70 to-background p-6 rounded-b-3xl border-b border-white/5 mb-6 sticky top-0 z-10">
                 <h1 className="text-2xl font-bold text-white">Registrar Refeição 🍽️</h1>
-                <p className="text-purple-200 text-sm mt-1">
+                <p className="text-text-muted text-sm mt-1">
                     Conte-me o que você comeu
                 </p>
             </div>
@@ -229,8 +290,8 @@ export default function RegisterSimple() {
                             type="date"
                             value={selectedDate}
                             onChange={(e) => setSelectedDate(e.target.value)}
-                            max={new Date().toISOString().split('T')[0]}
-                            className="w-full px-3 py-2 rounded-xl bg-card border border-white/10 text-white text-sm focus:border-primary focus:outline-none"
+                            max={getLocalDateKey()}
+                            className="w-full px-3 py-2 rounded-xl bg-slate-900/40 border border-white/10 text-white text-sm focus:border-primary focus:outline-none"
                         />
                     </div>
                     <div className="w-1/3">
@@ -241,7 +302,7 @@ export default function RegisterSimple() {
                             type="time"
                             value={selectedTime}
                             onChange={(e) => setSelectedTime(e.target.value)}
-                            className="w-full px-3 py-2 rounded-xl bg-card border border-white/10 text-white text-sm focus:border-primary focus:outline-none"
+                            className="w-full px-3 py-2 rounded-xl bg-slate-900/40 border border-white/10 text-white text-sm focus:border-primary focus:outline-none"
                         />
                     </div>
                 </div>
@@ -265,7 +326,7 @@ export default function RegisterSimple() {
                     relative p-4 rounded-2xl border-2 transition-all
                     ${isSelected
                                             ? 'border-primary bg-primary/10 scale-105'
-                                            : 'border-white/10 bg-card hover:border-white/20'
+                                            : 'border-white/10 bg-slate-900/40 hover:border-white/20'
                                         }
                   `}
                                 >
@@ -303,16 +364,24 @@ export default function RegisterSimple() {
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="Ex: Arroz, feijão, frango grelhado e salada"
                         rows={4}
-                        className="w-full bg-card border border-white/10 rounded-2xl p-4 text-white placeholder-gray-500 focus:outline-none focus:border-primary resize-none"
+                        className="w-full bg-slate-900/40 border border-white/10 rounded-2xl p-4 text-white placeholder-gray-500 focus:outline-none focus:border-primary resize-none"
                         required
                     />
                     <p className="text-gray-400 text-xs mt-2">
                         Seja específico para a Ayra te ajudar melhor!
                     </p>
+                    <button
+                        type="button"
+                        onClick={handleEstimateMacros}
+                        disabled={estimatingMacros || !description.trim()}
+                        className="mt-3 w-full bg-blue-500/10 border border-blue-500/30 text-blue-700 font-semibold py-3 rounded-xl hover:bg-blue-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {estimatingMacros ? 'Calculando macros...' : 'Calcular macros automaticamente'}
+                    </button>
                 </div>
 
                 {/* MACRONUTRIENTES (Accordion) */}
-                <div className="bg-card border border-white/10 rounded-2xl overflow-hidden">
+                <div className="bg-slate-900/40 border border-white/10 rounded-2xl overflow-hidden">
                     <button
                         type="button"
                         onClick={() => setShowMacros(!showMacros)}
@@ -381,7 +450,7 @@ export default function RegisterSimple() {
                         <button
                             type="button"
                             onClick={() => fileInputRef.current?.click()}
-                            className="w-full bg-card border-2 border-dashed border-white/20 rounded-2xl p-8 hover:border-primary/50 transition-colors"
+                            className="w-full bg-slate-900/40 border-2 border-dashed border-white/20 rounded-2xl p-8 hover:border-primary/50 transition-colors"
                         >
                             <div className="flex flex-col items-center gap-2">
                                 <div className="bg-primary/20 p-4 rounded-full">
@@ -422,7 +491,7 @@ export default function RegisterSimple() {
                 <button
                     type="submit"
                     disabled={loading || !selectedMeal || !description.trim()}
-                    className="w-full bg-gradient-to-r from-primary to-green-400 text-black font-bold py-4 px-6 rounded-2xl shadow-lg flex items-center justify-center gap-3 hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                    className="w-full bg-primary text-black font-bold py-4 px-6 rounded-2xl shadow-lg flex items-center justify-center gap-3 hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {loading ? (
                         <>
@@ -441,7 +510,7 @@ export default function RegisterSimple() {
                 <button
                     type="button"
                     onClick={() => navigate('/inicio')}
-                    className="w-full bg-card border border-white/10 text-white font-semibold py-3 px-6 rounded-2xl hover:border-white/20 transition-colors"
+                    className="w-full bg-slate-900/40 border border-white/10 text-white font-semibold py-3 px-6 rounded-2xl hover:border-white/20 transition-colors"
                 >
                     Cancelar
                 </button>
