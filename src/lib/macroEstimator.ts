@@ -189,6 +189,9 @@ function inferGrams(item: string, foodName: string): number {
     }
 
     if (isSlice) {
+        if (/\bpao\b|\bpão\b/.test(foodName)) {
+            return quantity * 25;
+        }
         if (/\bqueijo\b|\bmozarela\b|\bmu[sz]arela\b|\bparmesao\b|\bparmesão\b/i.test(foodName)) {
             return quantity * 20;
         }
@@ -279,6 +282,25 @@ function scoreMatch(inputTokens: string[], inputNormalized: string, food: FoodNu
     const foodHasGema = food.tokens.includes('gema');
     if (inputHasOvo && !inputHasClara && !inputHasGema && (foodHasClara || foodHasGema)) {
         score -= 4;
+    }
+
+    // Se usuario escreve "pão de forma" sem especificar tipo, prioriza versão simples.
+    const inputHasPaoForma = inputTokens.includes('pao') && inputTokens.includes('forma');
+    const inputHasSpecificBreadType = inputTokens.some((token) =>
+        ['aveia', 'milho', 'integral', 'gluten'].includes(token)
+    );
+    if (inputHasPaoForma && !inputHasSpecificBreadType) {
+        const foodHasAveia = food.tokens.includes('aveia');
+        const foodHasMilho = food.tokens.includes('milho');
+        const foodHasIntegral = food.tokens.includes('integral');
+        const foodHasGluten = food.tokens.includes('gluten');
+
+        if (foodHasAveia || foodHasMilho || foodHasIntegral) {
+            score -= 3;
+        }
+        if (foodHasGluten) {
+            score += 2;
+        }
     }
 
     return score;
